@@ -1,0 +1,13 @@
+{
+  "name": "lighthouse-surf-payments",
+  "version": "1.0.0",
+  "description": "PayHere payment backend for Light House Surf Camp online bookings",
+  "main": "payhere-server.js",
+  "scripts": {
+    "start": "node payhere-server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
