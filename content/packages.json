@@ -1,0 +1,65 @@
+{
+  "items": [
+    {
+      "id": "pkg-weekend",
+      "name": "Weekend Taster Camp",
+      "tagline": "3 days · 2 nights",
+      "price": 190,
+      "unit": "per person",
+      "image": "assets/img/hkrp0048.jpg",
+      "alt": "Surfers walking to the water at sunrise in Arugam Bay",
+      "blurb": "A long weekend to find out why people cancel their onward flights. Two nights in a sea-view cabana, four hours of coaching, and every meal handled.",
+      "includes": [
+        "2 nights sea-view cabana",
+        "2 × surf lessons with a certified coach",
+        "All meals + fresh juices",
+        "Board & rash-guard hire",
+        "Sunset yoga session"
+      ],
+      "featured": false,
+      "active": true
+    },
+    {
+      "id": "pkg-7day",
+      "name": "7-Day Surf Camp",
+      "tagline": "All-inclusive · 6 nights",
+      "price": 590,
+      "unit": "per person",
+      "image": "assets/img/cabana2-3.jpg",
+      "alt": "Sea-view cabana terrace at Light House Surf Camp",
+      "blurb": "Our signature week, and the one guests come back for. Daily coaching at the break that suits your level, Ayurvedic bodywork to keep you paddling, and a table that fills up at sunset.",
+      "includes": [
+        "6 nights sea-view cabana",
+        "5 × guided surf sessions",
+        "Daily breakfast, lunch & dinner",
+        "Unlimited board & wetsuit hire",
+        "1 × Ayurvedic massage",
+        "Airport transfer assistance",
+        "Video coaching & feedback"
+      ],
+      "featured": true,
+      "active": true
+    },
+    {
+      "id": "pkg-10day",
+      "name": "10-Day Pro Trip",
+      "tagline": "All-inclusive · 9 nights",
+      "price": 890,
+      "unit": "per person",
+      "image": "assets/img/drone-3.jpg",
+      "alt": "Aerial view of the point break at Arugam Bay",
+      "blurb": "For surfers chasing real progression. We follow the swell up and down the coast — Whiskey Point, Peanut Farm, Okanda — and film every session.",
+      "includes": [
+        "9 nights premium cabana",
+        "8 × coached sessions incl. dawn patrol",
+        "Surf-safari day trips up the coast",
+        "All meals & recovery smoothies",
+        "2 × Ayurvedic treatments",
+        "Full video analysis package",
+        "Airport transfers both ways"
+      ],
+      "featured": false,
+      "active": true
+    }
+  ]
+}

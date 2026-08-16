@@ -196,4 +196,116 @@
     }, {threshold:.14, rootMargin:'0px 0px -6% 0px'});
     els.forEach(function(el){ io.observe(el); });
   }
+
+  /* ---------------------------------------------------------
+     Accordions
+     Progressive enhancement: the markup ships open and the
+     panels only collapse once this runs, so a visitor without
+     JS reads the full text instead of an empty page.
+     --------------------------------------------------------- */
+  document.querySelectorAll('.acc').forEach(function(acc){
+    var single = acc.hasAttribute('data-single');
+    acc.querySelectorAll('.acc-item').forEach(function(item, i){
+      var head  = item.querySelector('.acc-head');
+      var panel = item.querySelector('.acc-panel');
+      if(!head || !panel) return;
+
+      if(!panel.id) panel.id = 'accp-' + Math.random().toString(36).slice(2,8);
+      head.setAttribute('aria-controls', panel.id);
+
+      // First item stays open so the section never looks empty.
+      var open = item.hasAttribute('data-open') || i === 0;
+      set(open);
+
+      head.addEventListener('click', function(){
+        var next = head.getAttribute('aria-expanded') !== 'true';
+        if(single && next){
+          acc.querySelectorAll('.acc-item.open').forEach(function(other){
+            if(other === item) return;
+            other.classList.remove('open');
+            var h = other.querySelector('.acc-head');
+            if(h) h.setAttribute('aria-expanded','false');
+          });
+        }
+        set(next);
+      });
+
+      function set(on){
+        item.classList.toggle('open', on);
+        head.setAttribute('aria-expanded', on ? 'true' : 'false');
+      }
+    });
+  });
+
+  /* ---------------------------------------------------------
+     Read more
+     The clamp itself is CSS and only applies under 760px, so
+     the button is pointless on a desktop — it is hidden there
+     rather than removed, keeping one DOM across breakpoints.
+     --------------------------------------------------------- */
+  document.querySelectorAll('.readmore').forEach(function(box){
+    var body = box.querySelector('.readmore-body');
+    if(!body) return;
+
+    var btn = box.querySelector('.readmore-btn');
+    if(!btn){
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'readmore-btn';
+      box.appendChild(btn);
+    }
+    if(!body.id) body.id = 'rm-' + Math.random().toString(36).slice(2,8);
+    btn.setAttribute('aria-controls', body.id);
+
+    var more = box.getAttribute('data-more') || 'Read more';
+    var less = box.getAttribute('data-less') || 'Read less';
+    label(false);
+
+    btn.addEventListener('click', function(){
+      var on = !box.classList.contains('open');
+      box.classList.toggle('open', on);
+      label(on);
+    });
+
+    function label(on){
+      btn.textContent = on ? less : more;
+      btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+    }
+  });
+
+  /* ---------------------------------------------------------
+     Sticky mobile CTA
+     Held back until the hero has scrolled past — showing it
+     over the hero would cover the very buttons it duplicates.
+     Hidden again over the closing CTA band for the same reason.
+     --------------------------------------------------------- */
+  var cta = document.querySelector('.mobile-cta');
+  if(cta){
+    /* The data-* attributes hold a *selector*, not the element itself —
+       they live on the bar and point at the sections that gate it. */
+    var pick = function(attr, fallback){
+      var sel = cta.getAttribute(attr);
+      return (sel && document.querySelector(sel)) || document.querySelector(fallback);
+    };
+    var afterEl  = pick('data-cta-after',  '.hero');
+    var beforeEl = pick('data-cta-before', '.cta-band');
+    var shown = false;
+
+    var syncCta = function(){
+      var y = window.pageYOffset;
+      /* rect-based, so a hero inside any offsetParent still measures right */
+      var past  = afterEl ? afterEl.getBoundingClientRect().bottom < 120 : y > 400;
+      var atEnd = false;
+      if(beforeEl){
+        var r = beforeEl.getBoundingClientRect();
+        atEnd = r.top < window.innerHeight * 0.9;
+      }
+      var want = past && !atEnd;
+      if(want !== shown){ shown = want; cta.classList.toggle('on', want); }
+    };
+
+    window.addEventListener('scroll', syncCta, {passive:true});
+    window.addEventListener('resize', syncCta, {passive:true});
+    syncCta();
+  }
 })();

@@ -606,3 +606,428 @@ section{position:relative}
   .hero-media>img,.hero-media.slideshow .slide.active{animation:none;transform:none}
   .js .reveal{opacity:1;transform:none}
 }
+
+/* =========================================================
+   PREMIUM LAYER — booking engine, mobile-first patterns,
+   always-on CTAs. Appended after the reduced-motion block,
+   so this section carries its own guard at the very end.
+   ========================================================= */
+
+/* --- Skip link (keyboard users land on the content on every page) --- */
+.skip-link{position:absolute;left:-9999px;top:0;z-index:200;background:var(--espresso);color:var(--ivory);
+  padding:14px 22px;border-radius:0 0 var(--r) 0;font-size:.85rem;font-weight:700;letter-spacing:.06em}
+.skip-link:focus{left:0}
+
+/* --- Trust row under a page hero --- */
+.trust-row{list-style:none;display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:26px}
+.trust-row li{display:flex;align-items:center;gap:9px;font-size:.86rem;color:rgba(255,255,255,.9);
+  text-shadow:0 1px 14px rgba(0,0,0,.5)}
+.trust-row li span{color:var(--sand);font-size:1rem}
+
+.phero-book{padding:calc(var(--nav-h) + clamp(52px,8vw,88px)) 0 clamp(56px,7vw,88px)}
+
+/* =========================================================
+   BOOKING — step rail
+   ========================================================= */
+.steps{display:flex;gap:0;margin-bottom:clamp(26px,3.6vw,38px);list-style:none}
+.steps .s{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;
+  padding-top:2px;color:var(--stone);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  font-weight:700;height:auto;background:none;border-radius:0}
+/* the connecting rail sits behind the numbers */
+.steps .s::before{content:"";position:absolute;top:17px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0}
+.steps .s:first-child::before{display:none}
+.steps .s.on::before{background:var(--clay)}
+.steps .s-num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;position:relative;z-index:1;
+  background:var(--ivory);border:2px solid var(--line);color:var(--stone);font-family:var(--display);
+  font-size:.95rem;transition:background .35s,border-color .35s,color .35s,transform .35s}
+.steps .s.on .s-num{background:var(--clay);border-color:var(--clay);color:#fff}
+.steps .s.current .s-num{transform:scale(1.1);box-shadow:0 0 0 5px rgba(179,98,61,.15)}
+.steps .s.on{color:var(--clay)}
+.steps .s-lab{line-height:1.3;text-align:center}
+/* completed steps are clickable shortcuts back */
+.steps .s.on:not(.current){cursor:pointer}
+.steps .s.on:not(.current):hover .s-num{transform:scale(1.06)}
+
+.step-h{font-family:var(--display);font-weight:300;font-size:clamp(1.5rem,3.2vw,2rem);color:var(--ink);
+  margin-bottom:6px;line-height:1.15;outline:none}
+.step-h:focus-visible{outline:2px solid var(--clay);outline-offset:5px;border-radius:3px}
+.step-sub{font-size:.94rem;color:var(--ink-soft);margin-bottom:22px;max-width:56ch}
+.step-nav{display:flex;justify-content:space-between;gap:12px;margin-top:28px;flex-wrap:wrap}
+.step-nav-end{justify-content:flex-end}
+.step-nav-center{justify-content:center;margin-top:14px}
+
+/* =========================================================
+   BOOKING — option cards (image-forward)
+   ========================================================= */
+.bk-options{margin-top:4px}
+.bk-loading{display:flex;flex-direction:column;align-items:center;gap:14px;padding:56px 0;color:var(--stone)}
+.bk-loading .spin{width:26px;height:26px;border:2px solid var(--line);border-top-color:var(--clay);
+  border-radius:50%;animation:bkspin .8s linear infinite}
+@keyframes bkspin{to{transform:rotate(360deg)}}
+
+.opt-grid{display:grid;gap:14px}
+.opt-grid-lg{gap:clamp(16px,2.2vw,22px)}
+
+.opt{display:grid;grid-template-columns:96px 1fr auto;align-items:center;gap:16px;
+  background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden;
+  transition:border-color .35s,box-shadow .35s,transform .35s}
+.opt:hover{border-color:var(--brass);box-shadow:var(--shadow-soft);transform:translateY(-2px)}
+.opt.in-cart{border-color:var(--clay);box-shadow:0 0 0 1px var(--clay) inset}
+.opt-img{width:96px;object-fit:cover;display:block;align-self:stretch;height:100%}
+.opt-body{padding:14px 0;min-width:0}
+.opt-body h4{font-family:var(--display);font-weight:400;font-size:1.06rem;color:var(--ink);line-height:1.25}
+.opt-meta{font-size:.82rem;color:var(--stone);margin-top:3px}
+.opt-price{margin-top:7px;display:flex;align-items:baseline;gap:7px}
+.opt-price b{font-family:var(--display);font-weight:300;font-size:1.3rem;color:var(--clay)}
+.opt-price em{font-style:normal;font-size:.74rem;color:var(--stone);letter-spacing:.04em}
+.opt-add{padding-right:16px;display:flex;flex-direction:column;align-items:center;gap:5px;flex:none}
+.opt-unitword{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);font-weight:700}
+.opt-btn{padding:11px 20px;font-size:.76rem;min-height:var(--tap)}
+
+/* Large package cards — photography leads */
+.opt-lg{display:block}
+.opt-lg .opt-img{width:100%;height:clamp(190px,26vw,250px)}
+.opt-lg .opt-body{padding:clamp(18px,2.4vw,24px) clamp(18px,2.4vw,24px) 0}
+.opt-lg .opt-body h4{font-size:clamp(1.3rem,2.4vw,1.7rem)}
+.opt-blurb{font-size:.9rem;color:var(--ink-soft);margin-top:10px;line-height:1.65}
+.opt-inc{list-style:none;margin:14px 0 0;display:grid;gap:6px}
+.opt-inc li{font-size:.85rem;color:var(--ink-soft);padding-left:22px;position:relative}
+.opt-inc li::before{content:"\2713";position:absolute;left:0;top:0;color:var(--brass);font-weight:700}
+.opt-lg .opt-add{padding:18px clamp(18px,2.4vw,24px) clamp(18px,2.4vw,24px);flex-direction:row;
+  align-items:center;justify-content:space-between;width:100%;gap:12px}
+.opt-lg .opt-btn{flex:1;justify-content:center}
+
+/* Quantity stepper — 44px targets, integers only (the number input
+   that happily accepted "2.5" is gone entirely) */
+.stepper{display:flex;align-items:center;gap:4px;background:var(--ivory);border:1px solid var(--line);
+  border-radius:100px;padding:3px}
+.stepper button{width:38px;height:38px;border-radius:50%;border:none;background:var(--paper);color:var(--clay);
+  font-size:1.15rem;line-height:1;cursor:pointer;display:grid;place-items:center;
+  transition:background .25s,color .25s;font-weight:600}
+.stepper button:hover{background:var(--clay);color:#fff}
+.stepper button:focus-visible{outline:2px solid var(--clay);outline-offset:2px}
+.stepper-n{min-width:26px;text-align:center;font-family:var(--display);font-size:1.05rem;color:var(--ink)}
+
+/* Category chips replace the 1,826px flat list */
+.cat-chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;margin:0 -2px 4px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cat-chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:inline-flex;align-items:center;gap:7px;padding:10px 18px;min-height:var(--tap);
+  border:1px solid var(--line);border-radius:100px;background:var(--paper);color:var(--ink-soft);
+  font-family:var(--body);font-weight:700;font-size:.8rem;letter-spacing:.03em;cursor:pointer;
+  transition:background .3s,color .3s,border-color .3s;white-space:nowrap}
+.chip:hover{border-color:var(--brass)}
+.chip.on{background:var(--jungle);border-color:var(--jungle);color:var(--ivory)}
+.chip-n{background:var(--clay);color:#fff;border-radius:100px;min-width:20px;height:20px;
+  display:grid;place-items:center;font-size:.68rem;padding:0 6px}
+.cat-note{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);
+  font-weight:700;margin:0 0 12px}
+
+.bk-fallback{text-align:center;padding:36px 20px;border:1px dashed var(--line);border-radius:var(--r)}
+.bk-fallback h4{font-family:var(--display);font-weight:400;font-size:1.2rem;color:var(--ink);margin-bottom:8px}
+.bk-fallback p{font-size:.9rem;color:var(--ink-soft);margin-bottom:18px}
+
+/* =========================================================
+   BOOKING — cart, review, validation
+   ========================================================= */
+.cart-count{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 7px;border-radius:100px;
+  background:var(--clay);color:#fff;font-family:var(--body);font-size:.74rem;font-weight:700;
+  vertical-align:middle;margin-left:8px}
+.summary h3{display:flex;align-items:center}
+
+.review-box{display:grid;gap:2px}
+.rv-line{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid var(--line-dk)}
+.rv-line span{color:rgba(247,241,230,.9)}
+.rv-line b{color:var(--sand);white-space:nowrap;font-weight:600}
+.rv-total{display:flex;justify-content:space-between;gap:16px;padding:9px 0;font-size:.92rem}
+.rv-total b{color:var(--sand);white-space:nowrap}
+.rv-strong{font-family:var(--display);font-size:1.3rem;font-weight:300;padding:12px 0;
+  border-top:1px solid var(--line-dk);margin-top:6px}
+.rv-strong b{color:var(--sand)}
+.rv-who{margin-top:14px;padding-top:14px;border-top:1px solid var(--line-dk);
+  font-size:.82rem;color:rgba(247,241,230,.7)}
+
+.pay-copy{font-size:.9rem;color:var(--ink-soft);margin:22px 0 18px}
+.pay-copy b{color:var(--clay-dk)}
+.pay-fine{font-size:.78rem;color:var(--stone);text-align:center;margin-top:12px}
+.btn-block{width:100%;justify-content:center}
+.btn-xl{font-size:1rem;padding:18px 20px}
+.btn.is-loading{opacity:.6;pointer-events:none}
+
+.field label i{font-style:normal;color:var(--clay)}
+.lab-hint{text-transform:none;letter-spacing:0;font-weight:400;color:var(--stone);font-size:.72rem;margin-left:6px}
+.field-err{display:block;margin-top:7px;font-size:.78rem;color:var(--clay-dk);font-weight:600}
+.field.has-err input,.field.has-err select,.field.has-err textarea{
+  border-color:var(--clay);box-shadow:0 0 0 3px rgba(179,98,61,.12)}
+
+/* =========================================================
+   Sticky mobile summary bar + toast
+   ========================================================= */
+.bk-bar{position:fixed;left:0;right:0;bottom:0;z-index:95;transform:translateY(110%);
+  transition:transform .4s cubic-bezier(.2,.8,.2,1);
+  background:rgba(34,27,20,.97);backdrop-filter:blur(10px);border-top:1px solid var(--line-dk);
+  padding:12px var(--gutter) calc(12px + var(--safe-b))}
+.bk-bar.on{transform:none}
+.bk-bar-in{display:flex;align-items:center;gap:14px;max-width:var(--maxw);margin:0 auto}
+.bk-bar-sum{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.bk-bar-sum b{font-family:var(--display);font-weight:300;font-size:1.4rem;color:var(--sand)}
+.bk-bar-sum span{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(247,241,230,.65)}
+.bk-bar .btn{flex:none;min-height:var(--tap)}
+@media(min-width:981px){.bk-bar{display:none}}
+
+.bk-toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translate(-50%,20px);
+  z-index:130;background:var(--jungle);color:var(--ivory);padding:14px 22px;border-radius:100px;
+  font-size:.86rem;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;max-width:calc(100vw - 32px);text-align:center}
+.bk-toast.show{opacity:1;transform:translate(-50%,0)}
+.bk-toast.warn{background:var(--clay-dk)}
+
+/* =========================================================
+   Site-wide: sticky mobile CTA for the marketing pages
+   ========================================================= */
+.mobile-cta{position:fixed;left:0;right:0;bottom:0;z-index:94;display:none;gap:10px;
+  padding:10px var(--gutter) calc(10px + var(--safe-b));
+  background:rgba(34,27,20,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line-dk);
+  transform:translateY(110%);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.mobile-cta.on{transform:none}
+.mobile-cta .btn{flex:1;justify-content:center;min-height:var(--tap);font-size:.76rem;padding:13px 14px}
+@media(max-width:980px){
+  .mobile-cta{display:flex}
+  /* keep the footer clear of the bar */
+  .footer{padding-bottom:calc(38px + var(--tap) + var(--safe-b))}
+}
+
+/* =========================================================
+   Mobile content patterns — accordions & "read more"
+   Text-heavy prose collapses on phones so photography leads.
+   ========================================================= */
+.acc{border-top:1px solid var(--line)}
+.acc-item{border-bottom:1px solid var(--line)}
+.acc-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  background:none;border:none;padding:20px 2px;cursor:pointer;text-align:left;
+  font-family:var(--display);font-size:1.08rem;font-weight:400;color:var(--ink);min-height:var(--tap)}
+.acc-head:focus-visible{outline:2px solid var(--clay);outline-offset:-2px}
+.acc-ico{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);
+  display:grid;place-items:center;color:var(--clay);font-size:1rem;line-height:1;
+  transition:transform .35s,background .35s,color .35s}
+.acc-head[aria-expanded="true"] .acc-ico{transform:rotate(45deg);background:var(--clay);color:#fff;
+  border-color:var(--clay)}
+.acc-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.2,.8,.2,1)}
+.acc-panel>div{overflow:hidden}
+.acc-item.open .acc-panel{grid-template-rows:1fr}
+.acc-panel p{padding-bottom:20px;font-size:.93rem;color:var(--ink-soft)}
+.acc-panel p+p{padding-top:0}
+
+/* "Read more" — clamps prose to a few lines on phones only */
+.readmore-btn{display:none;background:none;border:none;color:var(--clay);font-family:var(--body);
+  font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;
+  padding:10px 2px;min-height:var(--tap)}
+.readmore-btn::after{content:" \2193"}
+.readmore.open .readmore-btn::after{content:" \2191"}
+@media(max-width:760px){
+  .readmore-btn{display:inline-block}
+  .readmore .readmore-body{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  .readmore.open .readmore-body{display:block;-webkit-line-clamp:unset}
+}
+
+/* =========================================================
+   Refined scroll choreography
+   ========================================================= */
+.js .reveal[data-delay="1"]{transition-delay:.09s}
+.js .reveal[data-delay="2"]{transition-delay:.18s}
+.js .reveal[data-delay="3"]{transition-delay:.27s}
+.js .reveal[data-delay="4"]{transition-delay:.36s}
+
+/* =========================================================
+   Booking responsive
+   ========================================================= */
+@media(max-width:980px){
+  .book-grid{grid-template-columns:1fr}
+  /* On a phone the cart sits ~1,300px below the options, so it stops
+     pretending to be a live panel and becomes a review block; the
+     sticky bar carries the running total instead. */
+  .summary{position:static;order:2}
+  /* leave room for the sticky bar so the last control is never buried */
+  #book{padding-bottom:calc(clamp(64px,8vw,110px) + 74px)}
+}
+@media(max-width:760px){
+  .steps .s-lab{font-size:.6rem;letter-spacing:.06em}
+  .steps .s-num{width:30px;height:30px;font-size:.85rem}
+  .steps .s::before{top:15px}
+  /* Photo left, text right, control underneath. Every measurement here is
+     tuned to keep a 7-item category under ~1.3 screens instead of the
+     1,826px wall the flat list used to produce. */
+  .opt{grid-template-columns:96px 1fr;grid-template-rows:auto auto;gap:0 13px}
+  .opt-img{width:96px;grid-row:1/3}
+  .opt-body{padding:11px 13px 0 0}
+  .opt-body h4{font-size:.96rem;line-height:1.25}
+  .opt-meta{font-size:.76rem;margin-top:2px}
+  .opt-price{margin-top:5px}
+  .opt-price b{font-size:1.08rem}
+  .opt-add{grid-column:2;padding:6px 13px 11px 0;flex-direction:row;justify-content:flex-start;
+    align-items:center;gap:10px}
+  /* the price line already says "per night" — the unit word is noise here */
+  .opt-unitword{display:none}
+  .opt-lg .opt-img{grid-row:auto;width:100%}
+  .opt-lg .opt-add{grid-column:auto}
+  /* full 44px targets on touch */
+  .stepper button{width:var(--tap);height:var(--tap);font-size:1.3rem}
+  .stepper-n{min-width:34px;font-size:1.15rem}
+  .cart-item .ci-qty button{width:36px;height:36px;font-size:1rem}
+  .cart-item .ci-x{min-width:36px;min-height:36px;padding:0;display:grid;place-items:center}
+  .step-nav .btn{flex:1 1 100%;justify-content:center}
+  .contact-strip{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .trust-row{gap:8px 16px}
+  .trust-row li{font-size:.78rem;flex:1 1 100%}
+  .opt-price b{font-size:1.15rem}
+  .bk-bar-sum b{font-size:1.2rem}
+}
+
+/* --- Reduced motion for everything added above --- */
+@media(prefers-reduced-motion:reduce){
+  .bk-loading .spin{animation:none}
+  .bk-bar,.mobile-cta,.bk-toast,.acc-panel,.steps .s-num{transition:none}
+  .opt:hover{transform:none}
+}
+
+/* =========================================================
+   MARKETING LAYER — package cards, FAQ, closing CTA
+   The booking engine already owns .opt/.opt-lg; these are the
+   equivalents for the storefront pages, where the job is to
+   show a price early rather than to collect a quantity.
+   ========================================================= */
+.wrap-narrow{max-width:860px}
+
+/* stretch, not start: equal-height cards land every "Reserve" button on
+   the same baseline, which is what makes a price grid read as premium. */
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4vw,28px);align-items:stretch}
+
+.pkg-card{position:relative;display:flex;flex-direction:column;background:var(--paper);
+  border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .5s,border-color .5s}
+.pkg-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-soft);border-color:var(--brass)}
+.pkg-card>img{width:100%;height:clamp(190px,20vw,240px);object-fit:cover;display:block}
+
+/* The one the camp wants sold sits slightly forward of the others. */
+.pkg-card.featured{border-color:var(--brass);box-shadow:var(--shadow-soft)}
+.pkg-card.featured>img{height:clamp(210px,23vw,268px)}
+.pkg-badge{position:absolute;top:16px;left:16px;z-index:2;background:var(--clay);color:#fff;
+  font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  padding:8px 14px;border-radius:100px;box-shadow:0 6px 18px -8px rgba(34,27,20,.7)}
+
+.pkg-body{padding:clamp(20px,2.4vw,28px);display:flex;flex-direction:column;flex:1}
+.pkg-body h3{font-family:var(--display);font-weight:400;font-size:clamp(1.2rem,2vw,1.45rem);
+  color:var(--ink);line-height:1.2}
+.pkg-tag{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--stone);
+  font-weight:700;margin-top:7px}
+.pkg-price{display:flex;align-items:baseline;gap:8px;margin:16px 0 4px;
+  padding-bottom:16px;border-bottom:1px solid var(--line-soft)}
+.pkg-price b{font-family:var(--display);font-weight:300;font-size:clamp(1.9rem,3.4vw,2.4rem);
+  color:var(--clay);line-height:1}
+.pkg-price em{font-style:normal;font-size:.78rem;letter-spacing:.06em;color:var(--stone)}
+.pkg-inc{list-style:none;margin:18px 0 24px;display:grid;gap:9px;flex:1}
+.pkg-inc li{font-size:.88rem;color:var(--ink-soft);padding-left:24px;position:relative;line-height:1.5}
+.pkg-inc li::before{content:"\2713";position:absolute;left:0;top:0;color:var(--brass);font-weight:700}
+.pkg-foot{text-align:center;margin-top:clamp(30px,4vw,44px);font-size:.94rem;color:var(--ink-soft)}
+.pkg-foot b{color:var(--clay);font-weight:700}
+.pkg-foot a{color:var(--clay-dk);font-weight:700;border-bottom:1px solid rgba(179,98,61,.35)}
+.pkg-foot a:hover{border-bottom-color:var(--clay)}
+
+.cta-fine{margin-top:22px;font-size:.78rem;letter-spacing:.06em;color:rgba(255,255,255,.62)}
+
+@media(max-width:980px){
+  .pkg-grid{grid-template-columns:repeat(2,1fr)}
+  .pkg-card.featured{order:-1;grid-column:1/-1}
+  .pkg-card.featured>img{height:clamp(200px,26vw,280px)}
+}
+@media(max-width:760px){
+  /* A swipeable rail beats a 2,000px stack of cards: the photography
+     stays large, and the whole offer is one thumb-flick wide. */
+  .pkg-grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:82%;
+    overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    margin-inline:calc(var(--gutter) * -1);padding:4px var(--gutter) 16px;
+    scrollbar-width:none}
+  .pkg-grid::-webkit-scrollbar{display:none}
+  .pkg-card{scroll-snap-align:center}
+  .pkg-card.featured{order:0;grid-column:auto}
+  .pkg-card>img,.pkg-card.featured>img{height:210px}
+  /* Cards sitting off to the right would otherwise stay faded out until
+     swiped; on a rail the reveal animation is noise, so drop it. */
+  .js .pkg-grid .reveal{opacity:1;transform:none;transition:none}
+  .pkg-card:hover{transform:none;box-shadow:none}
+}
+
+/* =========================================================
+   MOBILE CLARITY LAYER
+   On a phone the job is the opposite of desktop: photography
+   should hold the screen and prose should get out of the way.
+   Nothing here fires above 760px, so the desktop composition
+   built above is untouched.
+   ========================================================= */
+/* The swipe hint is meaningless on a grid, so it is hidden by default and
+   only switched on inside the phone block below. Declared first: an equal
+   specificity rule placed after the media query would win everywhere. */
+.rail-hint{display:none}
+
+@media(max-width:760px){
+
+  /* ---- Feature cards: stacked box → compact media row ----
+     Eight full-width boxes is 3,000px of scrolling. Laying the
+     icon beside the text roughly halves each card and turns the
+     set into something that reads as one list. */
+  .grid.g-3 .card,.grid.g-4 .card{
+    display:grid;grid-template-columns:46px 1fr;grid-template-rows:auto auto;
+    column-gap:15px;align-items:start;
+    padding:18px 18px 19px
+  }
+  .grid.g-3 .card .ico,.grid.g-4 .card .ico{
+    width:46px;height:46px;font-size:1.15rem;margin:0;grid-row:1/3
+  }
+  .grid.g-3 .card h3,.grid.g-4 .card h3{
+    grid-column:2;margin:0 0 5px;font-size:1.02rem;line-height:1.3;align-self:center
+  }
+  .grid.g-3 .card p,.grid.g-4 .card p{
+    grid-column:2;font-size:.88rem;line-height:1.55;margin:0
+  }
+  /* A card carrying a button keeps the stacked form — the CTA
+     needs the full width to stay a comfortable tap target. */
+  .grid .card:has(.btn){grid-template-columns:1fr;padding:24px 22px}
+  .grid .card:has(.btn) .ico{grid-row:auto;margin-bottom:14px}
+  .grid .card:has(.btn) h3,.grid .card:has(.btn) p{grid-column:1}
+  .card:hover{transform:none;box-shadow:none}
+
+  /* ---- Price cards: swipe rail ----
+     Same reasoning as the package grid on the homepage — one
+     thumb-flick beats a 2,000px column of near-identical cards. */
+  .price-grid{
+    grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:84%;
+    overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    margin-inline:calc(var(--gutter) * -1);padding:4px var(--gutter) 18px;
+    scrollbar-width:none
+  }
+  .price-grid::-webkit-scrollbar{display:none}
+  .price{scroll-snap-align:center;height:100%}
+  .js .price-grid .reveal{opacity:1;transform:none;transition:none}
+  /* The rail is only obvious if the next card peeks in — this hint
+     tells a first-time visitor there is more to the right. */
+  .rail-hint{
+    display:block;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--stone);margin:-4px 0 14px;opacity:.8
+  }
+  .bg-deep .rail-hint,.bg-teal .rail-hint{color:rgba(247,241,230,.7)}
+
+  /* ---- Long prose: clamp behind Read more ----
+     Applies to the wrappers injected into the storytelling
+     sections; see .readmore in the premium layer. */
+  .split-media{margin-bottom:4px}
+  .split .checklist{margin-top:16px}
+}
+
+@media(max-width:560px){
+  /* Two lines of heading is a headline; four is a paragraph. */
+  .phero h1{font-size:clamp(1.9rem,8.4vw,2.5rem);line-height:1.12}
+  .phero .lead{font-size:.96rem;line-height:1.6}
+  .price-grid{grid-auto-columns:88%}
+}

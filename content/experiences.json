@@ -1,0 +1,101 @@
+{
+  "categories": [
+    { "id": "stay",     "label": "Stay",     "note": "per night",   "unitWord": "Nights" },
+    { "id": "surf",     "label": "Surf",     "note": "lessons & rentals", "unitWord": "People" },
+    { "id": "wellness", "label": "Wellness", "note": "per session", "unitWord": "Sessions" }
+  ],
+  "items": [
+    {
+      "id": "stay-treehouse", "category": "stay", "name": "Tree House Cabana Sea View",
+      "meta": "Sea view · sleeps 2", "price": 15, "unit": "per night",
+      "image": "assets/img/imge0018.jpg", "alt": "Tree House Cabana with sea view", "active": true
+    },
+    {
+      "id": "stay-triple", "category": "stay", "name": "Triple Room Tree House Sea View",
+      "meta": "Sea view · sleeps 3", "price": 20, "unit": "per night",
+      "image": "assets/img/img0094.jpg", "alt": "Triple tree house cabana with sea view", "active": true
+    },
+    {
+      "id": "stay-single", "category": "stay", "name": "Single Cabana Sea View",
+      "meta": "Sea view · sleeps 1", "price": 15, "unit": "per night",
+      "image": "assets/img/imge0015.jpg", "alt": "Single cabana with sea view", "active": true
+    },
+    {
+      "id": "stay-double", "category": "stay", "name": "Cabana Double Room Sea View",
+      "meta": "Sea view · sleeps 2", "price": 20, "unit": "per night",
+      "image": "assets/img/img0091.jpg", "alt": "Double cabana room with sea view", "active": true
+    },
+    {
+      "id": "stay-mountain", "category": "stay", "name": "Mountain Cabana",
+      "meta": "Premium · private terrace · sleeps 2", "price": 50, "unit": "per night",
+      "image": "assets/img/photo8.jpg", "alt": "Mountain cabana with private hammock terrace", "active": true
+    },
+    {
+      "id": "stay-buffalo", "category": "stay", "name": "Buffalo Rock Cabana",
+      "meta": "Beachfront · sleeps 2", "price": 25, "unit": "per night",
+      "image": "assets/img/photo5.jpg", "alt": "Buffalo Rock beachfront cabana among the trees", "active": true
+    },
+    {
+      "id": "stay-dorm", "category": "stay", "name": "Bed in 6-Bed Mixed Dorm",
+      "meta": "Single bed · shared bathroom", "price": 10, "unit": "per night",
+      "image": "assets/img/dome-3.jpg", "alt": "Bed in the 6-bed mixed dormitory room", "active": true
+    },
+
+    {
+      "id": "lesson-single", "category": "surf", "name": "Single Surf Lesson",
+      "meta": "2-hour group lesson · board included", "price": 25, "unit": "per person",
+      "image": "assets/img/surf-1.jpg", "alt": "Surf instructor teaching a beginner in the shallows", "active": true
+    },
+    {
+      "id": "lesson-3day", "category": "surf", "name": "3-Day Beginner Course",
+      "meta": "3 × 2-hour sessions · stand up by day three", "price": 65, "unit": "per person",
+      "image": "assets/img/surf-4.jpg", "alt": "Beginner surfer riding their first wave", "active": true
+    },
+    {
+      "id": "coaching", "category": "surf", "name": "Private Coaching",
+      "meta": "90 min · 1-to-1 · video feedback", "price": 45, "unit": "per person",
+      "image": "assets/img/surf-2.jpg", "alt": "Coach filming a surfer from the beach", "active": true
+    },
+    {
+      "id": "rental-day", "category": "surf", "name": "Surfboard Rental — Daily",
+      "meta": "Per board, per day", "price": 12, "unit": "per day",
+      "image": "assets/img/surf-3.jpg", "alt": "Surfboards lined up on the sand", "active": true
+    },
+    {
+      "id": "rental-week", "category": "surf", "name": "Surfboard Rental — Weekly",
+      "meta": "Per board, per week · best value", "price": 65, "unit": "per week",
+      "image": "assets/img/photo22.jpg", "alt": "Quiver of surfboards at the camp", "active": true
+    },
+
+    {
+      "id": "well-consult", "category": "wellness", "name": "Ayurvedic Consultation",
+      "meta": "Pulse diagnosis with Dr. Swarna", "price": 25, "unit": "per session",
+      "image": "assets/img/a10.jpg", "alt": "Ayurvedic doctor consulting a guest", "active": true
+    },
+    {
+      "id": "well-abhyanga", "category": "wellness", "name": "Abhyanga Massage",
+      "meta": "Warm-oil full-body massage · 60 min", "price": 30, "unit": "per session",
+      "image": "assets/img/a12.jpg", "alt": "Warm oil Abhyanga massage treatment", "active": true
+    },
+    {
+      "id": "well-shirodhara", "category": "wellness", "name": "Shirodhara Therapy",
+      "meta": "Warm oil poured over the third eye", "price": 40, "unit": "per session",
+      "image": "assets/img/a15.jpg", "alt": "Shirodhara therapy in progress", "active": true
+    },
+    {
+      "id": "well-yoga", "category": "wellness", "name": "Yoga & Breathwork",
+      "meta": "Sunrise Hatha & pranayama", "price": 12, "unit": "per class",
+      "image": "assets/img/td-yoga.jpg", "alt": "Sunrise yoga class on the deck", "active": true
+    },
+    {
+      "id": "well-sound", "category": "wellness", "name": "Group Sound Bath",
+      "meta": "Beach or jungle · with Samyada", "price": 18, "unit": "per session",
+      "image": "assets/img/others-1.jpg", "alt": "Sound bath session with singing bowls", "active": true
+    },
+    {
+      "id": "well-soundmassage", "category": "wellness", "name": "1:1 Sound Massage",
+      "meta": "Personal sound treatment · with Samyada", "price": 40, "unit": "per session",
+      "image": "assets/img/others-2.jpg", "alt": "One-to-one sound massage treatment", "active": true
+    }
+  ]
+}

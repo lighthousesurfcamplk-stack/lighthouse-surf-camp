@@ -1,0 +1,23 @@
+{
+  "_note": "These are the testimonials already published on reviews.html. Only add reviews a real guest actually gave you — they feed the star rating Google shows in search results, and inventing them breaks Google's policy as well as consumer-protection law in most of your guests' home countries.",
+  "items": [
+    { "name": "Lena M.", "origin": "Germany · Beginner Course", "stars": 5, "featured": true,
+      "text": "Caught my first green wave on day two. The coaches are patient, fun and genuinely care. Best week of my whole Sri Lanka trip." },
+    { "name": "Jake R.", "origin": "Australia · 7-Day Camp", "stars": 5, "featured": true,
+      "text": "They took us to a different break every morning based on the swell. Pottuvil Point was unreal. Felt like surfing with friends, not a school." },
+    { "name": "Sofia T.", "origin": "Spain · 10-Day Trip", "stars": 5, "featured": true,
+      "text": "Travelled solo and never felt alone. The camp sorted everything — surf, yoga, food, a safari. I'm already planning my return." },
+    { "name": "Marco B.", "origin": "Italy · Private Coaching", "stars": 5, "featured": false,
+      "text": "As an intermediate I wanted real coaching, not hand-holding. The video analysis completely changed my bottom turn. Worth every dollar." },
+    { "name": "Emma & Tom", "origin": "UK · Weekend Taster", "stars": 5, "featured": false,
+      "text": "We came as a couple and had the most romantic week — surf at sunrise, sunset at Elephant Rock, fresh seafood every night. Magic." },
+    { "name": "Noa K.", "origin": "Netherlands · Board Rental", "stars": 5, "featured": false,
+      "text": "The boards were in great shape and delivery to the beach was so easy. Friendly local crew who clearly live and breathe this coast." },
+    { "name": "Daniel P.", "origin": "France · Group Package", "stars": 5, "featured": false,
+      "text": "Booked for a group of six friends. Everyone from total newbie to confident surfer was looked after. Seamless from airport to airport." },
+    { "name": "Aisha R.", "origin": "UAE · Beginner Lessons", "stars": 5, "featured": false,
+      "text": "Safety was clearly the priority, which mattered to me as a nervous beginner. By day three I was paddling out on my own. So proud." },
+    { "name": "Chris H.", "origin": "Canada · Surf Trip", "stars": 5, "featured": false,
+      "text": "That secret Light House break they took us to was the highlight of my year. Empty waves, white sand, just us. Unforgettable." }
+  ]
+}

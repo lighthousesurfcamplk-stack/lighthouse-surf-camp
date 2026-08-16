@@ -1,0 +1,76 @@
+# Light House Surf Camp — deploy configuration
+# Plain static site: nothing to build, publish the repo root as-is.
+
+[build]
+  publish = "."
+  command = ""
+
+# ---------------------------------------------------------------
+#  Caching
+# ---------------------------------------------------------------
+#  HTML must always be revalidated, otherwise a guest can sit on a
+#  stale price after the owner publishes a change in /admin.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Same reasoning: the CMS content is the live source of truth.
+[[headers]]
+  for = "/content/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Images never change in place — a new photo gets a new filename.
+[[headers]]
+  for = "/assets/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# CSS and JS are versioned in the markup (style.css?v=12), so the
+# URL changes whenever the file does.
+[[headers]]
+  for = "/assets/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ---------------------------------------------------------------
+#  Security
+# ---------------------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
+
+# Keep the admin panel out of search results even if robots.txt is missed.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+# ---------------------------------------------------------------
+#  Redirects
+# ---------------------------------------------------------------
+[[redirects]]
+  from = "/admin"
+  to = "/admin/"
+  status = 301
+
+# Old flat URLs, in case anything is already linked without .html
+[[redirects]]
+  from = "/book"
+  to = "/book.html"
+  status = 301
+
+[[redirects]]
+  from = "/packages"
+  to = "/packages.html"
+  status = 301

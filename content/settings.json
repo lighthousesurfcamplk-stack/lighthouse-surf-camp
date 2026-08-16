@@ -1,0 +1,42 @@
+{
+  "brand": {
+    "name": "Light House Surf Camp",
+    "tagline": "Surf Camp · Sri Lanka",
+    "location": "Arugam Bay, Sri Lanka"
+  },
+  "contact": {
+    "whatsapp": "94702828819",
+    "whatsappDisplay": "+94 70 282 8819",
+    "email": "lighthousesurfcamp.lk@gmail.com",
+    "instagram": "lighthousesurfcamp"
+  },
+  "booking": {
+    "currency": "USD",
+    "currencySymbol": "$",
+    "depositRate": 0.25,
+    "minNoticeDays": 1,
+    "note": "Balance is settled on arrival in Arugam Bay. Free cancellation up to 14 days before check-in."
+  },
+  "payhere": {
+    "enabled": false,
+    "sandbox": true,
+    "merchantId": "YOUR_MERCHANT_ID",
+    "hashEndpoint": "/api/payhere-hash",
+    "returnUrl": "https://lighthousesurfcamp.lk/thank-you.html",
+    "cancelUrl": "https://lighthousesurfcamp.lk/book.html",
+    "notifyUrl": "https://lighthousesurfcamp.lk/api/payhere-notify"
+  },
+  "_note": "Every figure below is published on the live site. Only edit these to numbers you can actually evidence — they also feed the star rating Google shows in search results.",
+  "rating": { "value": "4.9", "count": "180" },
+  "trust": [
+    { "icon": "★", "label": "4.9 / 5", "detail": "from 180+ guest reviews" },
+    { "icon": "🏄", "label": "10+ breaks", "detail": "within 30 minutes of camp" },
+    { "icon": "🔒", "label": "Free cancellation", "detail": "up to 14 days before" },
+    { "icon": "🌱", "label": "Eco-retreat", "detail": "solar, rainwater, zero single-use" }
+  ],
+  "stats": [
+    { "value": "4.9", "label": "Guest rating" },
+    { "value": "10+", "label": "Surf breaks" },
+    { "value": "180+", "label": "Reviews" }
+  ]
+}

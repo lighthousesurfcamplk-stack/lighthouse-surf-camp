@@ -1,0 +1,375 @@
+# =============================================================
+#  Light House Surf Camp — admin configuration (Decap CMS)
+# =============================================================
+#  This file tells the admin panel what the owner is allowed to
+#  edit. It maps 1:1 onto the four files in /content, which are
+#  the single source of truth the website reads at runtime.
+#
+#  IMPORTANT: the CMS rewrites each JSON file from the fields
+#  declared below. Any key that is NOT declared here would be
+#  silently deleted on the next save — which is why even the
+#  "_note" reminders are declared as hidden fields.
+# =============================================================
+
+# -------------------------------------------------------------
+#  BACKEND — pick ONE. Option A ships enabled.
+# -------------------------------------------------------------
+#  A) Netlify Identity + Git Gateway.
+#     Best for a non-technical owner: they log in with an email
+#     and password and never need a GitHub account.
+backend:
+  name: git-gateway
+  branch: main
+
+#  B) GitHub direct. Use this if you would rather log in with a
+#     GitHub account, or if Identity is not available on your
+#     Netlify site. Comment out block A, uncomment this, and see
+#     "Option B" in ADMIN-GUIDE.md for the OAuth setup.
+#
+# backend:
+#   name: github
+#   repo: lighthousesurfcamplk-stack/lighthouse-surf-camp
+#   branch: main
+#   base_url: https://your-oauth-provider.netlify.app
+
+# Local preview: run `npx decap-server` then open /admin on
+# localhost — edits write straight to your working copy, no login.
+local_backend: true
+
+# -------------------------------------------------------------
+#  MEDIA
+# -------------------------------------------------------------
+#  Uploads land in the same folder the site already serves from,
+#  and are written into the JSON as "assets/img/<file>.jpg" —
+#  exactly the relative path the pages expect.
+media_folder: "assets/img"
+public_folder: "assets/img"
+
+# Every save is committed straight to main and goes live on the
+# next deploy. Switch to "editorial_workflow" if you would rather
+# review changes as drafts before they publish.
+publish_mode: simple
+
+site_url: https://lighthousesurfcamp.lk
+display_url: https://lighthousesurfcamp.lk
+logo_url: https://lighthousesurfcamp.lk/assets/img/favicon.svg
+
+collections:
+  # ===========================================================
+  #  1. CAMP PACKAGES — the big cards on the booking page
+  # ===========================================================
+  - name: "packages"
+    label: "Camp Packages"
+    description: "The headline packages guests see first when they book."
+    files:
+      - name: "packages"
+        label: "Camp Packages"
+        file: "content/packages.json"
+        description: >-
+          Drag to reorder — the order here is the order guests see.
+          Untick "Show on the website" to retire a package without
+          deleting it.
+        fields:
+          - label: "Packages"
+            name: "items"
+            widget: "list"
+            label_singular: "Package"
+            summary: "{{fields.name}} — {{fields.price}} {{fields.unit}}"
+            collapsed: true
+            fields:
+              - label: "Internal ID"
+                name: "id"
+                widget: "string"
+                hint: >-
+                  Never change this once a package is live — the booking
+                  cart and the website both look packages up by ID.
+                  Lowercase letters, numbers and dashes only.
+                pattern: ['^[a-z0-9-]+$', "Lowercase letters, numbers and dashes only — e.g. pkg-family-week"]
+              - label: "Name"
+                name: "name"
+                widget: "string"
+                hint: "Shown as the card heading, e.g. 7-Day Surf Camp."
+              - label: "Short line under the name"
+                name: "tagline"
+                widget: "string"
+                required: false
+                hint: "e.g. All-inclusive · 6 nights"
+              - label: "Price"
+                name: "price"
+                widget: "number"
+                value_type: "int"
+                min: 0
+                hint: "Numbers only — no $ sign. The site adds the currency."
+              - label: "Price applies…"
+                name: "unit"
+                widget: "select"
+                options: ["per person", "per night", "per session", "per day", "per week", "total"]
+                default: "per person"
+              - label: "Photo"
+                name: "image"
+                widget: "image"
+                media_library: { config: { multiple: false } }
+                hint: "Landscape photos look best. Upload at least 1400px wide."
+              - label: "Photo description"
+                name: "alt"
+                widget: "string"
+                hint: >-
+                  Describe the photo in a few words. Screen readers read this
+                  aloud, and Google uses it to understand the image.
+              - label: "Description"
+                name: "blurb"
+                widget: "text"
+                hint: "Two or three sentences. Write it the way you would say it to a guest."
+              - label: "What's included"
+                name: "includes"
+                widget: "list"
+                field: { label: "Item", name: "item", widget: "string" }
+                hint: "One line each. These appear as the ticked list on the card."
+              - label: "Highlight as 'Most popular'"
+                name: "featured"
+                widget: "boolean"
+                default: false
+                hint: "Tick one package only — it gets the gold border and badge."
+              - label: "Show on the website"
+                name: "active"
+                widget: "boolean"
+                default: true
+
+  # ===========================================================
+  #  2. ROOMS, LESSONS & TREATMENTS — the à la carte catalogue
+  # ===========================================================
+  - name: "experiences"
+    label: "Rooms, Lessons & Treatments"
+    description: "Everything a guest can add individually under 'Build Your Own'."
+    files:
+      - name: "experiences"
+        label: "Rooms, Lessons & Treatments"
+        file: "content/experiences.json"
+        fields:
+          - label: "Tabs"
+            name: "categories"
+            widget: "list"
+            label_singular: "Tab"
+            collapsed: true
+            summary: "{{fields.label}}"
+            hint: >-
+              The tabs across the top of "Build Your Own". Only change these
+              if you are also updating the Tab field on every item below.
+            fields:
+              - label: "Tab ID"
+                name: "id"
+                widget: "string"
+                pattern: ['^[a-z0-9-]+$', "Lowercase letters, numbers and dashes only"]
+              - label: "Tab name"
+                name: "label"
+                widget: "string"
+              - label: "Small note under the tab"
+                name: "note"
+                widget: "string"
+                required: false
+              - label: "Quantity word"
+                name: "unitWord"
+                widget: "string"
+                hint: "Shown next to the +/− control, e.g. Nights, People, Sessions."
+
+          - label: "Items"
+            name: "items"
+            widget: "list"
+            label_singular: "Item"
+            collapsed: true
+            summary: "{{fields.name}} — {{fields.price}} ({{fields.category}})"
+            fields:
+              - label: "Internal ID"
+                name: "id"
+                widget: "string"
+                hint: >-
+                  Never change this once it is live. Prefix it with the tab,
+                  e.g. stay-treehouse, surf-lesson-single, well-yoga.
+                pattern: ['^[a-z0-9-]+$', "Lowercase letters, numbers and dashes only"]
+              - label: "Tab"
+                name: "category"
+                widget: "select"
+                options:
+                  - { label: "Stay", value: "stay" }
+                  - { label: "Surf", value: "surf" }
+                  - { label: "Wellness", value: "wellness" }
+              - label: "Name"
+                name: "name"
+                widget: "string"
+              - label: "Short line under the name"
+                name: "meta"
+                widget: "string"
+                required: false
+                hint: "e.g. Sea view · sleeps 2"
+              - label: "Price"
+                name: "price"
+                widget: "number"
+                value_type: "int"
+                min: 0
+                hint: "Numbers only — no $ sign."
+              - label: "Price applies…"
+                name: "unit"
+                widget: "select"
+                options: ["per night", "per person", "per session", "per day", "per week", "total"]
+                default: "per night"
+              - label: "Photo"
+                name: "image"
+                widget: "image"
+                media_library: { config: { multiple: false } }
+              - label: "Photo description"
+                name: "alt"
+                widget: "string"
+              - label: "Show on the website"
+                name: "active"
+                widget: "boolean"
+                default: true
+
+  # ===========================================================
+  #  3. GUEST REVIEWS
+  # ===========================================================
+  - name: "reviews"
+    label: "Guest Reviews"
+    description: "The testimonials shown on the reviews page and the homepage."
+    files:
+      - name: "reviews"
+        label: "Guest Reviews"
+        file: "content/reviews.json"
+        fields:
+          - { label: "Reminder", name: "_note", widget: "hidden" }
+          - label: "Reviews"
+            name: "items"
+            widget: "list"
+            label_singular: "Review"
+            collapsed: true
+            summary: "{{fields.name}} — {{fields.origin}}"
+            hint: >-
+              Only publish reviews a real guest actually gave you. These feed
+              the star rating Google shows in search results, and inventing
+              them breaks Google's policy as well as consumer-protection law
+              in most of your guests' home countries.
+            fields:
+              - { label: "Guest name", name: "name", widget: "string", hint: "First name and initial is plenty, e.g. Lena M." }
+              - { label: "Country · what they booked", name: "origin", widget: "string", hint: "e.g. Germany · Beginner Course" }
+              - label: "Stars"
+                name: "stars"
+                widget: "number"
+                value_type: "int"
+                min: 1
+                max: 5
+                default: 5
+              - { label: "Review", name: "text", widget: "text" }
+              - label: "Show on the homepage"
+                name: "featured"
+                widget: "boolean"
+                default: false
+                hint: "Three featured reviews appear on the homepage. The rest live on the reviews page."
+
+  # ===========================================================
+  #  4. SITE SETTINGS
+  # ===========================================================
+  - name: "settings"
+    label: "Site Settings"
+    description: "Contact details, deposit rules, payment gateway and the numbers shown across the site."
+    files:
+      - name: "settings"
+        label: "Site Settings"
+        file: "content/settings.json"
+        fields:
+          - label: "Brand"
+            name: "brand"
+            widget: "object"
+            fields:
+              - { label: "Camp name", name: "name", widget: "string" }
+              - { label: "Tagline", name: "tagline", widget: "string" }
+              - { label: "Location", name: "location", widget: "string" }
+
+          - label: "Contact"
+            name: "contact"
+            widget: "object"
+            fields:
+              - label: "WhatsApp number"
+                name: "whatsapp"
+                widget: "string"
+                pattern: ['^[0-9]{8,15}$', "Digits only, including the country code and no + — e.g. 94702828819"]
+                hint: >-
+                  Digits only, country code first, no + and no spaces.
+                  Every "Chat on WhatsApp" button on the site uses this.
+              - { label: "WhatsApp number as displayed", name: "whatsappDisplay", widget: "string", hint: "How it is printed on screen, e.g. +94 70 282 8819" }
+              - { label: "Email", name: "email", widget: "string" }
+              - { label: "Instagram handle", name: "instagram", widget: "string", hint: "Without the @." }
+
+          - label: "Booking rules"
+            name: "booking"
+            widget: "object"
+            fields:
+              - { label: "Currency code", name: "currency", widget: "string", default: "USD" }
+              - { label: "Currency symbol", name: "currencySymbol", widget: "string", default: "$" }
+              - label: "Deposit taken online"
+                name: "depositRate"
+                widget: "number"
+                value_type: "float"
+                min: 0
+                max: 1
+                step: 0.05
+                hint: >-
+                  As a decimal: 0.25 means guests pay 25% now and the balance
+                  on arrival. Changing this instantly changes every quote.
+              - { label: "Minimum notice (days)", name: "minNoticeDays", widget: "number", value_type: "int", min: 0 }
+              - label: "Small print under the deposit"
+                name: "note"
+                widget: "text"
+                hint: "Shown on the confirmation step. Keep your cancellation terms accurate here."
+
+          - label: "Card payments (PayHere)"
+            name: "payhere"
+            widget: "object"
+            collapsed: true
+            fields:
+              - label: "Accept card payments"
+                name: "enabled"
+                widget: "boolean"
+                default: false
+                hint: >-
+                  Leave OFF until your PayHere account is approved and the
+                  hash endpoint is deployed. While it is off, guests confirm
+                  over WhatsApp instead — bookings still work.
+              - label: "Sandbox (test) mode"
+                name: "sandbox"
+                widget: "boolean"
+                default: true
+                hint: "ON = test cards only, no real money. Turn OFF only when you are ready to take live payments."
+              - { label: "Merchant ID", name: "merchantId", widget: "string", hint: "From your PayHere dashboard. This one is safe to publish — never put your Merchant SECRET here." }
+              - { label: "Hash endpoint", name: "hashEndpoint", widget: "string" }
+              - { label: "Return URL", name: "returnUrl", widget: "string" }
+              - { label: "Cancel URL", name: "cancelUrl", widget: "string" }
+              - { label: "Notify URL", name: "notifyUrl", widget: "string" }
+
+          - { label: "Reminder", name: "_note", widget: "hidden" }
+
+          - label: "Star rating"
+            name: "rating"
+            widget: "object"
+            hint: "Published as structured data, so Google may show it in search results. Only enter figures you can evidence."
+            fields:
+              - { label: "Average rating", name: "value", widget: "string" }
+              - { label: "Number of reviews", name: "count", widget: "string" }
+
+          - label: "Trust badges"
+            name: "trust"
+            widget: "list"
+            collapsed: true
+            summary: "{{fields.label}} — {{fields.detail}}"
+            fields:
+              - { label: "Icon", name: "icon", widget: "string", hint: "A single emoji or symbol." }
+              - { label: "Headline", name: "label", widget: "string" }
+              - { label: "Detail", name: "detail", widget: "string" }
+
+          - label: "Headline numbers"
+            name: "stats"
+            widget: "list"
+            collapsed: true
+            summary: "{{fields.value}} {{fields.label}}"
+            hint: "The three big figures across the site. Only publish numbers you can back up."
+            fields:
+              - { label: "Number", name: "value", widget: "string" }
+              - { label: "Label", name: "label", widget: "string" }

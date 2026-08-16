@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- Never let a search engine index the admin panel. -->
+  <meta name="robots" content="noindex,nofollow">
+  <title>Content Manager · Light House Surf Camp</title>
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <style>
+    /* Match the camp's palette so the admin does not feel like a
+       different product. Purely cosmetic — Decap draws the rest. */
+    :root{ --clay:#b3623d; --ink:#272019; --ivory:#f7f1e6; }
+    body{ margin:0; background:var(--ivory); font-family:system-ui,-apple-system,"Segoe UI",sans-serif; }
+    #boot{
+      position:fixed; inset:0; display:grid; place-items:center; text-align:center;
+      background:var(--ivory); color:var(--ink); z-index:5; padding:24px;
+    }
+    #boot h1{ font-size:1.15rem; font-weight:600; margin:0 0 8px; }
+    #boot p{ font-size:.9rem; color:#5a5044; margin:0; max-width:34ch; line-height:1.6; }
+    #boot .dot{
+      width:26px; height:26px; margin:0 auto 18px; border-radius:50%;
+      border:2px solid rgba(39,32,25,.15); border-top-color:var(--clay);
+      animation:sp .8s linear infinite;
+    }
+    @keyframes sp{ to{ transform:rotate(360deg); } }
+    @media(prefers-reduced-motion:reduce){ #boot .dot{ animation:none; } }
+  </style>
+</head>
+<body>
+
+  <div id="boot">
+    <div>
+      <div class="dot"></div>
+      <h1>Opening your content manager…</h1>
+      <p>If this message stays on screen for more than a few seconds, check that you are online, then reload the page.</p>
+    </div>
+  </div>
+
+  <!-- Netlify Identity: provides the email/password login for the
+       git-gateway backend. Harmless if you switch to the GitHub backend. -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <!-- Decap CMS itself. Pinned to a major version so an upstream
+       release can never change the admin under the owner's feet. -->
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+  <script>
+    // Hide the boot message once the CMS has painted.
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        var b = document.getElementById('boot');
+        if (b) b.remove();
+      }, 1200);
+    });
+
+    // After an invited user sets their password, drop them straight into
+    // the admin instead of bouncing them back to the public homepage.
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', function (user) {
+        if (!user) {
+          window.netlifyIdentity.on('login', function () {
+            document.location.href = '/admin/';
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>

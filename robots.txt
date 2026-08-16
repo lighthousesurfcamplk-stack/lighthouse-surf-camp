@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# The content manager is for the owner, not for search engines.
+Disallow: /admin/
+Disallow: /server/
+
+Sitemap: https://lighthousesurfcamp.lk/sitemap.xml
