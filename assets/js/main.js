@@ -189,9 +189,27 @@
   if(reduceMotion.matches || !('IntersectionObserver' in window)){
     els.forEach(function(el){ el.classList.add('in'); });
   }else{
+    /* Stagger: siblings that reveal together arrive as a cascade rather
+       than one synchronised block. The delay is the element's index among
+       its .reveal siblings, capped at 4 so a long grid never keeps the
+       visitor waiting. A lone section heading has no siblings, so it gets
+       0ms and still leads. */
+    var stagger = function(el){
+      var sibs = el.parentNode ? el.parentNode.children : [];
+      var i = 0;
+      for(var k = 0; k < sibs.length; k++){
+        if(sibs[k] === el) break;
+        if(sibs[k].classList && sibs[k].classList.contains('reveal')) i++;
+      }
+      return Math.min(i, 4) * 90;
+    };
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
-        if(entry.isIntersecting){ entry.target.classList.add('in'); io.unobserve(entry.target); }
+        if(entry.isIntersecting){
+          entry.target.style.transitionDelay = stagger(entry.target) + 'ms';
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
       });
     }, {threshold:.14, rootMargin:'0px 0px -6% 0px'});
     els.forEach(function(el){ io.observe(el); });

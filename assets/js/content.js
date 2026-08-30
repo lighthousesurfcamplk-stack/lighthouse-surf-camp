@@ -21,7 +21,13 @@
 (function (global) {
   'use strict';
 
-  var BASE = 'content/';
+  /* Where /content/*.json lives, relative to the page asking for it.
+     Root-level English pages are simply "content/". Translated pages
+     live one directory down (/ru/, /de/, /fr/) and are stamped with
+     data-root="../" by tools/i18n-build.js, so the same fetch resolves
+     back to the single shared content directory instead of 404-ing and
+     leaving every CMS-managed price stuck at its hard-coded fallback. */
+  var BASE = (document.documentElement.getAttribute('data-root') || '') + 'content/';
   var FILES = ['settings', 'packages', 'experiences', 'reviews'];
   var cache = null;
   var pending = null;

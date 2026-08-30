@@ -42,9 +42,28 @@
   --deep:#272019;
   --gold:#a98a4e;
   --sunset:#b3623d;
+  /* ---- ocean: the water register --------------------------------
+     Desaturated and green-cast on purpose so the blues sit beside the
+     warm sand base instead of fighting it. The ramp is deliberately deep:
+     the dark surfaces carry ivory text at reduced alpha (.75-.88) for
+     hierarchy, and every one of those alphas must still clear 4.5:1
+     against the LIGHTEST end of the gradient, --ocean-2. Measured:
+       ivory on --ocean-2   6.82:1     ivory @.75 on --ocean-2  4.64:1
+       ivory on --ocean     9.25:1     --sand on --ocean-2      5.64:1
+       ink   on --foam     12.68:1     white on --ocean        10.40:1
+     --lagoon is the one exception: 2.58:1 on ivory and 2.64:1 on
+     --ocean-2, so it is for accents, borders and large display type
+     ONLY. Never set body copy in it. ---------------------------- */
+  --foam:#dbe7e5;      /* palest wash: tinted surfaces, hairlines */
+  --lagoon:#57a3ad;    /* shallow water: accents + large text only */
+  --lagoon-dk:#3d8a95;
+  --ocean-2:#1a5b68;   /* light end of every ocean gradient */
+  --ocean:#134650;     /* the workhorse blue */
+  --ocean-dk:#0d333b;  /* pressed / hover state */
+  --abyss:#08222a;     /* deepest water */
   /* layout metrics */
   --nav-h:90px;
-  --gutter:clamp(20px,4.4vw,32px);
+  --gutter:clamp(22px,4.8vw,40px);
   --tap:44px;
   --safe-b:env(safe-area-inset-bottom,0px);
 }
@@ -55,7 +74,7 @@ body{
   font-family:var(--body);
   background:var(--ivory);
   color:var(--ink);
-  line-height:1.7;
+  line-height:1.75;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
@@ -96,8 +115,8 @@ p{color:var(--ink-soft);text-wrap:pretty}
 .btn-ghost:hover{background:#fff;color:var(--ink);border-color:#fff;transform:translateY(-2px)}
 .btn-gold{background:var(--brass);color:#fff}
 .btn-gold:hover{background:var(--brass-dk);transform:translateY(-2px)}
-.btn-ocean{background:var(--jungle);color:#fff}
-.btn-ocean:hover{background:var(--espresso);transform:translateY(-2px)}
+.btn-ocean{background:var(--ocean);color:#fff}
+.btn-ocean:hover{background:var(--ocean-dk);transform:translateY(-2px)}
 .btn .arrow{transition:transform .4s;flex:none}
 .btn:hover .arrow{transform:translateX(5px)}
 
@@ -141,16 +160,42 @@ p{color:var(--ink-soft);text-wrap:pretty}
 .nav.scrolled .brand .mark{border-color:var(--brass)}
 .brand b{font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(100deg,var(--brass),var(--clay) 75%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 1px 5px rgba(0,0,0,.35))}
 .nav.scrolled .brand b,.footer .brand b{filter:none}
+/* The wordmark paints a gradient through the letterforms, which needs
+   color:transparent — so if background-clip:text is ever unsupported the
+   brand name renders as nothing at all rather than degrading. Repaint it in
+   solid brass in that case; no browser that supports the clip sees this. */
+@supports not ((background-clip:text) or (-webkit-background-clip:text)){
+  .brand b{background:none;color:var(--brass)}
+}
 .brand .mark svg{width:22px;height:22px;display:block}
 .brand small{display:block;font-family:var(--body);font-size:.56rem;letter-spacing:.34em;text-transform:uppercase;color:rgba(255,255,255,.75);margin-top:1px;white-space:nowrap}
 .nav.scrolled .brand small{color:var(--brass)}
 .nav-links{display:flex;align-items:center;gap:clamp(18px,2.1vw,30px);list-style:none;min-width:0}
+/* ---- language switcher -------------------------------------------
+   Real <a href> links to the static /ru/ /de/ /fr/ pages, so they are
+   crawlable and work without JS. Two copies exist in the markup (nav bar
+   and drawer); each is hidden at the breakpoint where the other shows. */
+.lang{display:flex;align-items:center;gap:2px;list-style:none;margin-right:4px}
+.lang a{display:flex;align-items:center;justify-content:center;min-width:34px;height:30px;
+  padding:0 7px;border-radius:100px;font-size:.68rem;font-weight:700;letter-spacing:.09em;
+  color:rgba(255,255,255,.72);transition:color .3s,background .3s;text-shadow:0 1px 10px rgba(34,27,20,.35)}
+.lang a:hover{color:#fff;background:rgba(255,255,255,.14)}
+.lang a.on{color:var(--ivory);background:rgba(255,255,255,.2)}
+.nav.scrolled .lang a{color:var(--ink-soft);text-shadow:none}
+.nav.scrolled .lang a:hover{color:var(--ocean);background:var(--foam)}
+.nav.scrolled .lang a.on{color:var(--ocean);background:var(--foam)}
+.lang-drawer{display:none}
+.lang-li{margin-top:6px}
 .nav-links a{display:inline-block;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.9);position:relative;transition:color .3s;text-shadow:0 1px 10px rgba(34,27,20,.35);white-space:nowrap}
 .nav.scrolled .nav-links a{color:var(--ink-soft);text-shadow:none}
-.nav-links a::after{content:"";position:absolute;left:0;bottom:-7px;width:0;height:1px;background:var(--brass);transition:width .35s}
+/* The underline is laid out at full width and revealed with scaleX rather
+   than grown from width:0. Visually identical for a solid 1px bar, but a
+   width transition relayouts the link on every frame of the 350ms sweep,
+   while a transform is handed to the compositor and costs nothing. */
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-7px;width:100%;height:1px;background:var(--brass);transform:scaleX(0);transform-origin:left;transition:transform .35s}
 .nav-links a:hover,.nav-links a.active{color:#fff}
 .nav.scrolled .nav-links a:hover,.nav.scrolled .nav-links a.active{color:var(--clay)}
-.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}
 .nav-cta{display:flex;gap:14px;align-items:center;flex:none}
 .nav-cta .btn{white-space:nowrap;min-height:46px;padding:13px clamp(18px,2.4vw,28px)}
 /* Drawer-only "Book Now" — injected by main.js, hidden on desktop */
@@ -213,8 +258,8 @@ p{color:var(--ink-soft);text-wrap:pretty}
 
 /* ---------- Sections ---------- */
 section{position:relative}
-.section{padding:clamp(64px,10vw,140px) 0}
-.section-head{max-width:700px;margin-bottom:clamp(34px,5vw,60px)}
+.section{padding:clamp(78px,11.5vw,170px) 0}
+.section-head{max-width:720px;margin-bottom:clamp(42px,5.6vw,74px)}
 .section-head.center{margin:0 auto clamp(34px,5vw,60px);text-align:center}
 .section-head.center .eyebrow{justify-content:center}
 
@@ -223,12 +268,12 @@ section{position:relative}
 .bg-paper h1,.bg-paper h2,.bg-paper h3,.bg-cream h1,.bg-cream h2,.bg-cream h3{color:var(--ink)}
 .bg-paper p,.bg-cream p{color:var(--ink-soft)}
 
-.bg-deep{background:linear-gradient(165deg,var(--espresso),#1a140e);color:var(--ivory)}
+.bg-deep{background:linear-gradient(165deg,var(--ocean-dk),var(--abyss));color:var(--ivory)}
 .bg-deep h1,.bg-deep h2,.bg-deep h3{color:var(--ivory)}
 .bg-deep p,.bg-deep .lead{color:rgba(247,241,230,.78)}
 .bg-deep .eyebrow{color:var(--sand)}.bg-deep .eyebrow::before{background:var(--brass)}
 
-.bg-teal{background:linear-gradient(160deg,var(--jungle-2),var(--jungle));color:var(--ivory)}
+.bg-teal{background:linear-gradient(160deg,var(--ocean-2),var(--ocean));color:var(--ivory)}
 .bg-teal h1,.bg-teal h2,.bg-teal h3{color:var(--ivory)}
 .bg-teal p,.bg-teal .lead{color:rgba(247,241,230,.82)}
 .bg-teal .eyebrow{color:var(--sand)}.bg-teal .eyebrow::before{background:var(--sand)}
@@ -249,7 +294,7 @@ section{position:relative}
 @keyframes marq{to{transform:translateX(-50%)}}
 
 /* ---------- Feature grid ---------- */
-.grid{display:grid;gap:clamp(18px,2.4vw,28px)}
+.grid{display:grid;gap:clamp(20px,2.8vw,34px)}
 .g-3{grid-template-columns:repeat(3,1fr)}
 .g-2{grid-template-columns:repeat(2,1fr)}
 .g-4{grid-template-columns:repeat(4,1fr)}
@@ -280,7 +325,7 @@ section{position:relative}
 .mcard p{color:rgba(247,241,230,.85);font-size:.92rem}
 
 /* ---------- Split feature ---------- */
-.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(38px,5vw,72px);align-items:center}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(46px,5.6vw,88px);align-items:center}
 /* `direction:rtl` used to flip these, which also flipped punctuation and
    scrollbars in nested content. Flex/grid order does the same job cleanly. */
 .split.rev>*:first-child{order:2}
@@ -312,7 +357,7 @@ section{position:relative}
 .price{display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--r);padding:clamp(28px,3.6vw,42px) clamp(22px,3vw,34px);position:relative;transition:transform .45s,box-shadow .45s,border-color .45s}
 .price h3{color:var(--ink);font-weight:400;padding-right:96px}
 .price:hover{transform:translateY(-6px);box-shadow:var(--shadow-soft);border-color:var(--brass)}
-.price.feat{background:linear-gradient(165deg,var(--jungle-2),var(--jungle));border-color:transparent;box-shadow:var(--shadow);color:var(--ivory)}
+.price.feat{background:linear-gradient(165deg,var(--ocean-2),var(--ocean));border-color:transparent;box-shadow:var(--shadow);color:var(--ivory)}
 .price.feat h3{color:var(--ivory)}
 .price .ribbon{position:absolute;top:24px;right:24px;background:var(--brass);color:#fff;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:5px 13px;border-radius:2px;white-space:nowrap}
 .price .amt{font-family:var(--display);font-size:clamp(2.4rem,6vw,3.1rem);color:var(--ink);line-height:1;margin:16px 0 5px;font-weight:300}
@@ -349,7 +394,7 @@ section{position:relative}
 /* ---------- CTA band ---------- */
 .cta-band{position:relative;border-radius:var(--ri);overflow:hidden;padding:clamp(44px,8vw,100px) clamp(24px,6vw,100px);text-align:center;box-shadow:var(--shadow)}
 .cta-band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
-.cta-band::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(34,27,20,.5),rgba(26,20,14,.82))}
+.cta-band::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(13,51,59,.48),rgba(8,34,42,.84))}
 .cta-band h2{color:#fff;margin-bottom:20px;font-weight:300}
 .cta-band .lead{color:rgba(255,255,255,.9);margin:0 auto}
 .cta-band .eyebrow{color:rgba(255,255,255,.9);justify-content:center}.cta-band .eyebrow::before{background:var(--sand)}
@@ -408,7 +453,7 @@ section{position:relative}
 .pkg-opt .meta{flex:1;min-width:0}
 .pkg-opt b{color:var(--ink);font-weight:700}
 .pkg-opt .pp{font-family:var(--display);color:var(--clay);font-size:1.35rem;font-weight:300;white-space:nowrap}
-.summary{background:linear-gradient(165deg,var(--jungle-2),var(--jungle));color:var(--ivory);border-radius:var(--r);padding:clamp(24px,3.2vw,36px);position:sticky;top:calc(var(--nav-h) + 14px);box-shadow:var(--shadow)}
+.summary{background:linear-gradient(165deg,var(--ocean-2),var(--ocean));color:var(--ivory);border-radius:var(--r);padding:clamp(24px,3.2vw,36px);position:sticky;top:calc(var(--nav-h) + 14px);box-shadow:var(--shadow)}
 .summary h3{margin-bottom:20px;color:var(--ivory);font-weight:400}
 .sum-row{display:flex;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid var(--line-dk);font-size:.94rem;color:rgba(247,241,230,.86)}
 .sum-row.total{border:none;font-family:var(--display);font-size:1.55rem;color:var(--sand);padding-top:20px;font-weight:300}
@@ -451,12 +496,13 @@ section{position:relative}
 /* buildReview() injects white/sand text, so this panel must be genuinely dark.
    It used to be rgba(8,18,15,.4) over the paper form card, which composites to
    a mid-grey (#9c9f9b) — white text on it measured ~2.3:1. */
-.review-box{background:linear-gradient(165deg,var(--jungle-2),var(--jungle));border:1px solid transparent;border-radius:var(--r);padding:clamp(18px,3.4vw,24px);color:rgba(247,241,230,.86);font-size:.92rem;box-shadow:var(--shadow-soft);overflow-wrap:anywhere}
+.review-box{background:linear-gradient(165deg,var(--ocean-2),var(--ocean));border:1px solid transparent;border-radius:var(--r);padding:clamp(18px,3.4vw,24px);color:rgba(247,241,230,.86);font-size:.92rem;box-shadow:var(--shadow-soft);overflow-wrap:anywhere}
 .review-box b{color:var(--ivory)}
 
 /* ---------- Reveal ---------- */
-.js .reveal{opacity:0;transform:translateY(36px);transition:opacity 1s cubic-bezier(.2,.8,.2,1),transform 1s cubic-bezier(.2,.8,.2,1)}
-.js .reveal.in{opacity:1;transform:none}
+.js .reveal{opacity:0;transform:translateY(42px);filter:blur(6px);
+  transition:opacity 1.15s cubic-bezier(.16,1,.3,1),transform 1.35s cubic-bezier(.16,1,.3,1),filter 1.15s cubic-bezier(.16,1,.3,1)}
+.js .reveal.in{opacity:1;transform:none;filter:none}
 
 /* =========================================================
    Responsive
@@ -467,7 +513,7 @@ section{position:relative}
 @media(max-width:1180px){
   .nav-links{
     position:fixed;inset:0 0 0 auto;width:min(84vw,380px);
-    background:linear-gradient(170deg,var(--espresso),#1a140e);
+    background:linear-gradient(170deg,var(--ocean-dk),var(--abyss));
     flex-direction:column;align-items:flex-start;
     justify-content:center;justify-content:safe center;
     /* Tightened from clamp(16px,3vh,26px) to pay for the taller links below —
@@ -493,6 +539,16 @@ section{position:relative}
   .nav-links a:hover,.nav-links a.active,
   .nav.scrolled .nav-links a:hover,.nav.scrolled .nav-links a.active{color:var(--sand)}
   .nav-links a::after{bottom:0}
+  /* The nav bar cannot fit four language pills beside Book Now and the
+     burger at 375px, so the bar copy is retired and the drawer copy takes
+     over with proper 44px targets. */
+  .lang-bar{display:none}
+  .lang-drawer{display:flex;gap:6px;margin-top:10px;padding-top:16px;
+    border-top:1px solid rgba(247,241,230,.16);width:100%}
+  .lang-drawer a{min-width:var(--tap);height:var(--tap);font-size:.8rem;
+    color:rgba(247,241,230,.78);background:rgba(247,241,230,.08);text-shadow:none}
+  .nav.scrolled .lang-drawer a{color:rgba(247,241,230,.78)}
+  .lang-drawer a.on,.nav.scrolled .lang-drawer a.on{color:var(--abyss);background:var(--sand)}
   .nav-drawer-cta{display:block}
   .burger{display:flex}
   .nav-cta .btn-ghost{display:none}
@@ -591,8 +647,8 @@ section{position:relative}
   .price:hover{box-shadow:none;border-color:var(--line-soft)}
   .mcard:hover img,.split-media:hover img,.photoband .ph:hover img,.masonry img:hover{transform:none}
   .btn:hover .arrow{transform:none}
-  .nav-links a:hover::after{width:0}
-  .nav-links a.active::after{width:100%}
+  .nav-links a:hover::after{transform:scaleX(0)}
+  .nav-links a.active::after{transform:scaleX(1)}
 }
 
 /* --- Reduced motion --- */
@@ -604,7 +660,7 @@ section{position:relative}
   html{scroll-behavior:auto}
   .strip .track{animation:none}
   .hero-media>img,.hero-media.slideshow .slide.active{animation:none;transform:none}
-  .js .reveal{opacity:1;transform:none}
+  .js .reveal{opacity:1;transform:none;filter:none}
 }
 
 /* =========================================================
@@ -717,7 +773,7 @@ section{position:relative}
   font-family:var(--body);font-weight:700;font-size:.8rem;letter-spacing:.03em;cursor:pointer;
   transition:background .3s,color .3s,border-color .3s;white-space:nowrap}
 .chip:hover{border-color:var(--brass)}
-.chip.on{background:var(--jungle);border-color:var(--jungle);color:var(--ivory)}
+.chip.on{background:var(--ocean);border-color:var(--ocean);color:var(--ivory)}
 .chip-n{background:var(--clay);color:#fff;border-radius:100px;min-width:20px;height:20px;
   display:grid;place-items:center;font-size:.68rem;padding:0 6px}
 .cat-note{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);
@@ -776,7 +832,7 @@ section{position:relative}
 @media(min-width:981px){.bk-bar{display:none}}
 
 .bk-toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-b));transform:translate(-50%,20px);
-  z-index:130;background:var(--jungle);color:var(--ivory);padding:14px 22px;border-radius:100px;
+  z-index:130;background:var(--ocean);color:var(--ivory);padding:14px 22px;border-radius:100px;
   font-size:.86rem;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;
   transition:opacity .3s,transform .3s;max-width:calc(100vw - 32px);text-align:center}
 .bk-toast.show{opacity:1;transform:translate(-50%,0)}
