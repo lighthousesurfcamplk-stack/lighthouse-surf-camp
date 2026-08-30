@@ -35,53 +35,13 @@ const ROOT = path.resolve(__dirname, '..');
 const ORIGIN = 'https://lighthousesurfcamp.lk';
 
 /* The languages we emit. `en` is the source and lives at the site root.
-   To add a language: create i18n/<code>.json and add a row here.
-
-   `code`     is BOTH the hreflang value and the dictionary filename, so the
-              two can never drift apart.
-   `dir`      is the URL segment. English is the source and has none.
-   `flag`     is a regional-indicator pair. It is decoration only — it sits in
-              an aria-hidden span, because a flag is a country and never a
-              language, and a screen reader announcing "flag of Israel" where
-              the user needs "Hebrew" is worse than silence. `name` carries
-              the meaning, written in the language it names (endonym), which
-              is the one string a visitor who cannot read the current page is
-              still guaranteed to recognise.
-   `menuLabel` is the word "Language" in that language, for the switcher's
-              own accessible name — the switcher is the one control that must
-              work for someone who landed on the WRONG language.
-   `rtl`      stamps dir="rtl" on <html>. See the RTL block in style.css.
-
-   Swiss row, flagged deliberately: 🇨🇭 is a country with four official
-   languages, so "Swiss German/French" cannot be one URL. /ch/ is de-CH
-   (Swiss Standard German — ~62% of residents); French-speaking Switzerland
-   is already served by /fr/, and hreflang="de-CH" is exactly the mechanism
-   for "German, but for Switzerland". The copy differs from /de/ where it
-   genuinely differs: ß is never written in Switzerland (always ss), and the
-   Helvetisms differ (Velo, Znüni, parkieren). If you would rather /ch/ were
-   fr-CH, swap the two fields — nothing else in this file needs to change. */
-const ALL_LANGS = [
-  { code: 'en',    dir: '',   label: 'EN', flag: '🇬🇧', name: 'English',   menuLabel: 'Language', htmlLang: 'en',    ogLocale: 'en_US' },
-  { code: 'de',    dir: 'de', label: 'DE', flag: '🇩🇪', name: 'Deutsch',   menuLabel: 'Sprache',  htmlLang: 'de',    ogLocale: 'de_DE' },
-  { code: 'de-CH', dir: 'ch', label: 'CH', flag: '🇨🇭', name: 'Schweiz',   menuLabel: 'Sprache',  htmlLang: 'de-CH', ogLocale: 'de_CH' },
-  { code: 'fr',    dir: 'fr', label: 'FR', flag: '🇫🇷', name: 'Français',  menuLabel: 'Langue',   htmlLang: 'fr',    ogLocale: 'fr_FR' },
-  { code: 'it',    dir: 'it', label: 'IT', flag: '🇮🇹', name: 'Italiano',  menuLabel: 'Lingua',   htmlLang: 'it',    ogLocale: 'it_IT' },
-  { code: 'es',    dir: 'es', label: 'ES', flag: '🇪🇸', name: 'Español',   menuLabel: 'Idioma',   htmlLang: 'es',    ogLocale: 'es_ES' },
-  { code: 'ru',    dir: 'ru', label: 'RU', flag: '🇷🇺', name: 'Русский',   menuLabel: 'Язык',     htmlLang: 'ru',    ogLocale: 'ru_RU' },
-  { code: 'ja',    dir: 'ja', label: 'JA', flag: '🇯🇵', name: '日本語',     menuLabel: '言語',      htmlLang: 'ja',    ogLocale: 'ja_JP' },
-  { code: 'he',    dir: 'he', label: 'HE', flag: '🇮🇱', name: 'עברית',     menuLabel: 'שפה',      htmlLang: 'he',    ogLocale: 'he_IL', rtl: true }
+   To add a language: create i18n/<code>.json and add a row here. */
+const LANGS = [
+  { code: 'en', dir: '',    label: 'EN', name: 'English',  htmlLang: 'en', ogLocale: 'en_US' },
+  { code: 'ru', dir: 'ru',  label: 'RU', name: 'Русский',  htmlLang: 'ru', ogLocale: 'ru_RU' },
+  { code: 'de', dir: 'de',  label: 'DE', name: 'Deutsch',  htmlLang: 'de', ogLocale: 'de_DE' },
+  { code: 'fr', dir: 'fr',  label: 'FR', name: 'Français', htmlLang: 'fr', ogLocale: 'fr_FR' }
 ];
-
-/* A language is only real once its dictionary exists. Without this guard a
-   row added here before its i18n/<code>.json is written would still get a
-   directory, a switcher entry, an hreflang tag and a sitemap URL — all
-   pointing at a page whose copy is 100% English. That is not a missing
-   translation, it is duplicate content under a language claim, and Google's
-   documented response is to discard the hreflang cluster for the WHOLE
-   site, taking the languages that were correct down with it. Skipping the
-   row costs one log line; shipping it costs the cluster. */
-const LANGS = ALL_LANGS.filter(l =>
-  !l.dir || fs.existsSync(path.join(ROOT, 'i18n', l.code + '.json')));
 
 /* Pages that exist in every language. Everything else stays English-only for
    now; the switcher sends visitors on those pages to the translated HOME page
@@ -196,15 +156,7 @@ function rewriteHead(html, lang, page, dict) {
      language is ever nested deeper. English sits at the root, so it
      gets no attribute and content.js falls back to "". */
   const root = lang.dir ? ' data-root="../"' : '';
-
-  /* Direction is a document-level fact, not a styling choice: it drives the
-     bidi algorithm, so an RTL page served as dir="ltr" mis-orders every line
-     that mixes Hebrew with a Latin word or a price — "מ-$190" renders with
-     the number on the wrong side. Setting it here means the RTL CSS can key
-     off [dir="rtl"] and needs no per-page class. */
-  const dir = lang.rtl ? ' dir="rtl"' : '';
-  html = html.replace(/<html[^>]*>/i,
-    '<html lang="' + lang.htmlLang + '"' + dir + root + '>');
+  html = html.replace(/<html[^>]*>/i, '<html lang="' + lang.htmlLang + '"' + root + '>');
 
   /* Every head field falls back to the English original when the dictionary
      has no translation for it. Without this guard an empty $pages block
@@ -236,7 +188,7 @@ function rewriteHead(html, lang, page, dict) {
 
   /* hreflang: every language version of THIS page points at every other,
      including itself, plus x-default for the language picker fallback.
-     Emitted only for pages that genuinely exist in every language. */
+     Emitted only for pages that genuinely exist in all four languages. */
   html = html.replace(/\n?\s*<link rel="alternate" hreflang="[^"]*" href="[^"]*">/g, '');
   if (TRANSLATED_PAGES.includes(page)) {
     const tags = LANGS.map(l =>
@@ -260,56 +212,23 @@ function rewriteHead(html, lang, page, dict) {
    Each entry is an <a href> to the actual translated URL, so it is
    crawlable, middle-clickable, and works with JS disabled.
    --------------------------------------------------------------------- */
-function switcherHTML(currentLang, page, fromLangDir, variant) {
-  /* On an English-only page (stay, gallery…) there is no translated
-     equivalent, so the switcher offers that language's HOME page rather
-     than a 404. */
-  const target = TRANSLATED_PAGES.includes(page) ? page : 'index';
-  const hrefFor = l => {
-    if (l.code === currentLang.code) return target + '.html';          // stay put
-    if (l.dir === '') return (fromLangDir ? '../' : '') + target + '.html';
-    return (fromLangDir ? '../' : '') + l.dir + '/' + target + '.html';
-  };
-
-  /* The two copies of the switcher live in the same document, so their menu
-     ids must differ or aria-controls on one button would point at the
-     other's list. */
-  const id = 'lang-menu-' + variant;
-
+function switcherHTML(currentLang, page, fromLangDir) {
   const items = LANGS.map(l => {
     const on = l.code === currentLang.code;
-    return '<li><a href="' + hrefFor(l) + '" hreflang="' + l.code + '" lang="' + l.htmlLang + '"' +
-           /* Each option is written in its own language, so each needs its own
-              direction — otherwise the Hebrew endonym renders reversed inside
-              an LTR menu. */
-           (l.rtl ? ' dir="rtl"' : '') +
-           (on ? ' class="on" aria-current="true"' : '') + '>' +
-           '<span class="lang-flag" aria-hidden="true">' + l.flag + '</span>' +
-           '<span class="lang-name">' + l.name + '</span></a></li>';
+    // Where does this flag actually go from where we are standing?
+    /* On an English-only page (stay, gallery…) there is no translated
+       equivalent, so the switcher offers that language's HOME page rather
+       than a 404. */
+    let href;
+    const target = TRANSLATED_PAGES.includes(page) ? page : 'index';
+    if (l.code === currentLang.code) href = target + '.html';          // stay put
+    else if (l.dir === '') href = (fromLangDir ? '../' : '') + target + '.html';
+    else href = (fromLangDir ? '../' : '') + l.dir + '/' + target + '.html';
+    return '<li><a href="' + href + '" hreflang="' + l.code + '" lang="' + l.htmlLang + '"' +
+           (on ? ' class="on" aria-current="true"' : '') +
+           ' title="' + l.name + '">' + l.label + '</a></li>';
   }).join('');
-
-  /* Deliberately NOT a <select>. A native select cannot contain an anchor, so
-     its options are invisible to crawlers, un-middle-clickable and dead with
-     JS off — which would throw away the entire reason these pages have static
-     per-language URLs. This is the disclosure pattern instead: a button that
-     owns aria-expanded, over a plain list of real links. It looks like a
-     select, and unlike one it is still a set of nine indexable hrefs.
-
-     aria-hidden on the flag is not an oversight. A flag names a country, never
-     a language, and "flag of Switzerland" tells a screen-reader user nothing
-     about which of four languages they are choosing. The endonym beside it
-     carries the meaning; the emoji is decoration. */
-  return '<div class="lang lang-' + variant + '" data-lang>' +
-    '<button class="lang-toggle" type="button" aria-expanded="false" aria-controls="' + id + '"' +
-      ' aria-label="' + currentLang.menuLabel + ': ' + currentLang.name + '">' +
-      '<span class="lang-flag" aria-hidden="true">' + currentLang.flag + '</span>' +
-      '<span class="lang-code">' + currentLang.label + '</span>' +
-      '<svg class="lang-caret" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"' +
-        ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
-        '<path d="M1 1.3 5 4.7 9 1.3"/></svg>' +
-    '</button>' +
-    '<ul class="lang-menu" id="' + id + '" aria-label="' + currentLang.menuLabel + '">' + items + '</ul>' +
-  '</div>';
+  return '<ul class="lang" aria-label="Language">' + items + '</ul>';
 }
 
 /* The switcher is injected TWICE, because the nav has two layouts:
@@ -321,34 +240,28 @@ function switcherHTML(currentLang, page, fromLangDir, variant) {
    a four-item language row does not fit beside them. Each copy is hidden at
    the other breakpoint in CSS, so only one is ever visible or focusable. */
 function injectSwitcher(html, lang, page) {
-  const copy = variant => switcherHTML(lang, page, !!lang.dir, variant);
+  const markup = switcherHTML(lang, page, !!lang.dir);
+  const as = cls => markup.replace('class="lang"', 'class="lang ' + cls + '"');
 
   /* Strip EVERY switcher variant before re-injecting, rather than trying to
-     patch whichever one is already there. Three shapes have shipped from this
-     script over time — an unclassed <ul class="lang">, the classed
-     bar/drawer <ul> pair, and now the <div> dropdown — and the CSS shows a
-     bare .lang at every width, so a leftover copy renders as a second
-     switcher beside the real one. Strip-then-inject makes the function
-     idempotent by construction: whatever shape the last build left, this one
-     starts from a clean nav. Order matters — the drawer copy is stripped
-     first, because it is a <div class="lang lang-drawer"> that the bar
-     pattern below must not be able to reach into. */
+     patch whichever one is already there. An earlier version of this script
+     emitted a single unclassed <ul class="lang"> with no breakpoint class;
+     a targeted "replace the classed pair" update left that stray copy in
+     place, and because the CSS shows a bare .lang at every width it rendered
+     as two switchers side by side on desktop. Strip-then-inject makes the
+     function idempotent by construction: whatever shape the last build left,
+     this one starts from a clean nav. */
   html = html
-    /* Current shape, drawer copy: a <div> switcher inside its wrapper <li>.
-       The strip has to run to the wrapper's own </div></li> and must not stop
-       at an option's </li> — hence naming the closing </ul></div> pair. */
-    .replace(/\s*<li class="lang-li"><div class="lang [^"]*"[\s\S]*?<\/ul><\/div><\/li>/g, '')
-    /* Legacy shape, drawer copy: a <ul> switcher inside the wrapper <li>.
-       An earlier non-greedy pattern stopped at the last option's "</li>
-       followed by </ul>", leaving the wrapper's own </ul></li> behind; the
-       next build then added a fresh wrapper in front of it and one orphaned
-       pair accumulated per run until the nav list was structurally garbage.
-       Naming the opening <ul class="lang lang-drawer"> removes the ambiguity. */
+    /* The drawer copy is a whole <li> wrapping a <ul>, so the strip has to run
+       to the wrapper's OWN </ul></li> and must not stop at the FR item's </li>
+       — which is itself followed by a </ul>, and so satisfied the earlier
+       non-greedy "</li> followed by </ul>" lookahead. Every run therefore left
+       the wrapper's trailing </ul></li> behind, and the next injection added a
+       fresh wrapper in front of it: one orphaned pair accumulated per build
+       until the nav list was structurally garbage. Naming the opening
+       <ul class="lang lang-drawer"> removes the ambiguity. */
     .replace(/\s*<li class="lang-li"><ul class="lang lang-drawer"[\s\S]*?<\/ul><\/li>/g, '')
-    /* Current shape, bar and solo copies. */
-    .replace(/\s*<div class="lang(?: [^"]*)?" data-lang>[\s\S]*?<\/ul><\/div>/g, '')
-    /* Legacy shape, bar and unclassed copies. */
-    .replace(/\s*<ul class="lang(?: lang-bar)?" aria-label="[^"]*">[\s\S]*?<\/ul>/g, '');
+    .replace(/\s*<ul class="lang(?: lang-bar)?" aria-label="Language">[\s\S]*?<\/ul>/g, '');
 
   /* Heal the closers those earlier runs orphaned. A clean nav list always ends
      with the last link, then </ul>, then <div class="nav-cta">, so anything
@@ -363,15 +276,15 @@ function injectSwitcher(html, lang, page) {
   /* thank-you.html has a stripped-back nav with no slide-in drawer, so the
      usual two-copy pattern does not apply: a .lang-bar there would be hidden
      below 1180px with no drawer copy to take over, leaving mobile visitors no
-     switcher at all. Pages without a drawer get the .lang-solo variant, which
-     the CSS shows at every width. */
+     switcher at all. Pages without a drawer get the plain .lang instead,
+     which the CSS shows at every width. */
   if (!/id="primary-nav"/.test(html)) {
-    return html.replace(/(<div class="nav-cta">\s*)/, '$1' + copy('solo') + '\n    ');
+    return html.replace(/(<div class="nav-cta">\s*)/, '$1' + markup + '\n    ');
   }
 
-  html = html.replace(/(<div class="nav-cta">\s*)/, '$1' + copy('bar') + '\n    ');
+  html = html.replace(/(<div class="nav-cta">\s*)/, '$1' + as('lang-bar') + '\n    ');
   html = html.replace(/(\s*)(<\/ul>\s*<div class="nav-cta">)/,
-    '$1  <li class="lang-li">' + copy('drawer') + '</li>$1$2');
+    '$1  <li class="lang-li">' + as('lang-drawer') + '</li>$1$2');
   return html;
 }
 
@@ -435,12 +348,6 @@ function build() {
     }
   }
 
-  const skipped = ALL_LANGS.filter(l => !LANGS.includes(l));
-  if (skipped.length) {
-    console.log('Skipped (no i18n/<code>.json yet): ' +
-      skipped.map(l => l.code).join(', ') +
-      '  — not linked, not in hreflang, not in the sitemap.');
-  }
   console.log('English pages updated in place (switcher + hreflang).');
   console.log('Generated:');
   report.forEach(r => console.log(r));

@@ -57,11 +57,7 @@
       var a = document.createElement('a');
       a.className = 'btn btn-primary';
       a.href = ctaSrc ? ctaSrc.getAttribute('href') : 'book.html';
-      /* Mirror the bar button's own label rather than hard-coding it: the
-         bar copy is translated at build time, so a literal 'Book Now' here
-         put an English CTA at the bottom of every German, French and
-         Russian drawer. */
-      a.textContent = (ctaSrc && ctaSrc.textContent.trim()) || 'Book Now';
+      a.textContent = 'Book Now';
       li.appendChild(a);
       links.appendChild(li);
     }
@@ -110,16 +106,8 @@
       if(e.key === 'Escape'){ e.preventDefault(); close(true); return; }
       if(e.key !== 'Tab') return;
 
-      /* Keep focus inside the drawer; the burger doubles as the close button.
-         Buttons count too — the language dropdown's trigger is one, and
-         leaving it out of this list put the wrap boundary in the wrong
-         place. The visibility filter matters for the same component: its
-         nine options live in a collapsed panel, and the last of them was
-         being handed focus by the Shift+Tab wrap while visibility:hidden,
-         which fails silently and dropped focus to the document body. */
-      var focusable = [burger].concat(
-        Array.prototype.slice.call(links.querySelectorAll('a[href],button'))
-          .filter(function(el){ return getComputedStyle(el).visibility !== 'hidden'; }));
+      // Keep focus inside the drawer; the burger doubles as the close button
+      var focusable = [burger].concat(Array.prototype.slice.call(links.querySelectorAll('a')));
       var firstEl = focusable[0], lastEl = focusable[focusable.length - 1];
       if(e.shiftKey && document.activeElement === firstEl){ e.preventDefault(); lastEl.focus(); }
       else if(!e.shiftKey && document.activeElement === lastEl){ e.preventDefault(); firstEl.focus(); }
@@ -130,106 +118,6 @@
     var onWide = function(e){ if(e.matches) close(false); };
     if(wide.addEventListener) wide.addEventListener('change', onWide);
     else if(wide.addListener) wide.addListener(onWide);
-  }
-
-  /* ---------------------------------------------------------
-     Language dropdown
-     Progressive enhancement over markup that already works: with this
-     file absent the CSS still paints the trigger and the panel stays
-     shut, but every option is a real <a href> inside it, so a crawler
-     reads all nine and a keyboard user can still Tab to them. What is
-     added here is only the disclosure behaviour.
-
-     There are two instances on a page — .lang-bar in the nav rail and
-     .lang-drawer in the slide-in menu — and each is wired independently
-     rather than through a single shared "open" variable, because only
-     one of the two is ever visible at a given width and a shared flag
-     would have the hidden copy silently claiming the open state.
-     --------------------------------------------------------- */
-  var langWidgets = Array.prototype.slice.call(document.querySelectorAll('[data-lang]'))
-    .map(function(root){
-      var toggle = root.querySelector('.lang-toggle');
-      var menu   = root.querySelector('.lang-menu');
-      if(!toggle || !menu) return null;
-
-      var options = Array.prototype.slice.call(menu.querySelectorAll('a'));
-
-      var isOpen = function(){ return toggle.getAttribute('aria-expanded') === 'true'; };
-
-      var set = function(open, focusIndex){
-        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        /* The panel animates via visibility, and a visibility:hidden
-           element refuses focus without reporting an error, so moving
-           focus has to wait for the attribute above to have taken
-           effect. It has by the time this line runs — attribute writes
-           are synchronous and the CSS transition on visibility is a 0s
-           step with no delay in the open direction. */
-        if(open && typeof focusIndex === 'number' && options.length){
-          var i = focusIndex < 0 ? options.length - 1 : focusIndex;
-          options[i].focus();
-        }
-      };
-
-      var close = function(returnFocus){
-        if(!isOpen()) return false;
-        set(false);
-        if(returnFocus) toggle.focus();
-        return true;
-      };
-
-      toggle.addEventListener('click', function(){
-        /* Only one panel at a time. Closing the others first also covers
-           the case where a widget was left open and the viewport crossed
-           the breakpoint, swapping which copy is on screen. */
-        langWidgets.forEach(function(w){ if(w && w.root !== root) w.close(false); });
-        set(!isOpen());
-      });
-
-      toggle.addEventListener('keydown', function(e){
-        if(e.key === 'ArrowDown' || e.key === 'Down'){ e.preventDefault(); set(true, 0); }
-        else if(e.key === 'ArrowUp' || e.key === 'Up'){ e.preventDefault(); set(true, -1); }
-        else if(e.key === 'Escape' || e.key === 'Esc'){
-          /* Consume it here so the mobile drawer's own Escape handler,
-             which is bound to document and would otherwise see the same
-             event bubble up, does not close the whole menu when the user
-             only meant to dismiss the language panel. */
-          if(close(true)) e.stopPropagation();
-        }
-      });
-
-      menu.addEventListener('keydown', function(e){
-        var i = options.indexOf(document.activeElement);
-        if(e.key === 'Escape' || e.key === 'Esc'){ if(close(true)) e.stopPropagation(); return; }
-        if(i === -1) return;
-        if(e.key === 'ArrowDown' || e.key === 'Down'){
-          e.preventDefault(); options[(i + 1) % options.length].focus();
-        }else if(e.key === 'ArrowUp' || e.key === 'Up'){
-          e.preventDefault(); options[(i - 1 + options.length) % options.length].focus();
-        }else if(e.key === 'Home'){ e.preventDefault(); options[0].focus(); }
-        else if(e.key === 'End'){ e.preventDefault(); options[options.length - 1].focus(); }
-      });
-
-      /* focusout rather than blur: it bubbles, so one listener covers the
-         trigger and all nine options. relatedTarget is where focus is
-         going — null when it leaves the document entirely (an alt-tab),
-         which should NOT close the panel out from under the user. */
-      root.addEventListener('focusout', function(e){
-        if(e.relatedTarget && !root.contains(e.relatedTarget)) close(false);
-      });
-
-      return { root: root, close: close, isOpen: isOpen };
-    })
-    .filter(Boolean);
-
-  if(langWidgets.length){
-    /* pointerdown, not click: a click on a link elsewhere on the page can
-       navigate before the click listener runs, leaving the panel painted
-       open through the page transition. */
-    document.addEventListener('pointerdown', function(e){
-      langWidgets.forEach(function(w){
-        if(!w.root.contains(e.target)) w.close(false);
-      });
-    });
   }
 
   /* ---------------------------------------------------------

@@ -171,91 +171,19 @@ p{color:var(--ink-soft);text-wrap:pretty}
 .brand small{display:block;font-family:var(--body);font-size:.62rem;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.75);margin-top:2px;white-space:nowrap}
 .nav.scrolled .brand small{color:var(--brass)}
 .nav-links{display:flex;align-items:center;gap:clamp(18px,2.1vw,30px);list-style:none;min-width:0}
-/* ---- language switcher: disclosure dropdown ----------------------
-   A <button aria-expanded> sitting over a <ul> of real <a href> links to
-   the static /de/ /fr/ /ru/ … pages. It reads as a select and behaves as
-   one, but it is not a <select>: a native select cannot contain an
-   anchor, so its nine options would be invisible to crawlers, impossible
-   to open in a new tab and dead with JS off — which is the entire reason
-   these pages have their own URLs in the first place.
-
-   Two copies exist in the markup — .lang-bar in the nav rail and
-   .lang-drawer inside the slide-in menu — because at 375px the bar has
-   exactly 0px of slack once the logo, Book Now and the burger are placed
-   (measured: 306px used of 316px available). Each copy is hidden at the
-   breakpoint where the other shows, so only one is ever focusable. */
-.lang{position:relative;flex:none;margin-right:2px}
-
-/* The trigger. Sized to the 36px the nav rail can spare beside a 46px
-   button; the drawer copy grows it to the full 44px tap target below. */
-.lang-toggle{
-  display:flex;align-items:center;gap:7px;
-  height:36px;padding:0 9px 0 11px;
-  font-family:var(--body);font-size:.68rem;font-weight:700;
-  letter-spacing:.09em;text-transform:uppercase;
-  color:rgba(255,255,255,.82);
-  background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.2);border-radius:100px;
-  cursor:pointer;white-space:nowrap;
-  text-shadow:0 1px 10px rgba(34,27,20,.35);
-  transition:color .3s,background .3s,border-color .3s
-}
-.lang-toggle:hover{color:#fff;background:rgba(255,255,255,.2)}
-.lang-toggle[aria-expanded="true"]{color:#fff;background:rgba(255,255,255,.22)}
-
-/* Flags are emoji, so they come from whichever colour-emoji font the OS
-   ships. Naming those families ahead of the UI font stops the browser
-   from resolving a regional-indicator pair in Manrope, which has no such
-   glyphs and renders the bare two-letter fallback box instead. */
-.lang-flag{
-  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif;
-  font-size:1.05rem;line-height:1;text-shadow:none;flex:none
-}
-.lang-code{line-height:1}
-.lang-caret{width:9px;height:6px;flex:none;opacity:.75;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
-.lang-toggle[aria-expanded="true"] .lang-caret{transform:rotate(180deg)}
-
-/* The panel. Anchored to the trigger's right edge so a nine-row list
-   opens inward from the nav rail instead of off the side of the page. */
-.lang-menu{
-  position:absolute;top:calc(100% + 11px);inset-inline-end:0;z-index:130;
-  min-width:196px;padding:7px;list-style:none;
-  background:var(--paper);border:1px solid var(--line-soft);border-radius:14px;
-  box-shadow:0 24px 54px -22px rgba(8,34,42,.42);
-  /* Animated with opacity/transform rather than display, so the open and
-     close both have a transition to run. visibility rides along as a 0s
-     step — delayed on close so the panel stays painted through the fade,
-     immediate on open because the JS may focus a link in the same tick
-     and a still-hidden element silently refuses focus. */
-  opacity:0;visibility:hidden;transform:translateY(-8px) scale(.97);transform-origin:top right;
-  transition:opacity .26s ease,transform .26s cubic-bezier(.2,.8,.2,1),visibility 0s .26s
-}
-.lang-toggle[aria-expanded="true"]+.lang-menu{
-  opacity:1;visibility:visible;transform:none;transition-delay:0s,0s,0s
-}
-.lang-menu a{
-  display:flex;align-items:center;gap:11px;
-  min-height:38px;padding:7px 11px;border-radius:9px;
-  font-family:var(--body);font-size:.87rem;font-weight:500;letter-spacing:0;
-  text-transform:none;text-shadow:none;white-space:nowrap;
-  color:var(--ink-soft);transition:color .22s,background .22s
-}
-.lang-menu a:hover,.lang-menu a:focus-visible{background:var(--foam);color:var(--ocean)}
-.lang-menu a.on{background:var(--foam);color:var(--ocean);font-weight:700}
-/* The current language earns a tick rather than colour alone — colour is
-   the one signal a colour-blind visitor may not receive, and this menu
-   has no other way to say "you are here". */
-.lang-menu a.on::after{content:"✓";margin-inline-start:auto;font-size:.8rem;opacity:.85}
-
-/* Scrolled: the nav turns to paper, so the trigger has to follow it off
-   the photograph and onto a light surface. */
-.nav.scrolled .lang-toggle{
-  color:var(--ink-soft);background:var(--foam);border-color:var(--line-soft);text-shadow:none
-}
-.nav.scrolled .lang-toggle:hover,.nav.scrolled .lang-toggle[aria-expanded="true"]{
-  color:var(--ocean);background:var(--sand)
-}
-
+/* ---- language switcher -------------------------------------------
+   Real <a href> links to the static /ru/ /de/ /fr/ pages, so they are
+   crawlable and work without JS. Two copies exist in the markup (nav bar
+   and drawer); each is hidden at the breakpoint where the other shows. */
+.lang{display:flex;align-items:center;gap:2px;list-style:none;margin-right:4px}
+.lang a{display:flex;align-items:center;justify-content:center;min-width:34px;height:30px;
+  padding:0 7px;border-radius:100px;font-size:.68rem;font-weight:700;letter-spacing:.09em;
+  color:rgba(255,255,255,.72);transition:color .3s,background .3s;text-shadow:0 1px 10px rgba(34,27,20,.35)}
+.lang a:hover{color:#fff;background:rgba(255,255,255,.14)}
+.lang a.on{color:var(--ivory);background:rgba(255,255,255,.2)}
+.nav.scrolled .lang a{color:var(--ink-soft);text-shadow:none}
+.nav.scrolled .lang a:hover{color:var(--ocean);background:var(--foam)}
+.nav.scrolled .lang a.on{color:var(--ocean);background:var(--foam)}
 .lang-drawer{display:none}
 .lang-li{margin-top:6px}
 .nav-links a{display:inline-block;font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.9);position:relative;transition:color .3s;text-shadow:0 1px 10px rgba(34,27,20,.35);white-space:nowrap}
@@ -264,7 +192,7 @@ p{color:var(--ink-soft);text-wrap:pretty}
    than grown from width:0. Visually identical for a solid 1px bar, but a
    width transition relayouts the link on every frame of the 350ms sweep,
    while a transform is handed to the compositor and costs nothing. */
-.nav-links a::after{content:"";position:absolute;inset-inline-start:0;bottom:-7px;width:100%;height:1px;background:var(--brass);transform:scaleX(0);transform-origin:inline-start;transition:transform .35s}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-7px;width:100%;height:1px;background:var(--brass);transform:scaleX(0);transform-origin:left;transition:transform .35s}
 .nav-links a:hover,.nav-links a.active{color:#fff}
 .nav.scrolled .nav-links a:hover,.nav.scrolled .nav-links a.active{color:var(--clay)}
 .nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}
@@ -300,7 +228,7 @@ p{color:var(--ink-soft);text-wrap:pretty}
 .hero-media.slideshow .slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 1.7s ease-in-out;animation:none}
 .hero-media.slideshow .slide.active{opacity:1;animation:kenburns 7s ease-out forwards}
 @keyframes kenburns{from{transform:scale(1.1)}to{transform:scale(1)}}
-.hero-dots{position:absolute;bottom:24px;inset-inline-end:calc(var(--gutter) + 2px);z-index:4;display:flex;gap:4px}
+.hero-dots{position:absolute;bottom:24px;right:calc(var(--gutter) + 2px);z-index:4;display:flex;gap:4px}
 .hero-dots button{
   width:34px;height:var(--tap);padding:0;border:none;background:none;cursor:pointer;
   display:grid;place-items:center;
@@ -319,7 +247,7 @@ p{color:var(--ink-soft);text-wrap:pretty}
 .hero .lead{color:rgba(255,255,255,.92);text-shadow:0 2px 20px rgba(0,0,0,.5)}
 .hero .eyebrow{color:rgba(255,255,255,.92)}.hero .eyebrow::before{background:var(--sand)}
 .hero-meta{display:flex;flex-wrap:wrap;gap:16px;margin-top:38px;align-items:center}
-.hero-stats{display:flex;gap:36px;margin-inline-start:auto;flex-wrap:wrap}
+.hero-stats{display:flex;gap:36px;margin-left:auto;flex-wrap:wrap}
 .stat b{font-family:var(--display);font-size:clamp(1.65rem,5.2vw,2rem);color:#fff;display:block;line-height:1;font-weight:300}
 .stat span{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--sand)}
 .scroll-cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;
@@ -362,7 +290,7 @@ section{position:relative}
    loop visibly jumped. Spacing now lives inside each half, so -50% is seamless. */
 .strip{background:var(--jungle);color:var(--ivory);padding:18px 0;overflow:hidden;white-space:nowrap;border-top:1px solid var(--line-dk);border-bottom:1px solid var(--line-dk)}
 .strip .track{display:inline-flex;gap:0;animation:marq 30s linear infinite;font-family:var(--display);font-size:clamp(1rem,3vw,1.25rem);font-style:italic;font-weight:300;will-change:transform}
-.strip span{display:inline-flex;align-items:center;gap:46px;padding-inline-end:46px;color:var(--sand)}
+.strip span{display:inline-flex;align-items:center;gap:46px;padding-right:46px;color:var(--sand)}
 @keyframes marq{to{transform:translateX(-50%)}}
 
 /* ---------- Feature grid ---------- */
@@ -422,12 +350,12 @@ section{position:relative}
 .photoband .ph:hover img{transform:scale(1.06)}
 .photoband .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(26,20,14,.6));opacity:.5;transition:opacity .4s}
 .photoband .ph:hover::after{opacity:.85}
-.photoband .cap{position:absolute;inset-inline-start:18px;bottom:16px;z-index:2;color:#fff;font-family:var(--display);font-style:italic;font-size:clamp(.95rem,2.6vw,1.1rem);letter-spacing:.01em}
+.photoband .cap{position:absolute;left:18px;bottom:16px;z-index:2;color:#fff;font-family:var(--display);font-style:italic;font-size:clamp(.95rem,2.6vw,1.1rem);letter-spacing:.01em}
 
 /* ---------- Pricing ---------- */
 .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4vw,28px);align-items:stretch}
 .price{display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--r);padding:clamp(28px,3.6vw,42px) clamp(22px,3vw,34px);position:relative;transition:transform .45s,box-shadow .45s,border-color .45s}
-.price h3{color:var(--ink);font-weight:400;padding-inline-end:96px}
+.price h3{color:var(--ink);font-weight:400;padding-right:96px}
 .price:hover{transform:translateY(-6px);box-shadow:var(--shadow-soft);border-color:var(--brass)}
 .price.feat{background:linear-gradient(165deg,var(--ocean-2),var(--ocean));border-color:transparent;box-shadow:var(--shadow);color:var(--ivory)}
 .price.feat h3{color:var(--ivory)}
@@ -565,7 +493,7 @@ section{position:relative}
 .cart-item .ci-main em{font-style:normal;font-size:.76rem;color:rgba(247,241,230,.7)}
 .cart-item .ci-qty{display:flex;align-items:center;gap:7px;flex:none}
 .cart-item .ci-qty button{width:26px;height:26px;border-radius:50%;border:1px solid var(--line-dk);background:transparent;color:#fff;cursor:pointer;font-size:.85rem;line-height:1;display:grid;place-items:center;flex:none}
-.cart-item .ci-price{width:56px;flex:none;text-align:end;color:var(--sand);font-size:.88rem}
+.cart-item .ci-price{width:56px;flex:none;text-align:right;color:var(--sand);font-size:.88rem}
 .cart-item .ci-x{background:none;border:none;color:rgba(247,241,230,.5);cursor:pointer;font-size:1.05rem;padding:0 2px;flex:none}
 .cart-empty{color:rgba(247,241,230,.6);font-size:.9rem;padding:12px 0}
 /* "— or —" and "Edit details" were set in near-white on the pale form card */
@@ -619,54 +547,16 @@ section{position:relative}
   .nav-links a:hover,.nav-links a.active,
   .nav.scrolled .nav-links a:hover,.nav.scrolled .nav-links a.active{color:var(--sand)}
   .nav-links a::after{bottom:0}
-  /* Measured at 375px: brand 163 + nav-cta 143 = 306 of the 316 available,
-     and the 10px flex gap takes the rest. There is exactly 0px of slack, so
-     the bar copy is retired here and the drawer copy takes over — full
-     width, 44px targets, and a panel that expands DOWNWARD in the flow
-     rather than floating over the links beneath it. */
+  /* The nav bar cannot fit four language pills beside Book Now and the
+     burger at 375px, so the bar copy is retired and the drawer copy takes
+     over with proper 44px targets. */
   .lang-bar{display:none}
-  .lang-drawer{display:block;width:100%;margin:10px 0 0;padding-top:16px;
-    border-top:1px solid rgba(247,241,230,.16)}
-  .lang-drawer .lang-toggle{width:100%;height:var(--tap);gap:11px;
-    padding:0 14px;border-radius:12px;font-size:.78rem;letter-spacing:.1em;
-    color:var(--ivory);background:rgba(247,241,230,.08);
-    border-color:rgba(247,241,230,.2);text-shadow:none}
-  /* Pushes the caret to the far edge of the full-width trigger. Logical, so
-     it lands on the left in the Hebrew build without a second rule. */
-  .lang-drawer .lang-caret{margin-inline-start:auto;width:11px;height:7px}
-  /* .nav.scrolled .lang-toggle is (0,3,0) and would otherwise repaint the
-     drawer trigger for the light nav — but the drawer is dark at every
-     scroll position, so it needs matching specificity to hold its own. */
-  .nav.scrolled .lang-drawer .lang-toggle{color:var(--ivory);
-    background:rgba(247,241,230,.08);border-color:rgba(247,241,230,.2)}
-  .lang-drawer .lang-toggle:hover,
-  .lang-drawer .lang-toggle[aria-expanded="true"],
-  .nav.scrolled .lang-drawer .lang-toggle:hover,
-  .nav.scrolled .lang-drawer .lang-toggle[aria-expanded="true"]{
-    color:var(--ivory);background:rgba(247,241,230,.16)}
-
-  /* In the drawer the panel is part of the document flow, not a popover:
-     it pushes the rest of the menu down, which is what "downward-expanding"
-     should feel like on a phone. The drawer itself is overflow-y:auto, so a
-     nine-row list that outgrows the viewport simply scrolls.
-
-     Collapsed with max-height rather than display:none so both directions
-     animate, and with visibility so the nine links inside are not still
-     reachable by Tab while the panel is shut — a max-height:0 container
-     hides its content visually but keeps it in the focus order. */
-  .lang-drawer .lang-menu{position:static;min-width:0;padding:0;margin:0;
-    background:none;border:0;border-radius:0;box-shadow:none;
-    opacity:1;transform:none;overflow:hidden;
-    max-height:0;visibility:hidden;
-    transition:max-height .4s cubic-bezier(.2,.8,.2,1),margin-top .4s,visibility 0s .4s}
-  .lang-drawer .lang-toggle[aria-expanded="true"]+.lang-menu{
-    max-height:560px;margin-top:8px;visibility:visible;transition-delay:0s,0s,0s}
-  .lang-drawer .lang-menu li+li{margin-top:4px}
-  .lang-drawer .lang-menu a{min-height:var(--tap);padding:8px 14px;border-radius:11px;
-    font-size:.92rem;color:rgba(247,241,230,.82);background:rgba(247,241,230,.05)}
-  .lang-drawer .lang-menu a:hover,.lang-drawer .lang-menu a:focus-visible{
-    color:var(--ivory);background:rgba(247,241,230,.14)}
-  .lang-drawer .lang-menu a.on{color:var(--abyss);background:var(--sand);font-weight:700}
+  .lang-drawer{display:flex;gap:6px;margin-top:10px;padding-top:16px;
+    border-top:1px solid rgba(247,241,230,.16);width:100%}
+  .lang-drawer a{min-width:var(--tap);height:var(--tap);font-size:.8rem;
+    color:rgba(247,241,230,.78);background:rgba(247,241,230,.08);text-shadow:none}
+  .nav.scrolled .lang-drawer a{color:rgba(247,241,230,.78)}
+  .lang-drawer a.on,.nav.scrolled .lang-drawer a.on{color:var(--abyss);background:var(--sand)}
   .nav-drawer-cta{display:block}
   .burger{display:flex}
   .nav-cta .btn-ghost{display:none}
@@ -686,7 +576,7 @@ section{position:relative}
   .photoband{grid-template-columns:repeat(2,1fr)}
   .masonry{columns:2}
   /* the stats block and the scroll cue were landing on top of each other */
-  .hero-stats{margin-inline-start:0}
+  .hero-stats{margin-left:0}
   .scroll-cue{display:none}
 }
 
@@ -696,7 +586,7 @@ section{position:relative}
   /* Footer links were 15px tall — the margin became padding so the target grows
      without spreading the columns as far as a full 44px would. */
   .footer a{display:flex;align-items:center;min-height:40px;margin-bottom:0}
-  .price h3{padding-inline-end:0}
+  .price h3{padding-right:0}
   .price .ribbon{position:static;display:inline-block;margin-bottom:12px}
   .hero-inner{padding-bottom:calc(66px + var(--safe-b))}
   .hero h1{margin:14px 0 18px}
@@ -707,9 +597,9 @@ section{position:relative}
     margin:16px 0 0;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:0;
     border-top:1px solid rgba(255,255,255,.22);padding-top:18px
   }
-  .hero-stats .stat{padding-inline-end:16px}
-  .hero-stats .stat+.stat{padding-inline-start:20px;border-inline-start:1px solid rgba(255,255,255,.22)}
-  .hero-dots{inset-inline-start:var(--gutter);inset-inline-end:auto;bottom:calc(10px + var(--safe-b))}
+  .hero-stats .stat{padding-right:16px}
+  .hero-stats .stat+.stat{padding-left:20px;border-left:1px solid rgba(255,255,255,.22)}
+  .hero-dots{left:var(--gutter);right:auto;bottom:calc(10px + var(--safe-b))}
   .cta-band .btns{flex-direction:column;align-items:stretch;gap:12px}
   .cta-band .btns>.btn{width:100%}
   .checklist li{font-size:.95rem;gap:12px}
@@ -808,7 +698,7 @@ section{position:relative}
   padding-top:2px;color:var(--stone);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
   font-weight:700;height:auto;background:none;border-radius:0}
 /* the connecting rail sits behind the numbers */
-.steps .s::before{content:"";position:absolute;top:17px;inset-inline-start:-50%;width:100%;height:2px;background:var(--line);z-index:0}
+.steps .s::before{content:"";position:absolute;top:17px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0}
 .steps .s:first-child::before{display:none}
 .steps .s.on::before{background:var(--clay)}
 .steps .s-num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;position:relative;z-index:1;
@@ -854,7 +744,7 @@ section{position:relative}
 .opt-price{margin-top:7px;display:flex;align-items:baseline;gap:7px}
 .opt-price b{font-family:var(--display);font-weight:300;font-size:1.3rem;color:var(--clay)}
 .opt-price em{font-style:normal;font-size:.74rem;color:var(--stone);letter-spacing:.04em}
-.opt-add{padding-inline-end:16px;display:flex;flex-direction:column;align-items:center;gap:5px;flex:none}
+.opt-add{padding-right:16px;display:flex;flex-direction:column;align-items:center;gap:5px;flex:none}
 .opt-unitword{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);font-weight:700}
 .opt-btn{padding:11px 20px;font-size:.76rem;min-height:var(--tap)}
 
@@ -865,8 +755,8 @@ section{position:relative}
 .opt-lg .opt-body h4{font-size:clamp(1.3rem,2.4vw,1.7rem)}
 .opt-blurb{font-size:.9rem;color:var(--ink-soft);margin-top:10px;line-height:1.65}
 .opt-inc{list-style:none;margin:14px 0 0;display:grid;gap:6px}
-.opt-inc li{font-size:.85rem;color:var(--ink-soft);padding-inline-start:22px;position:relative}
-.opt-inc li::before{content:"\2713";position:absolute;inset-inline-start:0;top:0;color:var(--brass);font-weight:700}
+.opt-inc li{font-size:.85rem;color:var(--ink-soft);padding-left:22px;position:relative}
+.opt-inc li::before{content:"\2713";position:absolute;left:0;top:0;color:var(--brass);font-weight:700}
 .opt-lg .opt-add{padding:18px clamp(18px,2.4vw,24px) clamp(18px,2.4vw,24px);flex-direction:row;
   align-items:center;justify-content:space-between;width:100%;gap:12px}
 .opt-lg .opt-btn{flex:1;justify-content:center}
@@ -929,7 +819,7 @@ section{position:relative}
 .btn.is-loading{opacity:.6;pointer-events:none}
 
 .field label i{font-style:normal;color:var(--clay)}
-.lab-hint{text-transform:none;letter-spacing:0;font-weight:400;color:var(--stone);font-size:.72rem;margin-inline-start:6px}
+.lab-hint{text-transform:none;letter-spacing:0;font-weight:400;color:var(--stone);font-size:.72rem;margin-left:6px}
 .field-err{display:block;margin-top:7px;font-size:.78rem;color:var(--clay-dk);font-weight:600}
 .field.has-err input,.field.has-err select,.field.has-err textarea{
   border-color:var(--clay);box-shadow:0 0 0 3px rgba(179,98,61,.12)}
@@ -978,7 +868,7 @@ section{position:relative}
 .acc{border-top:1px solid var(--line)}
 .acc-item{border-bottom:1px solid var(--line)}
 .acc-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;
-  background:none;border:none;padding:20px 2px;cursor:pointer;text-align:start;
+  background:none;border:none;padding:20px 2px;cursor:pointer;text-align:left;
   font-family:var(--display);font-size:1.08rem;font-weight:400;color:var(--ink);min-height:var(--tap)}
 .acc-head:focus-visible{outline:2px solid var(--clay);outline-offset:-2px}
 .acc-ico{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--line);
@@ -1087,7 +977,7 @@ section{position:relative}
 /* The one the camp wants sold sits slightly forward of the others. */
 .pkg-card.featured{border-color:var(--brass);box-shadow:var(--shadow-soft)}
 .pkg-card.featured>img{height:clamp(210px,23vw,268px)}
-.pkg-badge{position:absolute;top:16px;inset-inline-start:16px;z-index:2;background:var(--clay);color:#fff;
+.pkg-badge{position:absolute;top:16px;left:16px;z-index:2;background:var(--clay);color:#fff;
   font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
   padding:8px 14px;border-radius:100px;box-shadow:0 6px 18px -8px rgba(34,27,20,.7)}
 
@@ -1102,8 +992,8 @@ section{position:relative}
   color:var(--clay);line-height:1}
 .pkg-price em{font-style:normal;font-size:.78rem;letter-spacing:.06em;color:var(--stone)}
 .pkg-inc{list-style:none;margin:18px 0 24px;display:grid;gap:9px;flex:1}
-.pkg-inc li{font-size:.88rem;color:var(--ink-soft);padding-inline-start:24px;position:relative;line-height:1.5}
-.pkg-inc li::before{content:"\2713";position:absolute;inset-inline-start:0;top:0;color:var(--brass);font-weight:700}
+.pkg-inc li{font-size:.88rem;color:var(--ink-soft);padding-left:24px;position:relative;line-height:1.5}
+.pkg-inc li::before{content:"\2713";position:absolute;left:0;top:0;color:var(--brass);font-weight:700}
 .pkg-foot{text-align:center;margin-top:clamp(30px,4vw,44px);font-size:.94rem;color:var(--ink-soft)}
 .pkg-foot b{color:var(--clay);font-weight:700}
 .pkg-foot a{color:var(--clay-dk);font-weight:700;border-bottom:1px solid rgba(179,98,61,.35)}
@@ -1262,99 +1152,3 @@ section{position:relative}
      corner needs. The gap and size below are for reading comfort. */
   .acc-head{gap:12px;padding:18px 6px;font-size:1.02rem;line-height:1.4}
 }
-
-/* ============================================================
-   SCRIPT SUPPORT  —  Hebrew (RTL) and Japanese
-   Keyed off the lang/dir attributes that tools/i18n-build.js stamps on
-   <html>, so nothing here needs a per-page class.
-
-   Almost all of the layout above is flexbox and grid, which mirror
-   themselves once dir="rtl" is set, and the handful of genuinely
-   direction-bearing declarations were converted to logical properties
-   (padding-inline-start, inset-inline-end, text-align:start) in place
-   rather than re-stated here. What remains below is only what logical
-   properties cannot express: physical viewport pinning, a rotation
-   origin, and an animation that runs along an axis.
-   ============================================================ */
-
-/* ---- Type: neither Fraunces nor Manrope covers Hebrew or Japanese ----
-   Both would silently fall back per-glyph, mixing a serif Latin numeral
-   into a sans Hebrew line. Name the system faces instead of loading more
-   webfonts: every target OS ships a good Hebrew and a good Japanese
-   family, and a CJK webfont is a multi-megabyte download that would undo
-   the LCP work on the very pages it is meant to serve. */
-:root:lang(he),:root[lang="he"]{
-  --display:"Noto Serif Hebrew","David Libre","Frank Ruehl CLM",Georgia,serif;
-  --body:"Assistant","Heebo","Noto Sans Hebrew","Arial Hebrew",Arial,sans-serif
-}
-:root:lang(ja),:root[lang="ja"]{
-  --display:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
-  --body:"Hiragino Sans","Yu Gothic","Noto Sans JP","Meiryo",sans-serif
-}
-
-/* Wide tracking and uppercasing are Latin typographic devices. Hebrew has
-   no case at all, so text-transform:uppercase is a no-op that only
-   confuses, and letter-spacing on a connected-feeling script reads as
-   damage rather than emphasis. Japanese behaves the same way: tracking
-   applied to kana and kanji breaks the even rhythm the script depends on.
-   Line-height goes UP in both, because both have taller glyph bodies than
-   Latin lower-case. */
-[lang="he"] .eyebrow,[lang="he"] .crumb,[lang="he"] .btn,[lang="he"] .tag,
-[lang="he"] .nav-links a,[lang="he"] .mcard .tag,[lang="he"] .s-lab,
-[lang="ja"] .eyebrow,[lang="ja"] .crumb,[lang="ja"] .btn,[lang="ja"] .tag,
-[lang="ja"] .nav-links a,[lang="ja"] .mcard .tag,[lang="ja"] .s-lab{
-  letter-spacing:0;text-transform:none
-}
-[lang="he"] body,[lang="ja"] body{line-height:1.85}
-[lang="he"] h1,[lang="he"] h2,[lang="he"] h3,[lang="he"] h4,
-[lang="ja"] h1,[lang="ja"] h2,[lang="ja"] h3,[lang="ja"] h4{line-height:1.32}
-/* Fraunces' optical-size and italic axes do not exist in the fallback
-   families, so an italic pull-quote would be synthesised — slanted, not
-   drawn. Upright reads better than a fake oblique. */
-[lang="he"] .quote p,[lang="ja"] .quote p,
-[lang="he"] .photoband .cap,[lang="ja"] .photoband .cap{font-style:normal}
-
-/* ---- RTL: what mirroring cannot do on its own ---- */
-
-/* The slide-in drawer is pinned to a physical edge and animated along a
-   physical axis, so neither the inset nor the transform mirrors itself.
-   It has to come from the left in Hebrew, or it slides in over the burger
-   that opened it. */
-@media(max-width:1180px){
-  [dir="rtl"] .nav-links{
-    inset:0 auto 0 0;
-    transform:translateX(-100%);
-    box-shadow:30px 0 70px -30px rgba(0,0,0,.6)
-  }
-  [dir="rtl"] .nav-links.open{transform:none}
-}
-
-/* transform-origin takes physical keywords only; the panel must still
-   grow out of the corner it is anchored to. */
-[dir="rtl"] .lang-menu{transform-origin:top left}
-[dir="rtl"] .lang-menu{transform:translateY(-8px) scale(.97)}
-[dir="rtl"] .lang-toggle[aria-expanded="true"]+.lang-menu{transform:none}
-/* The trigger's asymmetric padding (11px lead, 9px trail) was set for a
-   flag-then-code reading order; mirrored, the two swap roles. */
-[dir="rtl"] .lang-toggle{padding:0 11px 0 9px}
-[dir="rtl"] .lang{margin-right:0;margin-left:2px}
-
-/* A marquee travels along an axis, and translateX(-50%) travels left
-   whatever the writing direction. Hebrew reads right-to-left, so the
-   ticker has to run the other way or it scrolls into the text instead of
-   out of it. */
-@keyframes marq-rtl{to{transform:translateX(50%)}}
-[dir="rtl"] .strip span{animation-name:marq-rtl}
-
-/* The tick after the current language sits at the far end of the row;
-   margin-inline-start already flips it, but the glyph itself must not be
-   pulled into the bidi run of the Hebrew label beside it. */
-[dir="rtl"] .lang-menu a.on::after{direction:ltr;unicode-bidi:isolate}
-
-/* Prices, dates and phone numbers are LTR runs inside RTL sentences. The
-   bidi algorithm gets the digits right on its own but not the currency
-   symbol or the surrounding punctuation, which is how "$190" becomes
-   "190$" in the middle of a Hebrew line. Isolating the run fixes it
-   without touching the copy. */
-[dir="rtl"] .price .amt,[dir="rtl"] .pkg-price,[dir="rtl"] .stat b,
-[dir="rtl"] time,[dir="rtl"] .ci-price{direction:ltr;unicode-bidi:isolate}
