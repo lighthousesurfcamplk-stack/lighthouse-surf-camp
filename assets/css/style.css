@@ -788,9 +788,17 @@ section{position:relative}
    ========================================================= */
 
 /* --- Skip link (keyboard users land on the content on every page) --- */
-.skip-link{position:absolute;left:-9999px;top:0;z-index:200;background:var(--espresso);color:var(--ivory);
+/* Hidden by clipping, not by left:-9999px. A physical -9999px offset is
+   inline-END overflow once dir="rtl" is set, and the root element does not
+   clip it — body{overflow-x:hidden} cannot help because it is <html> that
+   scrolls. Measured on he/index.html at 1280px: documentElement.scrollWidth
+   was 11264 instead of 1280, i.e. the whole Hebrew site panned sideways.
+   Clipping occupies zero space in either writing direction. */
+.skip-link{position:absolute;top:0;inset-inline-start:0;z-index:200;
+  width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;
+  background:var(--espresso);color:var(--ivory);
   padding:14px 22px;border-radius:0 0 var(--r) 0;font-size:.85rem;font-weight:700;letter-spacing:.06em}
-.skip-link:focus{left:0}
+.skip-link:focus{width:auto;height:auto;overflow:visible;clip-path:none}
 
 /* --- Trust row under a page hero --- */
 .trust-row{list-style:none;display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:26px}
@@ -1262,6 +1270,107 @@ section{position:relative}
      corner needs. The gap and size below are for reading comfort. */
   .acc-head{gap:12px;padding:18px 6px;font-size:1.02rem;line-height:1.4}
 }
+
+/* ============================================================
+   MOBILE RHYTHM LAYER  (375px – 480px)   ← THE OVERLAP FIX
+   Placed after the reading layer above and before the script
+   support below, so the Hebrew/Japanese leading overrides that
+   follow still win for those two languages.
+
+   ROOT CAUSE of the reported "lines rendering on top of each
+   other": the reset at the top of this sheet is
+   `*{box-sizing:border-box;margin:0;padding:0}` — and nothing
+   ever put a margin back for prose. Measured on a 375px viewport:
+   8 sibling pairs render at a 0-5px gap, including four H2 -> P
+   pairs at exactly 0px. A display serif's descenders extend past
+   its line box, so at a 0px gap an <h2> literally draws into the
+   cap height of the <p> beneath it. That is the overlap. It is a
+   missing margin, not a broken layout.
+   ============================================================ */
+@media(max-width:480px){
+
+  /* --- 1. Re-establish vertical rhythm (the actual fix) ---
+     Specificity is (0,0,2) via the adjacent combinator, which clears
+     the (0,0,0) universal reset without !important. */
+  h1+p,h2+p,h3+p,h4+p,
+  h1+ul,h2+ul,h3+ul,h4+ul,
+  h1+ol,h2+ol,h3+ol,h4+ol{margin-top:16px}
+  p+p,p+ul,p+ol,ul+p,ol+p{margin-top:1.05em}
+  p+h2,p+h3,p+h4,ul+h2,ul+h3,ul+h4{margin-top:30px}
+
+  /* Containers that already space their own children with flex/grid
+     `gap` must not receive the margin as well, or the two stack and
+     the block grows by ~17px per pair. */
+  .quote>*+*,.hero-meta>*+*,.grid>*+*,.acc-panel>*+*,
+  .foot-grid>*+*,.cart-item>*+*,.opt-body>*+*{margin-top:0}
+
+  /* --- 2. Leading: real descender clearance ---
+     Headings ship at line-height 1.06, correct for a 6.2rem desktop
+     h1 on one line. At 29-38px wrapped over 2-3 lines the descender
+     of one line reaches the cap of the next. The reading layer above
+     raised these to 1.14/1.18; Fraunces' descenders need a little
+     more than that at phone sizes. */
+  h1{line-height:1.18}
+  h2{line-height:1.22}
+  h3{line-height:1.3}
+  h4{line-height:1.34}
+
+  /* Negative tracking closes the very gaps that keep 38px glyphs
+     apart. Neutral at phone sizes, unchanged on every larger screen. */
+  h1,h2,h3,h4{letter-spacing:0}
+
+  /* --- 3. Crushed single-line values ---
+     line-height:1 gives a display numeral zero room; the digits sat
+     on the label below. */
+  .stat b{line-height:1.08;margin-bottom:3px}
+  .stat span{line-height:1.45}
+  .price .amt{line-height:1.06;margin:14px 0 6px}
+
+  /* --- 4. Hero spacing at 375px --- */
+  .hero h1{margin:12px 0 20px}
+  .hero .lead{line-height:1.65}
+  .hero-meta{margin-top:26px}
+
+  /* --- 5. Section rhythm: 78px of dead band top and bottom is a lot
+     of scrolling on a 812px-tall screen. --- */
+  .section{padding:66px 0}
+  .section-head{margin-bottom:32px}
+
+  /* --- 6. Body copy floor. 1rem/1.75 is comfortable; the lists were
+     inheriting the tighter component values. --- */
+  .lead{font-size:1rem;line-height:1.68}
+  .checklist li{line-height:1.62;gap:12px}
+  .checklist li+li{margin-top:10px}
+
+  /* --- 7. Specificity escalation ---
+     Two component rules outrank the (0,0,2) adjacent-sibling rules in
+     part 1 and were still holding their headings flush:
+       .grid.g-3 .card:has(.ico) p{margin:0}   -> (0,4,2)
+       .pkg-tag{margin-top:7px}                -> (0,1,0)
+     Matched here at equal-or-higher weight rather than with
+     !important, so a later component override is still possible. */
+  .grid.g-3 .card:has(.ico) h3+p,
+  .grid.g-4 .card:has(.ico) h3+p{margin-top:13px}
+  .card h3{margin-bottom:0}
+  .pkg-body h3+.pkg-tag,.pkg-body h3+p{margin-top:12px}
+  .price h3+p,.price h3+.amt{margin-top:12px}
+
+  /* --- 8. Script guard ---
+     Hebrew and Japanese have taller glyph bodies than Latin lower-case
+     and are set at 1.32 further down this sheet. Re-stated here so this
+     whole block can be pasted at ANY point in the file without the
+     paste position deciding whether Hebrew keeps its leading. */
+  [lang="he"] h1,[lang="he"] h2,[lang="he"] h3,[lang="he"] h4,
+  [lang="ja"] h1,[lang="ja"] h2,[lang="ja"] h3,[lang="ja"] h4{
+    line-height:1.32;letter-spacing:0}
+}
+
+/* --- 428px (iPhone Pro Max): same rhythm, a little more air --- */
+@media(min-width:429px) and (max-width:560px){
+  h1+p,h2+p,h3+p,h4+p{margin-top:18px}
+  p+p{margin-top:1.1em}
+}
+
 
 /* ============================================================
    SCRIPT SUPPORT  —  Hebrew (RTL) and Japanese
