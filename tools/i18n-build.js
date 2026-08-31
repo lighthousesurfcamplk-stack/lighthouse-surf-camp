@@ -64,8 +64,13 @@ const ORIGIN = 'https://lighthousesurfcamp.lk';
    is already served by /fr/, and hreflang="de-CH" is exactly the mechanism
    for "German, but for Switzerland". The copy differs from /de/ where it
    genuinely differs: ß is never written in Switzerland (always ss), and the
-   Helvetisms differ (Velo, Znüni, parkieren). If you would rather /ch/ were
-   fr-CH, swap the two fields — nothing else in this file needs to change. */
+   Helvetisms differ (Velo, Znüni, parkieren).
+
+   SETTLED: /ch/ stays de-CH. Swiss-French visitors are served by /fr/, which
+   is standard French and reads correctly in Romandy; splitting /ch/ into
+   de-CH and fr-CH would double the Swiss surface for a minority of a
+   minority of this camp's traffic. Not an open question — do not reopen it
+   without the owner. */
 const ALL_LANGS = [
   { code: 'en',    dir: '',   label: 'EN', flag: 'gb', name: 'English',   menuLabel: 'Language', htmlLang: 'en',    ogLocale: 'en_US' },
   { code: 'de',    dir: 'de', label: 'DE', flag: 'de', name: 'Deutsch',   menuLabel: 'Sprache',  htmlLang: 'de',    ogLocale: 'de_DE' },

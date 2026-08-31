@@ -201,6 +201,13 @@
           break;
         }
         case 'wa': {
+          /* `arg` is deliberately NOT passed through t(). This text is not read
+             by the visitor — it is the message that lands in the camp's inbox in
+             Arugam Bay, and the team there triages it in English. A Hebrew or
+             Russian prefill would translate a guest-facing string into a delay
+             in answering that guest. The link LABEL is still translated, by
+             data-i18n on the same anchor; only the payload is pinned.
+             Locked by decision — do not "fix" this by adding t(arg). */
           var num = dig(data.settings, 'contact.whatsapp');
           if (num) {
             el.setAttribute('href',

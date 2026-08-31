@@ -948,8 +948,14 @@ section{position:relative}
 .chip.on{background:var(--ocean);border-color:var(--ocean);color:var(--ivory)}
 .chip-n{background:var(--clay);color:#fff;border-radius:100px;min-width:20px;height:20px;
   display:grid;place-items:center;font-size:.68rem;padding:0 6px}
-.cat-note{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone);
-  font-weight:700;margin:0 0 12px}
+/* The category note repeats what every card in the grid already states in its
+   own unit line ("per night", "per session"), so as a standalone uppercase
+   heading it read as a second, competing label above the same information.
+   Hidden rather than deleted: booking.js still builds the node from
+   content/experiences.json, so the owner's `note` field keeps working the day
+   we want it back, and display:none also keeps it out of the a11y tree — a
+   screen reader hears the unit once, like everyone else. */
+.cat-note{display:none}
 
 .bk-fallback{text-align:center;padding:36px 20px;border:1px dashed var(--line);border-radius:var(--r)}
 .bk-fallback h4{font-family:var(--display);font-weight:400;font-size:1.2rem;color:var(--ink);margin-bottom:8px}
@@ -1981,4 +1987,23 @@ p,li,dd,blockquote,figcaption,.lead,h1,h2,h3,h4,h5,h6{
    the shorter padding is correct. */
 @media(min-width:981px){
   .hero-inner{padding-bottom:max(9vh, 116px)}
+}
+
+
+/* ---------------------------------------------------------------------
+   [D] BOOKING CRUMB CLEARANCE — the brand lockup vs "HOME / BOOK NOW"
+   .phero-book reserves calc(var(--nav-h) + clamp(52px,8vw,88px)) at the
+   top, but --nav-h is a static 80px while the bar itself is content-sized
+   and grows with the brand lockup: measured on this build it is 81px at
+   480-600px wide and 87px at 768px. The crumb's breathing room is therefore
+   whatever the clamp has left AFTER the bar has taken what it needs, and on
+   a phone the clamp is already bottomed out at its 52px minimum — so the
+   gap shrinks silently the moment the lockup grows (a longer locale, a
+   larger default font size, a user zoom).
+
+   Budget the clearance explicitly instead of inheriting the leftovers. The
+   crumb carries the visitor's place in the booking flow, so it stays
+   visible; it is the spacing that gives way, not the content. */
+@media(max-width:760px){
+  .phero-book{padding-top:calc(var(--nav-h) + 76px)}
 }
