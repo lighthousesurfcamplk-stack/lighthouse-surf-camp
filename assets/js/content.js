@@ -27,7 +27,27 @@
      data-root="../" by tools/i18n-build.js, so the same fetch resolves
      back to the single shared content directory instead of 404-ing and
      leaving every CMS-managed price stuck at its hard-coded fallback. */
-  var BASE = (document.documentElement.getAttribute('data-root') || '') + 'content/';
+  var ROOT = document.documentElement.getAttribute('data-root') || '';
+  var BASE = ROOT + 'content/';
+
+  /* Turn a CMS-relative path into one that resolves from THIS page.
+     content/*.json stores "assets/img/foo.jpg" — correct for /index.html,
+     but a page at /it/index.html resolves that to /it/assets/img/foo.jpg
+     and paints a broken-image icon. This is why the package photos went
+     missing on every translated page while the hard-coded HTML ones,
+     which the build rewrote to "../assets/…", stayed fine: the JS
+     overwrote a correct src with a relative one after load.
+
+     Every translated page is stamped data-root="../" by
+     tools/i18n-build.js, so prefixing with it is all that is needed.
+     Absolute URLs, root-absolute paths and data: URIs are already
+     unambiguous and pass through untouched, so this stays correct if the
+     owner ever pastes a full CDN URL into the admin. */
+  function asset(p) {
+    if (typeof p !== 'string' || !p) return p;
+    if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|\/)/i.test(p)) return p;
+    return ROOT + p.replace(/^(?:\.\/)+/, '');
+  }
   var FILES = ['settings', 'packages', 'experiences', 'reviews'];
   var cache = null;
   var pending = null;
@@ -102,7 +122,7 @@
         case 'img':
           /* Only swap when the CMS actually holds an image, so a package
              the owner has not given a photo keeps the designed one. */
-          if (item && item.image) el.setAttribute('src', item.image);
+          if (item && item.image) el.setAttribute('src', asset(item.image));
           break;
         case 'list': {
           /* Rebuild the "what's included" bullets. The first existing child
@@ -152,6 +172,9 @@
     load: load,
     money: money,
     hydrate: hydrate,
+    /* Exported so booking.js resolves its thumbnails through the same
+       rule instead of keeping a second copy of it. */
+    asset: asset,
     get data() { return cache; }
   };
 

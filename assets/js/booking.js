@@ -142,7 +142,9 @@
     if (item.image) {
       var img = document.createElement('img');
       img.className = 'opt-img';
-      img.src = item.image;
+      /* Same /it/, /de/ subdirectory problem as content.js — resolve
+         through the shared helper so a localized build shows real photos. */
+      img.src = (window.LHSC && window.LHSC.asset) ? window.LHSC.asset(item.image) : item.image;
       img.alt = item.alt || item.name;
       img.loading = 'lazy';
       img.decoding = 'async';

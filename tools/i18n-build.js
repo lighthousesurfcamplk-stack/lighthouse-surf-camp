@@ -370,8 +370,14 @@ function injectSwitcher(html, lang, page) {
   }
 
   html = html.replace(/(<div class="nav-cta">\s*)/, '$1' + copy('bar') + '\n    ');
-  html = html.replace(/(\s*)(<\/ul>\s*<div class="nav-cta">)/,
-    '$1  <li class="lang-li">' + copy('drawer') + '</li>$1$2');
+  /* The drawer copy is injected at the TOP of the list, not the bottom.
+     On a phone the switcher used to sit below nine links, so a visitor who
+     needed another language had to scroll the whole menu to find it. DOM
+     order and visual order now agree, which also keeps the Tab order
+     honest — the CSS order:-1 is only a fallback for a page that has not
+     been rebuilt yet. */
+  html = html.replace(/(<ul class="nav-links" id="primary-nav">)(\s*)/,
+    '$1$2<li class="lang-li">' + copy('drawer') + '</li>$2');
   return html;
 }
 

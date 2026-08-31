@@ -83,7 +83,13 @@
         lockedY = window.scrollY;
         document.body.style.top = -lockedY + 'px';
         document.body.classList.add('nav-open');
-        var first = links.querySelector('a');
+        /* The first <a> in the drawer is now one of the nine options
+           inside the collapsed language panel, and a visibility:hidden
+           element refuses focus silently — which dropped focus to <body>
+           and broke the Tab trap. Focus the first control that is
+           actually painted instead. */
+        var first = Array.prototype.slice.call(links.querySelectorAll('a[href],button'))
+          .filter(function(el){ return getComputedStyle(el).visibility !== 'hidden'; })[0];
         if(first) first.focus({preventScroll:true});
       }else{
         document.body.classList.remove('nav-open');
@@ -158,6 +164,14 @@
 
       var set = function(open, focusIndex){
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        /* The state is mirrored onto a class as well as the attribute.
+           The stylesheet's primary selector is
+           .lang-toggle[aria-expanded="true"] + .lang-menu — an adjacent
+           sibling combinator, which stops matching the moment anything is
+           inserted between the button and the list, and then the panel
+           stays at opacity:0 while the JS believes it is open. A class on
+           the wrapper cannot be broken that way. */
+        root.classList.toggle('is-open', !!open);
         /* The panel animates via visibility, and a visibility:hidden
            element refuses focus without reporting an error, so moving
            focus has to wait for the attribute above to have taken
@@ -177,7 +191,13 @@
         return true;
       };
 
-      toggle.addEventListener('click', function(){
+      toggle.addEventListener('click', function(e){
+        /* The trigger sits inside <nav>, next to an <a class="btn"> and
+           inside a header that some browsers treat as a click-through
+           region. Claiming the event outright stops any ancestor handler
+           from re-closing the panel in the same gesture that opened it. */
+        e.preventDefault();
+        e.stopPropagation();
         /* Only one panel at a time. Closing the others first also covers
            the case where a widget was left open and the viewport crossed
            the breakpoint, swapping which copy is on screen. */
@@ -226,9 +246,24 @@
        navigate before the click listener runs, leaving the panel painted
        open through the page transition. */
     document.addEventListener('pointerdown', function(e){
+      /* composedPath() rather than e.target alone: inside a shadow tree
+         or on a browser that retargets the event, e.target can be an
+         ancestor of the widget and contains() then reports false for a
+         pointerdown that actually landed ON the trigger — closing the
+         panel in the same gesture that opened it, which is exactly what
+         "the button does nothing" looks like. */
+      var path = (typeof e.composedPath === 'function') ? e.composedPath() : null;
       langWidgets.forEach(function(w){
-        if(!w.root.contains(e.target)) w.close(false);
+        var inside = path ? path.indexOf(w.root) !== -1 : w.root.contains(e.target);
+        if(!inside) w.close(false);
       });
+    });
+
+    /* Restoring a page from the back/forward cache replays the DOM as it
+       was left, panel open and all, but not the JS state that got it
+       there. Shut everything on the way back in. */
+    window.addEventListener('pageshow', function(e){
+      if(e.persisted) langWidgets.forEach(function(w){ w.close(false); });
     });
   }
 

@@ -1467,3 +1467,351 @@ section{position:relative}
    without touching the copy. */
 [dir="rtl"] .price .amt,[dir="rtl"] .pkg-price,[dir="rtl"] .stat b,
 [dir="rtl"] time,[dir="rtl"] .ci-price{direction:ltr;unicode-bidi:isolate}
+
+/* =====================================================================
+   RELEASE 24 — SEVEN REPORTED DEFECTS
+   Appended last on purpose: every rule below is written at the SAME
+   specificity as the declaration it replaces, so source order — not
+   !important — is what makes it win. Nothing here uses !important.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   [1] BRAND — wavy, ocean-lit wordmark
+   The wordmark keeps the exact palette (brass -> clay) and the exact
+   words. What changes is the FORM: a wider optical tracking, a slow
+   tidal gradient sweep through the letterforms, a hand-drawn swell rule
+   between the two lines, and a badge that reads as a porthole rather
+   than a plain circle.
+   --------------------------------------------------------------------- */
+.brand{gap:clamp(11px,1.15vw,15px);align-items:center}
+
+/* The badge: a porthole. The inner radial is the sky-glow behind the
+   lantern; the ring shadow gives it a machined edge at every scroll
+   position without needing a second border. */
+.brand .mark{
+  width:clamp(38px,3.4vw,47px);height:clamp(38px,3.4vw,47px);
+  border:1px solid rgba(255,255,255,.44);
+  background:radial-gradient(125% 118% at 50% 4%,rgba(255,255,255,.17),rgba(255,255,255,0) 64%);
+  box-shadow:0 0 0 4px rgba(255,255,255,.045),inset 0 1px 0 rgba(255,255,255,.24);
+  overflow:hidden;position:relative;
+  transition:border-color .5s,box-shadow .5s,transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.nav.scrolled .brand .mark{
+  border-color:rgba(169,138,78,.55);
+  background:radial-gradient(125% 118% at 50% 4%,rgba(169,138,78,.16),rgba(169,138,78,0) 64%);
+  box-shadow:0 0 0 4px rgba(169,138,78,.09),inset 0 1px 0 rgba(255,255,255,.5);
+}
+.brand:hover .mark{transform:translateY(-1px) rotate(-2deg)}
+.brand .mark svg{width:66%;height:66%;display:block;overflow:visible}
+
+/* The two sea lines drift under the tower — a slow swell, not a loop
+   that draws attention to itself. */
+.brand .mark .mark-sea{animation:mark-swell 6.5s ease-in-out infinite}
+@keyframes mark-swell{
+  0%,100%{transform:translateX(0)}
+  50%    {transform:translateX(-2.6px)}
+}
+.brand .mark .mark-beam{animation:mark-beam 5.5s ease-in-out infinite}
+@keyframes mark-beam{0%,100%{opacity:.28}45%{opacity:.72}}
+
+/* The wordmark. font-optical-sizing plus a lifted weight give Fraunces
+   its display cut at this size; the tracking is what makes it read
+   premium. background-size:230% is the runway the tidal sweep travels. */
+.brand b{
+  display:block;
+  font-family:var(--display);
+  font-weight:500;
+  font-size:clamp(1.1rem,1.35vw,1.38rem);
+  line-height:1;
+  letter-spacing:.155em;
+  text-transform:uppercase;
+  font-optical-sizing:auto;
+  background:linear-gradient(96deg,#f0e3c8 0%,var(--brass) 34%,var(--clay) 62%,#e9d3a4 100%);
+  background-size:230% 100%;
+  background-position:0% 50%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 1px 6px rgba(0,0,0,.38));
+  animation:brand-tide 11s ease-in-out infinite;
+}
+@keyframes brand-tide{
+  0%,100%{background-position:0% 50%}
+  50%    {background-position:100% 50%}
+}
+.nav.scrolled .brand b,.footer .brand b{filter:none}
+
+/* The swell rule. A 22px tile carrying exactly two full periods, so the
+   22px scroll loops seamlessly. It sits in the gap between the two
+   lines and is the single element doing the "wavy" work — the type
+   itself stays legible and on-brand. */
+.brand small{
+  position:relative;
+  display:block;
+  font-family:var(--body);
+  font-size:.6rem;
+  font-weight:600;
+  letter-spacing:.235em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.78);
+  margin-top:9px;padding-top:8px;
+  white-space:nowrap;
+}
+.brand small::before{
+  content:"";position:absolute;top:0;inset-inline-start:0;
+  width:100%;max-width:132px;height:5px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='5' viewBox='0 0 22 5'%3E%3Cpath d='M0 2.5q2.75-1.55 5.5 0t5.5 0 5.5 0 5.5 0' fill='none' stroke='%23a98a4e' stroke-width='1.05' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x 0 center;
+  opacity:.8;
+  animation:brand-swell 9s linear infinite;
+}
+@keyframes brand-swell{from{background-position:0 center}to{background-position:22px center}}
+.nav.scrolled .brand small{color:var(--brass)}
+
+/* Motion is decoration here, never information. */
+@media(prefers-reduced-motion:reduce){
+  .brand b,.brand small::before,
+  .brand .mark .mark-sea,.brand .mark .mark-beam{animation:none}
+  .brand b{background-position:18% 50%}
+}
+
+/* ---------------------------------------------------------------------
+   [2] DESKTOP LANGUAGE DROPDOWN — make the trigger unmissable
+   The panel is position:absolute inside .nav-cta. Three things can kill
+   it on desktop and all three are closed here:
+     a) a click landing on the flag/label SPAN instead of the BUTTON,
+     b) an ancestor clipping or out-stacking the panel,
+     c) the panel staying pointer-transparent after it fades in.
+   The .is-open class is a belt-and-braces duplicate of the
+   [aria-expanded="true"] + sibling selector: if the markup ever gains a
+   node between button and list, the attribute selector breaks silently —
+   the class cannot.
+   --------------------------------------------------------------------- */
+.nav,.nav-cta,.nav .wrap{overflow:visible}
+.nav-cta{position:relative;z-index:60}
+.lang{position:relative;z-index:61}
+
+/* Every child of the trigger is inert, so e.target is ALWAYS the button.
+   This is what makes the outside-click closer in main.js reliable. */
+.lang-toggle{position:relative;z-index:2;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.lang-toggle>*{pointer-events:none}
+
+.lang-menu{pointer-events:none}
+.lang-toggle[aria-expanded="true"]+.lang-menu,
+.lang.is-open>.lang-menu{
+  opacity:1;visibility:visible;transform:none;pointer-events:auto;
+  transition-delay:0s,0s,0s;
+}
+/* The drawer copy keeps its own collapsed-height animation. */
+@media(max-width:1180px){
+  .lang-drawer .lang-toggle[aria-expanded="true"]+.lang-menu,
+  .lang-drawer.is-open>.lang-menu{
+    max-height:640px;margin-top:10px;visibility:visible;pointer-events:auto;
+    transition-delay:0s,0s,0s;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   [3] + [4] MOBILE READING — breathable, and structurally unable to overlap
+   Root cause of the overlap: the universal reset near the top of this
+   file sets margin:0 on EVERY element, and nothing ever restored prose
+   margins. A <p> following a <p> therefore renders at a literal 0px gap,
+   and a display serif's descenders draw straight into the next line's
+   cap height — which is what "printing on top of each other" looks like.
+   The rules below restore that rhythm at (0,0,2) so ordinary prose gets
+   it everywhere, then escalate for the component selectors that
+   deliberately zero it out.
+   --------------------------------------------------------------------- */
+
+/* Global floor. No specificity games: a bare p+p is (0,0,2), so any
+   component rule that genuinely wants flush paragraphs still outranks it. */
+p+p{margin-top:1.05em}
+
+/* Nothing may ever push a line past its own box. */
+p,li,dd,blockquote,figcaption,.lead,h1,h2,h3,h4,h5,h6{
+  overflow-wrap:break-word;
+  min-width:0;
+}
+
+@media(max-width:760px){
+  /* --- vertical rhythm --------------------------------------------- */
+  h1+p,h2+p,h3+p,h4+p,
+  h1+ul,h2+ul,h3+ul,h4+ul,
+  h1+ol,h2+ol,h3+ol,h4+ol,
+  h1+.readmore,h2+.readmore,h3+.readmore,h4+.readmore{margin-top:18px}
+  p+p,p+ul,p+ol,ul+p,ol+p{margin-top:1.15em}
+  p+h2,p+h3,p+h4,ul+h2,ul+h3,ul+h4,.readmore+ul,.readmore+p{margin-top:30px}
+
+  /* --- leading: the other half of "no overlap" --------------------- */
+  h1{line-height:1.2;letter-spacing:-.005em}
+  h2{line-height:1.24;letter-spacing:-.005em}
+  h3{line-height:1.32;letter-spacing:0}
+  h4{line-height:1.36;letter-spacing:0}
+
+  /* --- density: lighter, larger, further apart --------------------- */
+  body{line-height:1.8}
+  p,.lead,li{font-weight:350}
+  p{font-size:1.02rem;line-height:1.8;color:var(--ink-soft)}
+  .lead{font-size:1.06rem;line-height:1.74;font-weight:350}
+  .section{padding:72px 0}
+  .section-head{margin-bottom:34px}
+  .eyebrow{margin-bottom:18px}
+  .checklist li{line-height:1.7;gap:13px;font-weight:350}
+  .checklist li+li{margin-top:14px}
+  .card p,.pkg-body p{line-height:1.75;font-weight:350}
+
+  /* --- component selectors that zero the rhythm out ---------------- */
+  .grid.g-3 .card:has(.ico) h3+p,
+  .grid.g-4 .card:has(.ico) h3+p{margin-top:14px}
+  .card h3{margin-bottom:0}
+  .pkg-body h3+.pkg-tag,.pkg-body h3+p{margin-top:13px}
+  .price h3+p,.price h3+.amt{margin-top:13px}
+  .stat b{line-height:1.08;margin-bottom:4px}
+  .stat span{line-height:1.5}
+
+  /* --- [4] THE RETREAT: retire -webkit-line-clamp ------------------
+     -webkit-line-clamp is only defined for a container of INLINE
+     content. ".readmore-body" holds two block-level <p>s, and clamping
+     a multi-child block is undefined behaviour: WebKit/Blink size the
+     box from the CONTAINER's line-height while each child lays out on
+     its own, which is exactly how two paragraphs end up drawn over one
+     another. Measured at 375px: container 112px tall, first <p> also
+     112px, second <p> starting at +128px with no margin between them.
+
+     A plain max-height clamp is deterministic instead: real block
+     layout, so margins are honoured, a soft mask instead of a hard
+     ellipsis, and it animates in both directions. It is structurally
+     incapable of stacking two lines. --------------------------------- */
+  .readmore .readmore-body{
+    display:block;
+    -webkit-line-clamp:none;
+    -webkit-box-orient:initial;
+    max-height:9.4em;
+    overflow:hidden;
+    -webkit-mask-image:linear-gradient(180deg,#000 58%,rgba(0,0,0,.15) 92%,transparent 100%);
+    mask-image:linear-gradient(180deg,#000 58%,rgba(0,0,0,.15) 92%,transparent 100%);
+    transition:max-height .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .readmore.open .readmore-body{
+    max-height:240em;
+    -webkit-mask-image:none;mask-image:none;
+  }
+  .readmore-btn{display:inline-flex;align-items:center;margin-top:6px}
+
+  /* --- [5] PHOTOS: stop cropping the subject out ------------------
+     .split-media forces 4/3 below 760px. The sources are 956x1700
+     portraits, so a 4/3 box discards roughly 70% of the frame from the
+     centre out — which takes the surfers with it. Dropping the fixed
+     ratio lets the image keep its own; max-height only engages for
+     extreme panoramas, and then it crops from --focal, not dead centre. */
+  .split-media{aspect-ratio:auto;max-height:none}
+  .split-media img{
+    width:100%;height:auto;max-height:76vh;
+    object-fit:cover;object-position:var(--focal,50% 38%);
+    display:block;
+  }
+  .pkg-card>img{
+    height:auto;aspect-ratio:4/3;
+    object-fit:cover;object-position:var(--focal,50% 42%);
+  }
+  .mcard img,.photoband .ph img,.cta-band img,.phero img{
+    object-position:var(--focal,50% 38%);
+  }
+  .photoband .ph{aspect-ratio:4/5}
+}
+
+/* Two paragraphs of Hebrew or Japanese need more leading, not more
+   tracking — the rhythm rules above are script-neutral, this is not. */
+@media(max-width:760px){
+  [lang="he"] p,[lang="ja"] p{line-height:1.95}
+  [lang="he"] h1,[lang="he"] h2,[lang="he"] h3,[lang="he"] h4,
+  [lang="ja"] h1,[lang="ja"] h2,[lang="ja"] h3,[lang="ja"] h4{
+    line-height:1.4;letter-spacing:0;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   [6] MOBILE MENU — language first, and a slide that feels designed
+   Two changes: the switcher is pinned to the top of the panel (order:-1
+   backs up the DOM move in tools/i18n-build.js, so it is first even on
+   a page that has not been rebuilt yet), and the panel now opens from
+   the top rather than centring its contents, with the links arriving on
+   a short stagger behind the panel edge.
+   --------------------------------------------------------------------- */
+@media(max-width:1180px){
+  .nav-links{
+    width:min(88vw,392px);
+    justify-content:flex-start;
+    gap:1px;
+    padding:calc(var(--nav-h) + 16px) 30px calc(34px + var(--safe-b));
+    background:linear-gradient(168deg,#10404b 0%,var(--ocean-dk) 44%,var(--abyss) 100%);
+    box-shadow:-34px 0 80px -34px rgba(0,0,0,.72);
+    /* .52s on a spring-ish curve reads as weight; the old .45s ease
+       read as a panel being switched on. */
+    transition:transform .52s cubic-bezier(.16,1,.3,1),visibility 0s .52s;
+  }
+  .nav-links.open{
+    transition:transform .52s cubic-bezier(.16,1,.3,1),visibility 0s;
+  }
+
+  /* Language switcher: first thing in the panel, under the header. */
+  .nav-links .lang-li{
+    order:-1;width:100%;
+    margin:0 0 20px;padding:0 0 20px;
+    border-bottom:1px solid rgba(247,241,230,.15);
+    border-top:0;
+  }
+  .lang-drawer{margin:0;padding-top:0;border-top:0}
+  .lang-drawer .lang-toggle{
+    height:50px;border-radius:14px;font-size:.8rem;
+    background:rgba(247,241,230,.09);border-color:rgba(247,241,230,.22);
+  }
+
+  /* Staggered entrance. transform on the row, never on the panel, so
+     the drawer's own slide stays one compositor-friendly move. */
+  .nav-links>li{
+    opacity:0;transform:translateX(26px);
+    transition:opacity .38s ease,transform .5s cubic-bezier(.16,1,.3,1);
+  }
+  .nav-links.open>li{opacity:1;transform:none}
+  .nav-links.open>li:nth-child(1) {transition-delay:.10s}
+  .nav-links.open>li:nth-child(2) {transition-delay:.14s}
+  .nav-links.open>li:nth-child(3) {transition-delay:.18s}
+  .nav-links.open>li:nth-child(4) {transition-delay:.22s}
+  .nav-links.open>li:nth-child(5) {transition-delay:.26s}
+  .nav-links.open>li:nth-child(6) {transition-delay:.30s}
+  .nav-links.open>li:nth-child(7) {transition-delay:.34s}
+  .nav-links.open>li:nth-child(8) {transition-delay:.38s}
+  .nav-links.open>li:nth-child(9) {transition-delay:.42s}
+  .nav-links.open>li:nth-child(10){transition-delay:.46s}
+  .nav-links.open>li:nth-child(11){transition-delay:.50s}
+  /* order:-1 moves it visually; this delay follows it so the switcher is
+     the first row to arrive, not the tenth. */
+  .nav-links.open>li.lang-li{transition-delay:.06s}
+
+  .nav-links a{font-size:1.06rem;letter-spacing:.085em;padding:6px 0}
+  .nav-drawer-cta{margin-top:22px}
+  .nav-drawer-cta .btn{width:100%;justify-content:center}
+
+  /* Deeper scrim so the page behind reads as dismissed, not just dimmed. */
+  .nav-scrim{background:rgba(8,34,42,.58);backdrop-filter:blur(4px) saturate(.9)}
+}
+@media(max-width:1180px) and (prefers-reduced-motion:reduce){
+  .nav-links>li{opacity:1;transform:none;transition:none}
+  .nav-links{transition:transform .01s,visibility 0s .01s}
+}
+
+/* [1b] Brand at phone widths. The header has exactly three tenants —
+   mark, wordmark, and a 143px CTA cluster — and at 375px the wordmark
+   gets what is left, which is about 128px. The display sizes above are
+   tuned for the desktop rail and clip here, so they are re-tuned rather
+   than left to text-overflow. Same treatment, smaller stone. */
+@media(max-width:760px){
+  .brand{gap:10px}
+  .brand .mark{width:36px;height:36px}
+  .brand b{font-size:1rem;letter-spacing:.1em}
+  .brand small{font-size:.58rem;letter-spacing:.11em;margin-top:6px;padding-top:5px;
+    overflow:visible;text-overflow:clip}
+  .brand small::before{max-width:100%;height:4px}
+}
+@media(max-width:400px){
+  .brand b{font-size:.95rem;letter-spacing:.07em}
+  .brand small{font-size:.53rem;letter-spacing:.085em}
+}
