@@ -1,48 +1,20 @@
 {
-  "hero": {
-    "video": {
-      "videoDesktop": "",
-      "videoMobile": "",
-      "poster": ""
-    },
-    "slide1": {
-      "image": "assets/img/dji0088.jpg",
-      "alt": "Aerial view of Light House Surf Camp and the Arugam Bay coastline"
-    },
-    "slide2": {
-      "image": "assets/img/img1155.jpg",
-      "alt": "A surfer riding a wave at Arugam Bay"
-    },
-    "slide3": {
-      "image": "assets/img/dji0086.jpg",
-      "alt": "Aerial of the palm coastline at golden hour, Arugam Bay"
-    }
-  },
-  "story": {
-    "image": "assets/img/dji0064.jpg",
-    "alt": "Aerial of the turquoise bay and white-sand beach at Arugam Bay"
-  },
-  "rooms": {
-    "one": {
-      "image": "assets/img/cabana3-11.jpg",
-      "alt": "Tree house cabana with sea view"
-    },
-    "two": {
-      "image": "assets/img/cabana2-3.jpg",
-      "alt": "Double cabana with sea-view terrace and hammock"
-    },
-    "three": {
-      "image": "assets/img/dome-3.jpg",
-      "alt": "Bed in the bright 6-bed mixed dorm"
-    }
-  },
-  "dining": {
-    "image": "assets/img/restaurant-14.jpg",
-    "alt": "Inside the natural-wood A-frame restaurant lit at golden hour"
-  },
   "wellness": {
     "image": "assets/img/imge0018.jpg",
     "alt": "A-frame sea-view cabana at Light House Surf Camp — surf and restore"
+  },
+  "place": {
+    "image": "assets/img/ea001.jpg",
+    "alt": "Sri Lanka's wild east coast at Arugam Bay"
+  },
+  "cta": {
+    "image": "assets/img/restaurant-12.jpg",
+    "alt": "Sunset over Light House Surf Camp"
+  },
+  "_note": "Edited in /admin under \"Images and Video\". Every key here is declared in admin/config.yml - anything not declared there is dropped on the next save.",
+  "story": {
+    "image": "assets/img/dji0064.jpg",
+    "alt": "Aerial of the turquoise bay and white-sand beach at Arugam Bay"
   },
   "band": {
     "one": {
@@ -62,13 +34,41 @@
       "alt": "Palm and beach at sunset"
     }
   },
-  "place": {
-    "image": "assets/img/ea001.jpg",
-    "alt": "Sri Lanka's wild east coast at Arugam Bay"
+  "rooms": {
+    "one": {
+      "image": "assets/img/cabana3-11.jpg",
+      "alt": "Tree house cabana with sea view"
+    },
+    "two": {
+      "image": "assets/img/cabana2-3.jpg",
+      "alt": "Double cabana with sea-view terrace and hammock"
+    },
+    "three": {
+      "image": "assets/img/dome-3.jpg",
+      "alt": "Bed in the bright 6-bed mixed dorm"
+    }
   },
-  "cta": {
-    "image": "assets/img/restaurant-12.jpg",
-    "alt": "Sunset over Light House Surf Camp"
+  "dining": {
+    "image": "assets/img/restaurant-14.jpg",
+    "alt": "Inside the natural-wood A-frame restaurant lit at golden hour"
   },
-  "_note": "Edited in /admin under \"Images and Video\". Every key here is declared in admin/config.yml - anything not declared there is dropped on the next save."
+  "hero": {
+    "video": {
+      "videoDesktop": "",
+      "videoMobile": "assets/video/light-house-.mp4",
+      "poster": ""
+    },
+    "slide1": {
+      "image": "assets/img/dji0088.jpg",
+      "alt": "Aerial view of Light House Surf Camp and the Arugam Bay coastline"
+    },
+    "slide2": {
+      "image": "assets/img/img1155.jpg",
+      "alt": "A surfer riding a wave at Arugam Bay"
+    },
+    "slide3": {
+      "image": "assets/img/dji0086.jpg",
+      "alt": "Aerial of the palm coastline at golden hour, Arugam Bay"
+    }
+  }
 }
