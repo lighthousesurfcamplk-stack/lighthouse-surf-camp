@@ -538,10 +538,28 @@ section{position:relative}
 /* ---------- Booking ---------- */
 .book-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:clamp(28px,3.6vw,44px);align-items:start}
 .form-card{background:var(--paper);border:1px solid var(--line-soft);border-radius:var(--r);padding:clamp(22px,4.2vw,42px);box-shadow:var(--shadow-soft)}
-.form-card h3{color:var(--ink);font-weight:400}.form-card p{color:var(--ink-soft)}
-.steps{display:flex;gap:8px;margin-bottom:32px}
-.steps .s{flex:1;height:3px;border-radius:2px;background:var(--line)}
-.steps .s.on{background:var(--clay)}
+/* #book is .bg-deep, and line 369's .bg-deep h1,h2,h3{color:var(--ivory)}
+   is meant for text sitting directly on the dark section. But .form-card is a
+   light cream card INSIDE that section, so the section rule bled through and
+   painted its headings ivory-on-cream - invisible. h3 and p were patched for
+   this here long ago; h2 was missed, which is exactly what .step-h uses, so
+   every step heading (Build your trip / Your details / Confirm) rendered as a
+   faint ghost. Covering the whole h1-h4 range closes the hole for good.
+   (0,1,1) - the same specificity as the .bg-deep rule, but later in the
+   sheet, so it wins on order and needs no !important. */
+.form-card h1,.form-card h2,.form-card h3,.form-card h4{color:var(--ink)}
+.form-card h3{font-weight:400}
+.form-card p{color:var(--ink-soft)}
+/* The step rail lives in its own block further down (search "BOOKING —
+   step rail"). A legacy 3px progress-bar version used to sit here and was
+   never deleted when the circle-marker design replaced it. Its base rule was
+   harmless — the later .steps .s re-declares height/background at equal
+   specificity and wins on order — but .steps .s.on{background:var(--clay)}
+   is (0,3,0) against the newer rule's (0,2,0), so it outranked the reset and
+   painted every completed <li> solid terracotta: one stretched orange slab
+   across steps 1-2, with .s-lab labels rendered terracotta-on-terracotta and
+   therefore invisible. book.html is the only page carrying .steps markup, so
+   removing it outright is safe. */
 .field{margin-bottom:22px}
 .field label{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);margin-bottom:9px;font-weight:700}
 .field input,.field select,.field textarea{
@@ -849,7 +867,10 @@ section{position:relative}
   font-size:.95rem;transition:background .35s,border-color .35s,color .35s,transform .35s}
 .steps .s.on .s-num{background:var(--clay);border-color:var(--clay);color:#fff}
 .steps .s.current .s-num{transform:scale(1.1);box-shadow:0 0 0 5px rgba(179,98,61,.15)}
-.steps .s.on{color:var(--clay)}
+/* background:none is belt-and-braces: it pins the reset at the same (0,3,0)
+   specificity as the deleted legacy rule, so the fill cannot come back if a
+   .on background is ever reintroduced above this block. */
+.steps .s.on{color:var(--clay);background:none}
 .steps .s-lab{line-height:1.3;text-align:center}
 /* completed steps are clickable shortcuts back */
 .steps .s.on:not(.current){cursor:pointer}

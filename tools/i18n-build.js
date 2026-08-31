@@ -365,9 +365,24 @@ function switcherHTML(currentLang, page, fromLangDir, variant) {
   /* On an English-only page (stay, gallery…) there is no translated
      equivalent, so the switcher offers that language's HOME page rather
      than a 404. */
+  /* Where the OTHER languages can send this visitor. A page is only reachable
+     in another language once it has a localized build, so anything outside
+     TRANSLATED_PAGES degrades to that language's homepage rather than linking
+     at a file that does not exist. */
   const target = TRANSLATED_PAGES.includes(page) ? page : 'index';
+
   const hrefFor = l => {
-    if (l.code === currentLang.code) return target + '.html';          // stay put
+    /* The visitor's CURRENT language must always point at the page they are
+       actually reading. This used to use `target`, which meant that on the ten
+       pages with no localized build, clicking your own language — the one
+       option in the menu guaranteed to be a no-op — threw you to the homepage.
+       The fallback exists for languages that genuinely lack the page; it has
+       no business firing on the language you are already in.
+
+       Safe everywhere: a /xx/ directory only ever holds TRANSLATED_PAGES, and
+       for those `page` and `target` are the same string, so this changes
+       nothing on a translated page and fixes the English inner pages. */
+    if (l.code === currentLang.code) return page + '.html';
     if (l.dir === '') return (fromLangDir ? '../' : '') + target + '.html';
     return (fromLangDir ? '../' : '') + l.dir + '/' + target + '.html';
   };
