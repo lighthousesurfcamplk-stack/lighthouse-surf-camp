@@ -1,0 +1,19 @@
+{
+  "hero": {
+    "image": "assets/img/drone-2.jpg",
+    "alt": "Aerial of Light House Surf Camp in the palm jungle by the sea"
+  },
+  "one": {
+    "image": "assets/img/cabana2-8.jpg",
+    "alt": "Hand-built two-storey thatched cabana among the trees"
+  },
+  "two": {
+    "image": "assets/img/others-3.jpg",
+    "alt": "Guests exploring a coastal viewpoint near Arugam Bay"
+  },
+  "cta": {
+    "image": "assets/img/restaurant-12.jpg",
+    "alt": "Sunset over Light House Surf Camp"
+  },
+  "_note": "Edited in /admin under \"Images and Video\". Every key here is declared in admin/config.yml - anything not declared there is dropped on the next save."
+}

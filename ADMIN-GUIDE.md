@@ -1,8 +1,9 @@
 # Light House Surf Camp — Owner's Guide to the Admin Panel
 
 Everything a guest sees that changes — prices, photos, packages, rooms,
-treatments, reviews, your WhatsApp number, the deposit percentage — now lives
-in four plain files under `/content`. You never open them by hand. You open
+treatments, reviews, your WhatsApp number, the deposit percentage, and now
+every photograph and the homepage background film — lives in plain files under
+`/content`. You never open them by hand. You open
 **`yoursite.com/admin`**, click, type, and press Publish.
 
 There is no database and no monthly fee. Each save is a normal commit to your
@@ -17,6 +18,7 @@ own GitHub repository, and the site redeploys automatically in about a minute.
 | **Camp Packages** | The three big cards guests see first (Weekend Taster, 7-Day, 10-Day): name, price, photo, description, what's included | `content/packages.json` |
 | **Rooms, Lessons & Treatments** | Everything under "Build Your Own" — every cabana, lesson, rental and Ayurvedic treatment | `content/experiences.json` |
 | **Guest Reviews** | The testimonials on the homepage and the reviews page | `content/reviews.json` |
+| **Images & Video** | Every photograph on the public site, grouped by page — plus the homepage background film | `content/media-*.json` |
 | **Site Settings** | WhatsApp number, email, Instagram, deposit percentage, cancellation wording, card payments, the headline numbers | `content/settings.json` |
 
 Change a price in the admin and it updates **everywhere at once** — the booking
@@ -99,6 +101,50 @@ Numbers only. Do not type a `$`; the site adds the currency for you.
 Click the package or room → click the image → **Choose an image** → upload.
 Landscape photos at least 1400px wide look best. Fill in **Photo description**
 — screen readers read it aloud and Google uses it to understand the picture.
+
+**To swap a picture anywhere else on the site:**
+**Images & Video** → pick the page → click the picture → **Choose an image** →
+upload → **Publish**. The eight page areas are:
+
+| Entry | Covers |
+|---|---|
+| Home Page | Hero slideshow and background film, the story photo, the three room teasers, dining, wellness, the four-photo band, the place photo, the closing banner |
+| Stay Page | Hero, all seven room photographs, the four-photo band, the closing banner |
+| Surf Pages | Lessons hero and feature, all nine surf-spot photos, the rentals hero and four boards, both closing banners |
+| Wellness Page | Hero, the three treatment photos, the closing banner |
+| Things To Do Page | Hero, the feature photo, all twelve tiles, the closing photo and banner |
+| About Page | Hero, both story photos, the closing banner |
+| Gallery Page | Hero, the whole photo wall, the six Instagram tiles |
+| Packages, Booking & Reviews | The hero of each of those three pages, plus the packages feature and both closing banners |
+
+**Leave a field empty and that spot keeps the picture the site shipped with.**
+Nothing breaks, nothing goes blank — an empty field simply means "no change".
+That is also how you undo a swap you regret: clear the field and publish.
+
+**To put a moving background behind the homepage headline:**
+Images & Video → **Home Page** → **Background film**. There are three fields
+and all of them are optional:
+
+- **Desktop film (landscape)** — MP4 (H.264), about 1920×1080, 8–15 seconds,
+  **no sound**, under 5 MB.
+- **Mobile film (portrait)** — MP4 (H.264), about 1080×1920, same length,
+  **no sound**, under 3 MB. Phones are held upright: a landscape film shown on
+  one gets cropped to its middle strip, which is why the portrait cut is worth
+  filming separately.
+- **Still frame while the film loads** — one photograph shown for the moment
+  before the first frame arrives. Optional; without it the film fades in over
+  the slideshow.
+
+Upload **only one** film and it is used on every screen. Upload **neither** and
+the homepage keeps the three-photo slideshow exactly as it is today — the film
+is an addition, never a replacement. If a guest's phone refuses to autoplay it
+(Low Power Mode does this, and so do some data-saver settings), or if they have
+asked their phone to reduce motion, they see the photographs instead. Nobody
+ever sees a black rectangle.
+
+Keep the films **silent** — a page that makes noise by itself is the fastest way
+to lose a visitor — and keep them **short and calm**. This plays behind your
+headline; it is a backdrop, not a showreel.
 
 **To add a new room or treatment:**
 Rooms, Lessons & Treatments → **Add Item** → fill in the fields.

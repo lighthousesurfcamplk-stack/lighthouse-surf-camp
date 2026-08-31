@@ -279,11 +279,15 @@
   /* ---------------------------------------------------------
      Hero slideshow — dots, swipe, pause when hidden
      --------------------------------------------------------- */
+  /* Assigned by the slideshow below and called by the video controller
+     further down, so the two never both own the hero at once. */
+  var stopSlideshow = null;
+
   var show = document.querySelector('.hero-media.slideshow');
   if(show){
     var slides = Array.prototype.slice.call(show.querySelectorAll('.slide'));
     var dotsWrap = document.querySelector('.hero-dots');
-    var idx = 0, timer = null;
+    var idx = 0, timer = null, stood = false;
     var DURATION = 7000; // matches the 7s kenburns pass so the zoom never cuts mid-flight
 
     if(dotsWrap && slides.length > 1){
@@ -315,8 +319,19 @@
 
       // Don't advance while the tab is in the background
       document.addEventListener('visibilitychange', function(){
-        if(document.hidden) clearInterval(timer); else reset();
+        if(document.hidden) clearInterval(timer);
+        else if(!stood) reset();   // …and never restart one we stood down
       });
+
+      /* The background film has started playing, so the photographs behind
+         it are now only its poster frame. Stop paying for a crossfade
+         nobody can see — and stop it permanently, so the visibilitychange
+         handler above does not quietly start it again on the way back. */
+      stopSlideshow = function(){
+        stood = true;
+        clearInterval(timer);
+        timer = null;
+      };
 
       // Swipe between slides on touch
       var hero = show.closest('.hero') || show;
@@ -336,6 +351,116 @@
         }
       }, {passive:true});
     }
+  }
+
+  /* ---------------------------------------------------------
+     Hero background video
+     ---------------------------------------------------------
+     Pure progressive enhancement over the slideshow above. Until the
+     owner uploads a film in /admin the three photographs ARE the hero,
+     byte for byte as before; the moment a film exists this fades it in
+     over them and stands the slideshow down.
+
+     WHY THE SOURCE IS CHOSEN HERE, and not with <source media="…">:
+     a media attribute inside <video> is evaluated once, while the
+     element is loading, and is never re-read — so a phone held in
+     portrait that is then turned landscape keeps the portrait cut, and
+     a desktop browser that starts at a narrow window keeps the mobile
+     one. Safari has also never honoured it dependably inside <video>
+     (it is a <picture> feature that <video> borrowed on paper). A
+     matchMedia listener is read on every change, so a rotation swaps
+     the file, and it behaves identically in every engine.
+
+     The film is deliberately NOT the LCP: preload="none" plus a src
+     that is only attached after the content layer has answered means
+     the hero photograph still paints first, exactly as the preload hint
+     in the <head> intends.
+     --------------------------------------------------------- */
+  var heroVideo = document.querySelector('.hero-video');
+  if(heroVideo){
+    var heroEl   = heroVideo.closest('.hero');
+    var portrait = window.matchMedia('(max-width: 760px)');
+    var attempt  = 0;
+
+    function pickSource(){
+      var mob  = heroVideo.getAttribute('data-mobile');
+      var desk = heroVideo.getAttribute('data-desktop');
+      /* Fall back to whichever cut the owner did upload, so one film is
+         enough to get a video hero on every screen — a portrait clip
+         letterboxes gracefully under object-fit:cover, and no film at
+         all is still a perfectly good slideshow. */
+      return (portrait.matches ? (mob || desk) : (desk || mob)) || '';
+    }
+
+    function live(on){
+      if(!heroEl) return;
+      heroEl.classList.toggle('has-video', !!on);
+      if(on && stopSlideshow) stopSlideshow();
+    }
+
+    function mount(){
+      /* A full-bleed moving background is the exact thing this preference
+         asks us not to do, so there is no film at all — the slideshow,
+         already frozen by the guard in style.css, carries the hero. */
+      if(reduceMotion.matches) return;
+
+      /* A viewport of zero width satisfies '(max-width: 760px)', so a page
+         laid out before the browser has a real width — a prerender, a
+         background tab, an in-app webview mid-open — would pick the phone
+         cut, then swap to the desktop one the moment a width arrived and
+         pay for the film twice. Measured, not theorised: without this the
+         network log shows BOTH files downloaded on a desktop visit. Wait
+         for a real width; the listener below fires as soon as there is one,
+         and after that every change event is a genuine rotation or resize. */
+      if(!window.innerWidth) return;
+
+      var src = pickSource();
+      if(!src || heroVideo.getAttribute('src') === src) return;
+
+      var token = ++attempt;
+      heroVideo.setAttribute('src', src);
+      heroVideo.load();
+
+      var started = heroVideo.play();
+      if(started && started['catch']) started['catch'](function(err){
+        /* A rejection is not always a refusal. Pointing the element at a
+           new source aborts whatever play() was still in flight for the old
+           one, and that rejects with AbortError — treating it as "autoplay
+           declined" would hide a film that is about to start perfectly
+           well. Only the newest attempt gets to draw that conclusion.
+
+           A real refusal — iOS Low Power Mode, data-saver, some corporate
+           policies, all of which decline even muted inline video — has
+           nothing to recover and nothing to nag about: take the film back
+           off screen and let the photographs do their job. */
+        if(token !== attempt || (err && err.name === 'AbortError')) return;
+        live(false);
+      });
+    }
+
+    // Only reveal it once frames are actually on screen, never on the
+    // optimistic assumption that play() worked.
+    heroVideo.addEventListener('playing', function(){ live(true); });
+    heroVideo.addEventListener('error',   function(){ live(false); });
+
+    // Rotating the phone, or dragging a desktop window across 760px, re-picks.
+    if(portrait.addEventListener) portrait.addEventListener('change', mount);
+    else if(portrait.addListener) portrait.addListener(mount);
+
+    /* And resize as well as the query, because the query only reports a
+       CROSSING: a viewport going 0 → 400px stays "narrow" throughout, so the
+       change event never fires and the width gate above would hold the film
+       back for ever on exactly the phones it was written to serve. mount()
+       returns immediately when the chosen source has not changed, so paying
+       for this listener costs an attribute read. */
+    window.addEventListener('resize', mount);
+
+    // content.js fires this once the CMS paths are on the element.
+    document.addEventListener('lhsc:video', mount);
+
+    // …and run once now, in case the paths are hard-coded in the markup
+    // and there is no content layer to wait for.
+    mount();
   }
 
   /* ---------------------------------------------------------

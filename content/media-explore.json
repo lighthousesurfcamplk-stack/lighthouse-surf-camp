@@ -1,0 +1,69 @@
+{
+  "hero": {
+    "image": "assets/img/dji0086.jpg",
+    "alt": "Aerial of the Arugam Bay coastline and palm forest, Sri Lanka"
+  },
+  "feature": {
+    "image": "assets/img/ea001.jpg",
+    "alt": "The wild east coast around Arugam Bay"
+  },
+  "tiles": {
+    "kumana": {
+      "image": "assets/img/td-kumana.jpg",
+      "alt": "Kumana National Park safari at sunset"
+    },
+    "elephantRock": {
+      "image": "assets/img/td-elephantsunset.jpg",
+      "alt": "Sunset from Elephant Rock"
+    },
+    "lagoon": {
+      "image": "assets/img/td-lagoon.jpg",
+      "alt": "Pottuvil Lagoon mangrove boat trip"
+    },
+    "kudumbigala": {
+      "image": "assets/img/td-kudumbigala.jpg",
+      "alt": "Kudumbigala forest monastery"
+    },
+    "lahugala": {
+      "image": "assets/img/td-lahugala.jpg",
+      "alt": "Elephant at Lahugala National Park"
+    },
+    "muhudu": {
+      "image": "assets/img/td-muhudu.jpg",
+      "alt": "Muhudu Maha Viharaya temple by the sea"
+    },
+    "yoga": {
+      "image": "assets/img/td-yoga.jpg",
+      "alt": "Sunrise beach yoga at Arugam Bay"
+    },
+    "fishing": {
+      "image": "assets/img/td-fishing.jpg",
+      "alt": "Lagoon fishing at sunset"
+    },
+    "shopping": {
+      "image": "assets/img/td-shopping.jpg",
+      "alt": "Arugam Bay main street shopping"
+    },
+    "nightlife": {
+      "image": "assets/img/td-nightlife.jpg",
+      "alt": "Beach nightlife in Arugam Bay"
+    },
+    "culinary": {
+      "image": "assets/img/td-culinary.jpg",
+      "alt": "Sri Lankan cuisine — rice and curry"
+    },
+    "sunrise": {
+      "image": "assets/img/td-sunrise.jpg",
+      "alt": "Sunrise and sunset over Arugam Bay"
+    }
+  },
+  "closing": {
+    "image": "assets/img/others-1.jpg",
+    "alt": "Sunrise and sunset over Arugam Bay"
+  },
+  "cta": {
+    "image": "assets/img/restaurant-12.jpg",
+    "alt": "Sunset over Light House Surf Camp"
+  },
+  "_note": "Edited in /admin under \"Images and Video\". Every key here is declared in admin/config.yml - anything not declared there is dropped on the next save."
+}

@@ -1,0 +1,59 @@
+{
+  "hero": {
+    "image": "assets/img/cabana3-11.jpg",
+    "alt": "Jungle A-frame cabana by the sea at Light House Surf Camp"
+  },
+  "rooms": {
+    "one": {
+      "image": "assets/img/imge0018.jpg",
+      "alt": "Tree House Cabana with sea view at Light House Surf Camp"
+    },
+    "two": {
+      "image": "assets/img/img0094.jpg",
+      "alt": "Triple tree house cabana with sea view"
+    },
+    "three": {
+      "image": "assets/img/imge0015.jpg",
+      "alt": "Single cabana with sea view"
+    },
+    "four": {
+      "image": "assets/img/img0091.jpg",
+      "alt": "Double cabana room with sea view"
+    },
+    "five": {
+      "image": "assets/img/dome-3.jpg",
+      "alt": "Bed in the 6-bed mixed dormitory room"
+    },
+    "six": {
+      "image": "assets/img/photo8.jpg",
+      "alt": "Mountain cabana with private hammock terrace"
+    },
+    "seven": {
+      "image": "assets/img/photo5.jpg",
+      "alt": "Buffalo Rock beachfront cabana among the trees"
+    }
+  },
+  "band": {
+    "one": {
+      "image": "assets/img/cabana3-10.jpg",
+      "alt": "A-frame cabana with timber steps"
+    },
+    "two": {
+      "image": "assets/img/cabana2-1.jpg",
+      "alt": "Hammock terrace"
+    },
+    "three": {
+      "image": "assets/img/dome-4.jpg",
+      "alt": "Canopy room interior"
+    },
+    "four": {
+      "image": "assets/img/cabana2-8.jpg",
+      "alt": "Two-storey thatched cabana among trees"
+    }
+  },
+  "cta": {
+    "image": "assets/img/restaurant-12.jpg",
+    "alt": "Sunset over Light House Surf Camp"
+  },
+  "_note": "Edited in /admin under \"Images and Video\". Every key here is declared in admin/config.yml - anything not declared there is dropped on the next save."
+}

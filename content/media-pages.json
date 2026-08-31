@@ -1,0 +1,33 @@
+{
+  "book": {
+    "hero": {
+      "image": "assets/img/cabana3-11.jpg",
+      "alt": "Jungle A-frame cabana overlooking the sea at Light House Surf Camp"
+    }
+  },
+  "packages": {
+    "hero": {
+      "image": "assets/img/hkrp0048.jpg",
+      "alt": "Sunset and beach lights at Light House Surf Camp, Arugam Bay"
+    },
+    "feature": {
+      "image": "assets/img/cabana2-3.jpg",
+      "alt": "Sea-view cabana terrace with hammock"
+    },
+    "cta": {
+      "image": "assets/img/restaurant-12.jpg",
+      "alt": "Sunset over Light House Surf Camp"
+    }
+  },
+  "reviews": {
+    "hero": {
+      "image": "assets/img/photo22.jpg",
+      "alt": "Inside the natural-wood A-frame restaurant at Light House Surf Camp"
+    },
+    "cta": {
+      "image": "assets/img/restaurant-12.jpg",
+      "alt": "Sunset over Light House Surf Camp"
+    }
+  },
+  "_note": "Edited in /admin under \"Images and Video\". Every key here is declared in admin/config.yml - anything not declared there is dropped on the next save."
+}

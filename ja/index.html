@@ -37,10 +37,10 @@
 <meta name="theme-color" content="#0d333b">
 <!-- The hero image is the LCP element; fetch it in parallel with the CSS. -->
 <link rel="preload" as="image" href="../assets/img/dji0088.jpg" fetchpriority="high">
-<link rel="stylesheet" href="../assets/css/style.css?v=30">
+<link rel="stylesheet" href="../assets/css/style.css?v=31">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Resort","inLanguage":"ja","name":"Light House Surf Camp","description":"スリランカ・アルガムベイのブティックサーフ＆エコリトリート。ジャングルのカバナ、ビーチフロントのレストラン、サーフィンレッスン。","image":"https://lighthousesurfcamp.lk/assets/img/drone-2.jpg","url":"https://lighthousesurfcamp.lk/","telephone":"+94702828819","email":"lighthousesurfcamp.lk@gmail.com","priceRange":"$$","address":{"@type":"PostalAddress","addressLocality":"Arugam Bay","addressRegion":"Eastern Province","addressCountry":"LK"},"sameAs":["https://instagram.com/lighthousesurfcamp"],"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"180"}}</script>
 </head>
-<body>
+<body data-media="home">
 <svg class="flag-sprite" width="0" height="0" aria-hidden="true" focusable="false"><symbol id="flag-gb" viewBox="0 0 20 15"><path fill="#012169" d="M0 0h20v15H0z"/><path stroke="#fff" stroke-width="3" d="m0 0 20 15m0-15L0 15"/><path stroke="#C8102E" stroke-width="2" d="m0 0 20 15m0-15L0 15"/><path stroke="#fff" stroke-width="5" d="M10 0v15M0 7.5h20"/><path stroke="#C8102E" stroke-width="3" d="M10 0v15M0 7.5h20"/></symbol><symbol id="flag-de" viewBox="0 0 20 15"><path fill="#000" d="M0 0h20v5H0z"/><path fill="#DD0000" d="M0 5h20v5H0z"/><path fill="#FFCE00" d="M0 10h20v5H0z"/></symbol><symbol id="flag-ch" viewBox="0 0 20 15"><path fill="#D52B1E" d="M0 0h20v15H0z"/><path fill="#fff" d="M8.55 3.3h2.9v2.75h2.75v2.9h-2.75v2.75h-2.9V8.95H5.8v-2.9h2.75z"/></symbol><symbol id="flag-fr" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><path fill="#002395" d="M0 0h6.67v15H0z"/><path fill="#ED2939" d="M13.33 0H20v15h-6.67z"/></symbol><symbol id="flag-it" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><path fill="#009246" d="M0 0h6.67v15H0z"/><path fill="#CE2B37" d="M13.33 0H20v15h-6.67z"/></symbol><symbol id="flag-es" viewBox="0 0 20 15"><path fill="#AA151B" d="M0 0h20v15H0z"/><path fill="#F1BF00" d="M0 3.75h20v7.5H0z"/></symbol><symbol id="flag-ru" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v5H0z"/><path fill="#0039A6" d="M0 5h20v5H0z"/><path fill="#D52B1E" d="M0 10h20v5H0z"/></symbol><symbol id="flag-jp" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><circle cx="10" cy="7.5" r="4.05" fill="#BC002D"/></symbol><symbol id="flag-il" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><path fill="#0038B8" d="M0 2h20v1.9H0zM0 11.1h20V13H0z"/><path fill="none" stroke="#0038B8" stroke-width=".8" d="m10 4.75 2.34 4.05H7.66zM10 10.25 7.66 6.2h4.68z"/></symbol></svg>
 
 <a class="skip-link" href="#main" data-i18n="index.a--skip-to-content">本文へスキップ</a>
@@ -71,9 +71,26 @@
 <!-- HERO -->
 <header class="hero">
   <div class="hero-media slideshow">
-    <img width="1700" height="956" class="slide active" src="../assets/img/dji0088.jpg" alt="Light House Surf Campとアルガムベイ海岸の空撮" decoding="async" fetchpriority="high" data-i18n-alt="index.alt--aerial-view-of-light-house-surf">
-    <img width="1537" height="1023" class="slide" src="../assets/img/img1155.jpg" alt="アルガムベイで波に乗るサーファー" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-surfer-riding-a-wave-at">
-    <img width="1700" height="956" class="slide" src="../assets/img/dji0086.jpg" alt="ゴールデンアワーのヤシの海岸線の空撮、アルガムベイ" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-palm-coastline-at">
+    <img width="1700" height="956" class="slide active" src="../assets/img/dji0088.jpg" data-cms="media:hero.slide1" alt="Light House Surf Campとアルガムベイ海岸の空撮" decoding="async" fetchpriority="high" data-i18n-alt="index.alt--aerial-view-of-light-house-surf">
+    <img width="1537" height="1023" class="slide" src="../assets/img/img1155.jpg" data-cms="media:hero.slide2" alt="アルガムベイで波に乗るサーファー" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-surfer-riding-a-wave-at">
+    <img width="1700" height="956" class="slide" src="../assets/img/dji0086.jpg" data-cms="media:hero.slide3" alt="ゴールデンアワーのヤシの海岸線の空撮、アルガムベイ" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-palm-coastline-at">
+
+    <!-- BACKGROUND FILM (optional, set in /admin → Images & Video → Home Page).
+         Ships with no src on purpose. main.js reads the desktop and mobile
+         cuts off data-desktop / data-mobile — which content.js writes from
+         content/media-home.json — picks the one that fits this viewport via
+         matchMedia, and only fades it in once it is genuinely playing. Until
+         a film is uploaded this element is an empty, invisible 0-cost node
+         and the three photographs above remain the hero.
+
+         preload="none" keeps the download out of the race for the largest
+         contentful paint: the hero photograph still paints first, exactly as
+         the preload hint in the <head> intends. muted + playsinline are what
+         make autoplay legal on iOS and Android; aria-hidden and tabindex=-1
+         keep a decorative background out of the reading order. -->
+    <video class="hero-video" data-cms="video:hero.video"
+           autoplay loop muted playsinline preload="none"
+           tabindex="-1" aria-hidden="true"></video>
   </div>
   <div class="hero-dots" aria-label="Slideshow controls"></div>
   <div class="wrap hero-inner">
@@ -124,7 +141,7 @@
       </ul>
       <div style="margin-top:34px"><a class="btn btn-gold" href="about.html" data-i18n="index.a--our-story">私たちの物語 <span class="arrow">→</span></a></div>
     </div>
-    <div class="split-media"><img width="956" height="1700" src="../assets/img/dji0064.jpg" alt="アルガムベイのターコイズの湾と白砂のビーチの空撮" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-turquoise-bay-and"></div>
+    <div class="split-media"><img width="956" height="1700" src="../assets/img/dji0064.jpg" data-cms="media:story" alt="アルガムベイのターコイズの湾と白砂のビーチの空撮" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-turquoise-bay-and"></div>
   </div>
 </section>
 
@@ -200,9 +217,9 @@
   <div class="wrap">
     <div class="section-head reveal"><span class="eyebrow" data-i18n="index.span--the-stay">宿泊</span><h2 data-i18n="index.h2--sleep-wrapped-in-the-jungle">ジャングルに包まれて眠る。</h2><p data-i18n="index.p--from-sea-view-tree-house-cabanas">オーシャンビューのツリーハウス・カバナから、居心地のよいプライベートルーム、明るいドミトリーまで。どの空間も木と茅で手づくりされ、緑に向かって開いています。</p></div>
     <div class="grid g-3">
-      <article class="mcard reveal"><img width="1242" height="820" src="../assets/img/cabana3-11.jpg" alt="オーシャンビューのツリーハウス・カバナ" loading="lazy" decoding="async" data-i18n-alt="index.alt--tree-house-cabana-with-sea-view"><div class="body"><span class="tag" data-i18n="index.span--sea-view-sleeps-2">オーシャンビュー · 2名</span><h3 data-i18n="index.h3--tree-house-cabana">ツリーハウス・カバナ</h3><p data-i18n="index.p--elevated-a-frame-raised-among-the">ヤシの木々のあいだに建つ高床のAフレーム。テラスから海が大きく見渡せます。</p></div></article>
-      <article class="mcard reveal"><img width="957" height="1700" src="../assets/img/cabana2-3.jpg" alt="オーシャンビューのテラスとハンモック付きダブル・カバナ" loading="lazy" decoding="async" data-i18n-alt="index.alt--double-cabana-with-sea-view-terrace"><div class="body"><span class="tag" data-i18n="index.span--sea-view-sleeps-2-2">オーシャンビュー · 2名</span><h3 data-i18n="index.h3--double-room-sea-view">オーシャンビュー・ダブルルーム</h3><p data-i18n="index.p--a-comfortable-double-opening-onto-a">ハンモックのあるテラスに続く快適なダブルルーム。遮るもののない海の眺め。</p></div></article>
-      <article class="mcard reveal"><img width="960" height="1280" src="../assets/img/dome-3.jpg" alt="明るい6ベッド混合ドミトリーのベッド" loading="lazy" decoding="async" data-i18n-alt="index.alt--bed-in-the-bright-6-bed"><div class="body"><span class="tag" data-i18n="index.span--shared-budget">ドミトリー · お手頃</span><h3 data-i18n="index.h3--6-bed-mixed-dorm">6ベッド混合ドミトリー</h3><p data-i18n="index.p--a-single-bed-in-our-bright">明るく賑やかなドミトリーのシングルベッド。もっともお手頃な選択です。</p></div></article>
+      <article class="mcard reveal"><img width="1242" height="820" src="../assets/img/cabana3-11.jpg" data-cms="media:rooms.one" alt="オーシャンビューのツリーハウス・カバナ" loading="lazy" decoding="async" data-i18n-alt="index.alt--tree-house-cabana-with-sea-view"><div class="body"><span class="tag" data-i18n="index.span--sea-view-sleeps-2">オーシャンビュー · 2名</span><h3 data-i18n="index.h3--tree-house-cabana">ツリーハウス・カバナ</h3><p data-i18n="index.p--elevated-a-frame-raised-among-the">ヤシの木々のあいだに建つ高床のAフレーム。テラスから海が大きく見渡せます。</p></div></article>
+      <article class="mcard reveal"><img width="957" height="1700" src="../assets/img/cabana2-3.jpg" data-cms="media:rooms.two" alt="オーシャンビューのテラスとハンモック付きダブル・カバナ" loading="lazy" decoding="async" data-i18n-alt="index.alt--double-cabana-with-sea-view-terrace"><div class="body"><span class="tag" data-i18n="index.span--sea-view-sleeps-2-2">オーシャンビュー · 2名</span><h3 data-i18n="index.h3--double-room-sea-view">オーシャンビュー・ダブルルーム</h3><p data-i18n="index.p--a-comfortable-double-opening-onto-a">ハンモックのあるテラスに続く快適なダブルルーム。遮るもののない海の眺め。</p></div></article>
+      <article class="mcard reveal"><img width="960" height="1280" src="../assets/img/dome-3.jpg" data-cms="media:rooms.three" alt="明るい6ベッド混合ドミトリーのベッド" loading="lazy" decoding="async" data-i18n-alt="index.alt--bed-in-the-bright-6-bed"><div class="body"><span class="tag" data-i18n="index.span--shared-budget">ドミトリー · お手頃</span><h3 data-i18n="index.h3--6-bed-mixed-dorm">6ベッド混合ドミトリー</h3><p data-i18n="index.p--a-single-bed-in-our-bright">明るく賑やかなドミトリーのシングルベッド。もっともお手頃な選択です。</p></div></article>
     </div>
     <div style="text-align:center;margin-top:46px" class="reveal"><a class="btn btn-ghost" href="stay.html" data-i18n="index.a--view-all-accommodation">宿泊施設をすべて見る <span class="arrow">→</span></a></div>
   </div>
@@ -211,7 +228,7 @@
 <!-- DINING -->
 <section class="section bg-paper">
   <div class="wrap split rev reveal">
-    <div class="split-media"><img width="961" height="1280" src="../assets/img/restaurant-14.jpg" alt="ゴールデンアワーに照らされた天然木Aフレーム・レストランの内部" loading="lazy" decoding="async" data-i18n-alt="index.alt--inside-the-natural-wood-a-frame"></div>
+    <div class="split-media"><img width="961" height="1280" src="../assets/img/restaurant-14.jpg" data-cms="media:dining" alt="ゴールデンアワーに照らされた天然木Aフレーム・レストランの内部" loading="lazy" decoding="async" data-i18n-alt="index.alt--inside-the-natural-wood-a-frame"></div>
     <div>
       <span class="eyebrow" data-i18n="index.span--the-table">食事</span>
       <h2 data-i18n="index.h2--dine-under-the-natural-wood-cathedral">天然木の大聖堂で食事を。</h2>
@@ -245,7 +262,7 @@
       </ul>
       <div style="margin-top:34px"><a class="btn btn-gold" href="wellness.html" data-i18n="index.a--explore-wellness">ウェルネスを見る <span class="arrow">→</span></a></div>
     </div>
-    <div class="split-media"><img width="1242" height="1533" src="../assets/img/imge0018.jpg" alt="Light House Surf CampのAフレーム・オーシャンビュー・カバナ — サーフィンと回復" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-frame-sea-view-cabana-at"></div>
+    <div class="split-media"><img width="1242" height="1533" src="../assets/img/imge0018.jpg" data-cms="media:wellness" alt="Light House Surf CampのAフレーム・オーシャンビュー・カバナ — サーフィンと回復" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-frame-sea-view-cabana-at"></div>
   </div>
 </section>
 
@@ -263,10 +280,10 @@
 
 <!-- PHOTO BAND -->
 <section class="photoband">
-  <div class="ph"><img width="957" height="1700" src="../assets/img/cabana2-3.jpg" alt="海を望むハンモック" loading="lazy" decoding="async" data-i18n-alt="index.alt--hammock-with-sea-view"><span class="cap" data-i18n="index.span--slow-mornings">ゆっくりの朝</span></div>
-  <div class="ph"><img width="1700" height="956" src="../assets/img/drone-3.jpg" alt="アルガムベイの海岸線と波の空撮" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-arugam-bay-coastline"><span class="cap" data-i18n="index.span--empty-lineups">空いたラインナップ</span></div>
-  <div class="ph"><img width="919" height="1280" src="../assets/img/restaurant-12.jpg" alt="天然木のレストラン越しに見る夕日" loading="lazy" decoding="async" data-i18n-alt="index.alt--sunset-through-the-natural-wood-restaurant"><span class="cap" data-i18n="index.span--golden-hour">ゴールデンアワー</span></div>
-  <div class="ph"><img width="1275" height="1700" src="../assets/img/others-1.jpg" alt="夕暮れのヤシとビーチ" loading="lazy" decoding="async" data-i18n-alt="index.alt--palm-and-beach-at-sunset"><span class="cap" data-i18n="index.span--endless-coast">どこまでも続く海岸</span></div>
+  <div class="ph"><img width="957" height="1700" src="../assets/img/cabana2-3.jpg" data-cms="media:band.one" alt="海を望むハンモック" loading="lazy" decoding="async" data-i18n-alt="index.alt--hammock-with-sea-view"><span class="cap" data-i18n="index.span--slow-mornings">ゆっくりの朝</span></div>
+  <div class="ph"><img width="1700" height="956" src="../assets/img/drone-3.jpg" data-cms="media:band.two" alt="アルガムベイの海岸線と波の空撮" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-arugam-bay-coastline"><span class="cap" data-i18n="index.span--empty-lineups">空いたラインナップ</span></div>
+  <div class="ph"><img width="919" height="1280" src="../assets/img/restaurant-12.jpg" data-cms="media:band.three" alt="天然木のレストラン越しに見る夕日" loading="lazy" decoding="async" data-i18n-alt="index.alt--sunset-through-the-natural-wood-restaurant"><span class="cap" data-i18n="index.span--golden-hour">ゴールデンアワー</span></div>
+  <div class="ph"><img width="1275" height="1700" src="../assets/img/others-1.jpg" data-cms="media:band.four" alt="夕暮れのヤシとビーチ" loading="lazy" decoding="async" data-i18n-alt="index.alt--palm-and-beach-at-sunset"><span class="cap" data-i18n="index.span--endless-coast">どこまでも続く海岸</span></div>
 </section>
 
 <!-- LOCATION -->
@@ -287,7 +304,7 @@
       </ul>
       <div style="margin-top:34px"><a class="btn btn-primary" href="book.html" data-i18n="index.a--plan-your-trip">旅を計画する <span class="arrow">→</span></a></div>
     </div>
-    <div class="split-media wide"><img width="1402" height="1122" src="../assets/img/ea001.jpg" alt="アルガムベイに広がるスリランカの野生の東海岸" loading="lazy" decoding="async" data-i18n-alt="index.alt--sri-lanka-s-wild-east-coast"></div>
+    <div class="split-media wide"><img width="1402" height="1122" src="../assets/img/ea001.jpg" data-cms="media:place" alt="アルガムベイに広がるスリランカの野生の東海岸" loading="lazy" decoding="async" data-i18n-alt="index.alt--sri-lanka-s-wild-east-coast"></div>
   </div>
 </section>
 
@@ -344,7 +361,7 @@
 <section class="section bg-deep" style="padding-top:0;background:var(--espresso)">
   <div class="wrap" style="padding-top:clamp(78px,10vw,140px)">
     <div class="cta-band reveal">
-      <img width="919" height="1280" src="../assets/img/restaurant-12.jpg" alt="Light House Surf Campに沈む夕日" loading="lazy" decoding="async" data-i18n-alt="index.alt--sunset-over-light-house-surf-camp">
+      <img width="919" height="1280" src="../assets/img/restaurant-12.jpg" data-cms="media:cta" alt="Light House Surf Campに沈む夕日" loading="lazy" decoding="async" data-i18n-alt="index.alt--sunset-over-light-house-surf-camp">
       <span class="eyebrow" data-i18n="index.span--your-escape-awaits">あなたの旅が待っています</span>
       <h2 data-i18n="index.h2--reserve-your-place-in-paradise">楽園にあなたの場所を。</h2>
       <p class="lead" data-i18n="index.p--peak-season-runs-june-to-october">ハイシーズンは6月から10月、カバナの数はごくわずかです。デポジット25%でお席を確保してください。残金は到着時、14日前までキャンセル無料です。</p>
@@ -397,8 +414,8 @@
 
 <script type="application/ld+json" data-seo="auto">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"ja","mainEntity":[{"@type":"Question","name":"アルガムベイでサーフィンをするベストシーズンは？","acceptedAnswer":{"@type":"Answer","text":"ハイシーズンは6月から10月。うねりがもっとも安定し、湾が本領を発揮する時期です。カバナの数は少なく、この時期から先に埋まりますので早めのご予約を。オフシーズンの海岸は静かで緑が濃く、これから覚える方には最適です。"}},{"@type":"Question","name":"サーフィンは未経験です。それでも大丈夫？","acceptedAnswer":{"@type":"Answer","text":"もちろんです。ゲストの多くはまったくの初心者として到着します。レッスンは認定ローカルコーチによる少人数制で、毎朝うねりを読んでレベルに合ったポイントを選びます。ソフトトップとラッシュガードも込みです。"}},{"@type":"Question","name":"支払い方法は？予定が変わった場合は？","acceptedAnswer":{"@type":"Answer","text":"オンラインでデポジット25%をお支払いいただき、残金はアルガムベイ到着時に精算します。チェックイン14日前まではキャンセル無料です。オンライン決済を避けたい場合は、WhatsAppでご連絡いただければ直接手配いたします。"}},{"@type":"Question","name":"オールインクルーシブのキャンプには何が含まれますか？","acceptedAnswer":{"@type":"Answer","text":"カバナ、全食事、コーチ付きサーフセッション、ボードレンタルまですべてひとつの料金に。長めのキャンプにはアーユルヴェーダのトリートメント、ビデオコーチング、海岸線のサーフサファリが加わります。詳細は上の各パッケージカードをご覧ください。"}},{"@type":"Question","name":"空港からキャンプまでの行き方は？","acceptedAnswer":{"@type":"Answer","text":"フライト情報をお知らせいただければ送迎を手配します。トゥクトゥクやバイクは到着後に予約でき、ご自分のペースで海岸を巡れます。"}},{"@type":"Question","name":"ベジタリアンやヴィーガンにも対応できますか？","acceptedAnswer":{"@type":"Answer","text":"もちろんです。本格的なスリランカのライス＆カリー、ホッパー、その日の魚とあわせて、毎食ベジタリアン・ヴィーガンのご用意があります。アレルギーはご予約時にお知らせください。キッチンが対応します。"}}]}</script>
 
-<script src="../assets/js/main.js?v=9"></script>
+<script src="../assets/js/main.js?v=10"></script>
 <script>window.__LHSC_I18N={"postfix":false,"t":{"Weekend Taster Camp":"週末お試しキャンプ","3 days · 2 nights":"3日間・2泊","2 nights sea-view cabana":"オーシャンビュー・カバナ2泊","Board & rash-guard hire":"ボードとラッシュガードのレンタル","7-Day Surf Camp":"7日間サーフキャンプ","All-inclusive · 6 nights":"オールインクルーシブ・6泊","6 nights sea-view cabana":"オーシャンビュー・カバナ6泊","5 × guided surf sessions":"ガイド付きサーフセッション5回","1 × Ayurvedic massage":"アーユルヴェーダ・マッサージ1回","10-Day Pro Trip":"10日間プロトリップ","All-inclusive · 9 nights":"オールインクルーシブ・9泊","9 nights premium cabana":"プレミアム・カバナ9泊","8 × coached sessions incl. dawn patrol":"コーチ付きセッション8回（ドーンパトロール含む）","Full video analysis package":"ビデオ分析フルパッケージ","Airport transfers both ways":"空港送迎（往復）","Stay":"宿泊","Surf":"サーフィン","Wellness":"ウェルネス","Tree House Cabana Sea View":"ツリーハウス・カバナ（オーシャンビュー）","Triple Room Tree House Sea View":"トリプルルーム ツリーハウス（オーシャンビュー）","Single Cabana Sea View":"シングルカバナ（オーシャンビュー）","Cabana Double Room Sea View":"カバナ ダブルルーム（オーシャンビュー）","Mountain Cabana":"マウンテンカバナ","Buffalo Rock Cabana":"バッファロー・ロック カバナ","Ayurvedic Consultation":"アーユルヴェーダ・カウンセリング","Yoga & Breathwork":"ヨガ & 呼吸法","per person":"1名あたり","2 × surf lessons with a certified coach":"2 × 認定コーチによるサーフレッスン","All meals + fresh juices":"全食事 + フレッシュジュース","Sunset yoga session":"サンセットヨガ","Daily breakfast, lunch & dinner":"毎日の朝食・昼食・夕食","Unlimited board & wetsuit hire":"ボード＆ウェットスーツ無制限レンタル","Airport transfer assistance":"空港送迎のサポート","Video coaching & feedback":"ビデオコーチング＆フィードバック","Surf-safari day trips up the coast":"海岸沿いのサーフサファリ日帰りツアー","All meals & recovery smoothies":"全食事＆リカバリースムージー","2 × Ayurvedic treatments":"2 × アーユルヴェーダトリートメント","per night":"1泊あたり","Nights":"泊数","lessons & rentals":"レッスン＆レンタル","People":"人数","per session":"1回あたり","Sessions":"回数","Sea view · sleeps 2":"オーシャンビュー · 2名","Sea view · sleeps 3":"オーシャンビュー · 3名","Sea view · sleeps 1":"オーシャンビュー · 1名","Premium · private terrace · sleeps 2":"プレミアム · 専用テラス · 2名","Beachfront · sleeps 2":"ビーチフロント · 2名","Bed in 6-Bed Mixed Dorm":"6ベッド混合ドミトリーのベッド","Single bed · shared bathroom":"シングルベッド · 共用バスルーム","Single Surf Lesson":"サーフレッスン1回","2-hour group lesson · board included":"2時間のグループレッスン · ボード込み","3-Day Beginner Course":"3日間の初心者コース","3 × 2-hour sessions · stand up by day three":"3 × 2時間のセッション · 3日目には立てます","Private Coaching":"プライベートコーチング","90 min · 1-to-1 · video feedback":"90分 · マンツーマン · ビデオフィードバック","Surfboard Rental — Daily":"サーフボードレンタル — 1日","Per board, per day":"ボード1本・1日あたり","per day":"1日あたり","Surfboard Rental — Weekly":"サーフボードレンタル — 1週間","Per board, per week · best value":"ボード1本・1週間あたり · 一番お得","per week":"1週間あたり","Pulse diagnosis with Dr. Swarna":"Dr. Swarna による脈診","Abhyanga Massage":"アビヤンガ・マッサージ","Warm-oil full-body massage · 60 min":"温かいオイルの全身マッサージ · 60分","Shirodhara Therapy":"シロダーラ・セラピー","Warm oil poured over the third eye":"第三の目に温かいオイルを注ぐ","Sunrise Hatha & pranayama":"日の出のハタ＆プラーナヤーマ","per class":"1クラスあたり","Group Sound Bath":"グループ・サウンドバス","Beach or jungle · with Samyada":"ビーチまたはジャングル · Samyada とともに","1:1 Sound Massage":"1:1 サウンドマッサージ","Personal sound treatment · with Samyada":"個別のサウンドトリートメント · Samyada とともに","Add":"追加","Add {x} to your booking":"{x}を予約に追加","Remove one {x}":"{x}を1つ減らす","Add another {x}":"{x}をもう1つ追加","Remove {x} from your booking":"{x}を予約から削除","Experience category":"体験カテゴリー","Nothing reserved yet — pick a camp package or build your own trip above.":"まだ何も選ばれていません — 上のキャンプパッケージを選ぶか、自分だけの旅を組み立ててください。","Add at least one item before continuing.":"続ける前に、少なくとも1つ追加してください。","Please tell us your first name.":"お名前（名）をご記入ください。","Please enter a valid email — this is where your confirmation goes.":"有効なメールアドレスをご記入ください — 確認メールをお送りします。","Please enter a reachable phone or WhatsApp number.":"連絡のつく電話番号または WhatsApp 番号をご記入ください。","Please choose a date from today onwards.":"本日以降の日付をお選びください。","Group size should be a whole number between 1 and 40.":"人数は1〜40の整数でご記入ください。","Please check the highlighted fields.":"ハイライトされた項目をご確認ください。","Subtotal":"小計","Deposit due now ({p}%)":"今回のお支払い（{p}%）","Balance on arrival":"到着時のお支払い","{n} item":"{n}点","{n} items":"{n}点","Our live booking form is having a moment.":"予約フォームの調子が悪いようです。","Message us on WhatsApp and we will set the whole trip up for you personally — usually within the hour.":"WhatsApp でご連絡ください。旅の手配をすべて個別に承ります — 通常1時間以内にお返事します。","Book on WhatsApp":"WhatsApp で予約","{x} added — nice choice.":"{x}を追加しました — いい選択です。","{x} removed.":"{x}を削除しました。","We saved your last selection.":"前回の選択を保存しています。","Sending your booking to our team on WhatsApp…":"ご予約を WhatsApp でチームに送信しています…","Card payment is unavailable right now — sending via WhatsApp instead.":"カード決済が今は利用できません — WhatsApp で送信します。","Qty":"数量","A long weekend to find out why people cancel their onward flights. Two nights in a sea-view cabana, four hours of coaching, and every meal handled.":"帰りの便をキャンセルしたくなる理由が分かる長い週末。オーシャンビューのカバナに2泊、4時間のコーチング、食事はすべてお任せください。","Our signature week, and the one guests come back for. Daily coaching at the break that suits your level, Ayurvedic bodywork to keep you paddling, and a table that fills up at sunset.":"私たちの看板コース。ゲストが何度も戻ってくる1週間です。レベルに合ったブレイクでの毎日のコーチング、漕ぎ続けるためのアーユルヴェーダ施術、そして夕暮れに埋まる大きなテーブル。","For surfers chasing real progression. We follow the swell up and down the coast — Whiskey Point, Peanut Farm, Okanda — and film every session.":"本気で上達したいサーファーへ。うねりを追って海岸沿いを行き来します — Whiskey Point、Peanut Farm、Okanda — そして毎セッションを撮影します。"}};</script>
-<script src="../assets/js/content.js?v=4"></script>
+<script src="../assets/js/content.js?v=5"></script>
 </body>
 </html>

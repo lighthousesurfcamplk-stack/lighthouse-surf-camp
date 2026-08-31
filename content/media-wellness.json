@@ -1,0 +1,23 @@
+{
+  "hero": {
+    "image": "assets/img/others-1.jpg",
+    "alt": "Serene palm-fringed sunset over the sea at Arugam Bay"
+  },
+  "one": {
+    "image": "assets/img/a10.jpg",
+    "alt": "Ayurvedic treatment — food and touch as medicine"
+  },
+  "two": {
+    "image": "assets/img/a12.jpg",
+    "alt": "A calm sea-view space to begin the day with yoga and breathwork"
+  },
+  "three": {
+    "image": "assets/img/a15.jpg",
+    "alt": "Sunset sound healing session by the sea"
+  },
+  "cta": {
+    "image": "assets/img/restaurant-14.jpg",
+    "alt": "Warm, restful interior at Light House Surf Camp"
+  },
+  "_note": "Edited in /admin under \"Images and Video\". Every key here is declared in admin/config.yml - anything not declared there is dropped on the next save."
+}

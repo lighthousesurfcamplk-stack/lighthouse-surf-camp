@@ -272,7 +272,9 @@ function rewritePaths(html, lang) {
   if (!lang.dir) return html;
 
   // assets, sitemap, robots, manifest…
-  html = html.replace(/\b(href|src|content)="(assets\/[^"]*)"/g, '$1="../$2"');
+  // `poster` joins href/src/content: the hero film's poster frame is an
+  // asset path like any other, and a translated page is one level down.
+  html = html.replace(/\b(href|src|content|poster)="(assets\/[^"]*)"/g, '$1="../$2"');
   html = html.replace(/\bhref="(favicon[^"]*)"/g, 'href="../$1"');
 
   // Internal page links: same-language if that page is translated, else back

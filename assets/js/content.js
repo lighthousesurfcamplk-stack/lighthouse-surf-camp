@@ -14,6 +14,12 @@
      <span data-cms="text:contact.email">…</span>    → settings.contact.email
      <a    data-cms="wa:Hi, I'd like to book">…</a>  → wa.me link with prefilled text
 
+   …and three that read this page's own picture set, /content/media-*.json:
+
+     <img  data-cms="media:hero.slide1" src="…">     → that photograph + its alt
+     <div  data-cms="medialist:photos">…</div>       → a whole picture grid
+     <video data-cms="video:hero.video">             → the hero background film
+
    The HTML keeps a real value between the tags, so the page is correct
    for search engines and for anyone whose fetch fails — hydration only
    ever overwrites with something newer.
@@ -86,6 +92,24 @@
   }
 
   var FILES = ['settings', 'packages', 'experiences', 'reviews'];
+
+  /* WHICH PICTURE SET THIS PAGE USES.
+
+     Every photograph on the public site is now swappable in /admin, which
+     is a lot of JSON — so it is split by page area (media-home.json,
+     media-stay.json, media-gallery.json …) and each page fetches only its
+     own. Adding a ninth page of photographs therefore costs the other
+     eight nothing.
+
+     Stamped on <body>, deliberately NOT on <html>: tools/i18n-build.js
+     rewrites the whole <html> tag when it generates a translated page, so
+     an attribute parked there would survive on /index.html and vanish on
+     /de/index.html — the kind of bug that only shows up in one language. */
+  var MEDIA = (document.body && document.body.getAttribute('data-media')) || '';
+
+  /* Is a runtime dictionary actually loaded? English pages get none.
+     setAlt() below needs to know the difference. */
+  var HAS_DICT = !!(I18N && I18N.t);
   var cache = null;
   var pending = null;
 
@@ -107,12 +131,27 @@
     if (cache) return Promise.resolve(cache);
     if (pending) return pending;
 
-    pending = Promise.all(FILES.map(getJSON)).then(function (parts) {
+    var jobs = FILES.map(getJSON);
+
+    /* The picture set is a SOFT dependency. If media-home.json is missing
+       or malformed, Promise.all would reject and every price, name and
+       booking card on the page would stay at its hard-coded fallback —
+       a photograph problem taking down the shop. Resolve it to null
+       instead and let the designed images stand. */
+    jobs.push(MEDIA
+      ? getJSON('media-' + MEDIA)['catch'](function (err) {
+          console.warn('[LHSC] picture set "' + MEDIA + '" not loaded —', err.message);
+          return null;
+        })
+      : Promise.resolve(null));
+
+    pending = Promise.all(jobs).then(function (parts) {
       cache = {
         settings: parts[0],
         packages: parts[1],
         experiences: parts[2],
-        reviews: parts[3]
+        reviews: parts[3],
+        media: parts[4] || {}
       };
 
       // One flat lookup covering both catalogues — the booking cart stores
@@ -141,6 +180,76 @@
     var v = Number(n) || 0;
     var amount = v.toLocaleString('en-US', { maximumFractionDigits: 2 });
     return I18N.postfix ? amount + ' ' + s : s + amount;
+  }
+
+  /* ALT TEXT, which is the one CMS string that is also baked into the page.
+     tools/i18n-build.js translates the alt of every static <img> at build
+     time via data-i18n-alt, so blindly writing the English alt from the
+     shared content directory would undo that a second after the page
+     painted — the same regression the runtime dictionary exists to prevent,
+     just for screen readers instead of eyes.
+
+     English pages take the CMS alt as written. A translated page accepts it
+     only when t() can actually translate it; otherwise the build's own
+     translation is the better answer and stays. */
+  function setAlt(el, raw) {
+    if (typeof raw !== 'string' || !raw) return;
+    var out = t(raw);
+    if (!HAS_DICT || out !== raw || !el.getAttribute('alt')) el.setAttribute('alt', out);
+  }
+
+  /* Rebuild a pure picture grid from a CMS list — the gallery masonry and
+     the Instagram tiles. The first child is cloned as the template, so each
+     grid keeps its own wrapper markup (.masonry holds bare <img>, .ig-grid
+     holds <a class="ig-tile"><img></a>) without this file knowing about
+     either.
+
+     Only ever point this at a grid whose cards carry NO translated copy: a
+     rebuild clones one card over all of them, which would replace every
+     heading and paragraph in the grid with the first card's. That is why
+     the room cards and the surf-spot cards use one media: hook per picture
+     instead. */
+  function fillGrid(el, items) {
+    if (!Array.isArray(items) || !items.length) return;
+    var proto = el.firstElementChild;
+    if (!proto) return;
+
+    var wanted = items.map(function (m) {
+      return (m && m.image) ? asset(m.image) : '';
+    }).filter(Boolean);
+    if (!wanted.length) return;
+
+    /* If the CMS list still matches what the page shipped with, leave the
+       markup completely alone. The designed width/height pairs are correct
+       per photograph and the browser has already reserved the right boxes
+       from them; rebuilding would trade that for a layout shift and buy
+       nothing. Day one is therefore a no-op. */
+    var current = Array.prototype.map.call(el.querySelectorAll('img'), function (i) {
+      return i.getAttribute('src');
+    });
+    if (current.join('|') === wanted.join('|')) return;
+
+    var frag = document.createDocumentFragment();
+    items.forEach(function (m) {
+      if (!m || !m.image) return;
+      var node = proto.cloneNode(true);
+      var img = node.tagName === 'IMG' ? node : node.querySelector('img');
+      if (!img) return;
+      img.setAttribute('src', asset(m.image));
+      /* The template's dimensions describe the photograph it shipped with,
+         not this one. Every grid here crops with object-fit or flows in a
+         masonry column, so the honest answer is to drop the pair and let
+         the browser read the real file. */
+      img.removeAttribute('width');
+      img.removeAttribute('height');
+      img.setAttribute('loading', 'lazy');
+      img.setAttribute('decoding', 'async');
+      setAlt(img, m.alt);
+      frag.appendChild(node);
+    });
+    if (!frag.childNodes.length) return;
+    el.textContent = '';
+    el.appendChild(frag);
   }
 
   /* Fill every [data-cms] on the page. Safe to call more than once. */
@@ -188,6 +297,33 @@
             }
             el.appendChild(li);
           });
+          break;
+        }
+        case 'media': {
+          /* One picture. Only swaps when the CMS actually holds an image,
+             so a slot the owner has not filled keeps its designed photo. */
+          var pic = dig(data.media, arg);
+          if (pic && pic.image) {
+            el.setAttribute('src', asset(pic.image));
+            setAlt(el, pic.alt);
+          }
+          break;
+        }
+        case 'medialist':
+          fillGrid(el, dig(data.media, arg));
+          break;
+        case 'video': {
+          /* Paths only. WHICH file plays on this viewport, whether autoplay
+             was allowed, and what to do when a phone refuses, is behaviour —
+             it belongs with the rest of the hero in main.js, which is
+             listening for this event. Keeping the split means the film can
+             also be hard-coded in the markup and still work with the JSON
+             layer switched off entirely. */
+          var film = dig(data.media, arg) || {};
+          if (film.videoDesktop) el.setAttribute('data-desktop', asset(film.videoDesktop));
+          if (film.videoMobile)  el.setAttribute('data-mobile',  asset(film.videoMobile));
+          if (film.poster)       el.setAttribute('poster',       asset(film.poster));
+          document.dispatchEvent(new CustomEvent('lhsc:video', { detail: el }));
           break;
         }
         case 'text': {

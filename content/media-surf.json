@@ -1,0 +1,81 @@
+{
+  "lessons": {
+    "hero": {
+      "image": "assets/img/surf-1.jpg",
+      "alt": "A surfer walking the beach with a board at Arugam Bay"
+    },
+    "feature": {
+      "image": "assets/img/surf-4.jpg",
+      "alt": "Underwater view of a surfer duck-diving beneath a wave"
+    },
+    "cta": {
+      "image": "assets/img/surf-2.jpg",
+      "alt": "A surfer carving a turn at Arugam Bay"
+    }
+  },
+  "spots": {
+    "main": {
+      "image": "assets/img/spot-main.jpg",
+      "alt": "Main Point surf break, Arugam Bay"
+    },
+    "baby": {
+      "image": "assets/img/spot-baby.jpg",
+      "alt": "Baby Point beginner surf spot"
+    },
+    "whisky": {
+      "image": "assets/img/spot-whisky.jpg",
+      "alt": "Whisky Point surf spot"
+    },
+    "pottuvil": {
+      "image": "assets/img/spot-pottuvil.jpg",
+      "alt": "Pottuvil Point long right-hand wave"
+    },
+    "lighthouse": {
+      "image": "assets/img/spot-lighthouse.jpg",
+      "alt": "Light House surf break at Sangamankanda"
+    },
+    "elephant": {
+      "image": "assets/img/spot-elephant.jpg",
+      "alt": "Elephant Rock surf and sunset"
+    },
+    "peanut": {
+      "image": "assets/img/spot-peanut.jpg",
+      "alt": "Peanut Farm surf spot"
+    },
+    "okanda": {
+      "image": "assets/img/spot-okanda.jpg",
+      "alt": "Okanda beach break"
+    },
+    "panama": {
+      "image": "assets/img/spot-panama.jpg",
+      "alt": "Panama Point surf spot"
+    }
+  },
+  "rentals": {
+    "hero": {
+      "image": "assets/img/img1155.jpg",
+      "alt": "A surfer riding a clean wave at Arugam Bay on a board from the Light House quiver"
+    },
+    "boardOne": {
+      "image": "assets/img/spot-baby.jpg",
+      "alt": "Beginners paddling out on soft-tops in the calm water at Baby Point, Arugam Bay"
+    },
+    "boardTwo": {
+      "image": "assets/img/surf-1.jpg",
+      "alt": "A Light House coach walking the beach at Arugam Bay with a board under his arm"
+    },
+    "boardThree": {
+      "image": "assets/img/surf-2.jpg",
+      "alt": "A surfer turning off the top of a wave at Arugam Bay"
+    },
+    "boardFour": {
+      "image": "assets/img/surf-3.jpg",
+      "alt": "A surfer trimming along a long, clean wall at Arugam Bay"
+    },
+    "cta": {
+      "image": "assets/img/restaurant-12.jpg",
+      "alt": "Sunset over Light House Surf Camp"
+    }
+  },
+  "_note": "Edited in /admin under \"Images and Video\". Every key here is declared in admin/config.yml - anything not declared there is dropped on the next save."
+}

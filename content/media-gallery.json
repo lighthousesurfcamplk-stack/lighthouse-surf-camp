@@ -1,0 +1,179 @@
+{
+  "hero": {
+    "image": "assets/img/cyaee0257.jpg",
+    "alt": "Aerial view of the Arugam Bay coastline and point break"
+  },
+  "photos": [
+    {
+      "image": "assets/img/restaurant-3.jpg",
+      "alt": "Bamboo A-frame restaurant framing the sea"
+    },
+    {
+      "image": "assets/img/cabana3-11.jpg",
+      "alt": "Jungle A-frame cabana by the sea"
+    },
+    {
+      "image": "assets/img/cabana2-3.jpg",
+      "alt": "Hammock terrace with ocean view"
+    },
+    {
+      "image": "assets/img/restaurant-14.jpg",
+      "alt": "Inside the natural-wood restaurant at golden hour"
+    },
+    {
+      "image": "assets/img/drone-3.jpg",
+      "alt": "Aerial of the Arugam Bay coastline and surf"
+    },
+    {
+      "image": "assets/img/cabana3-4.jpg",
+      "alt": "A-frame cabana framed by jungle"
+    },
+    {
+      "image": "assets/img/restaurant-12.jpg",
+      "alt": "Sunset through the natural-wood restaurant"
+    },
+    {
+      "image": "assets/img/dome-3.jpg",
+      "alt": "Canopy garden room with timber ceiling"
+    },
+    {
+      "image": "assets/img/drone-5.jpg",
+      "alt": "Aerial of the bay at dusk"
+    },
+    {
+      "image": "assets/img/cabana2-1.jpg",
+      "alt": "Hammock on a cabana terrace"
+    },
+    {
+      "image": "assets/img/restaurant-7.jpg",
+      "alt": "Looking up inside the natural-wood cathedral restaurant"
+    },
+    {
+      "image": "assets/img/cabana1-6.jpg",
+      "alt": "Garden cabana terrace with rattan seating"
+    },
+    {
+      "image": "assets/img/others-1.jpg",
+      "alt": "Palm and beach at sunset"
+    },
+    {
+      "image": "assets/img/cabana3-10.jpg",
+      "alt": "A-frame cabana with timber steps"
+    },
+    {
+      "image": "assets/img/restaurant-11.jpg",
+      "alt": "The A-frame restaurant exterior"
+    },
+    {
+      "image": "assets/img/cabana2-8.jpg",
+      "alt": "Two-storey thatched cabana among the trees"
+    },
+    {
+      "image": "assets/img/drone-4.jpg",
+      "alt": "Aerial of the beach and point"
+    },
+    {
+      "image": "assets/img/dome-4.jpg",
+      "alt": "Canopy room with twin beds and jungle view"
+    },
+    {
+      "image": "assets/img/garden-1.jpg",
+      "alt": "Tropical gardens at the retreat"
+    },
+    {
+      "image": "assets/img/others-3.jpg",
+      "alt": "Guests at a coastal viewpoint near Arugam Bay"
+    },
+    {
+      "image": "assets/img/restaurant-4.jpg",
+      "alt": "The A-frame restaurant framed by palms at golden hour"
+    },
+    {
+      "image": "assets/img/restaurant-10.jpg",
+      "alt": "Open-air timber restaurant and bar"
+    },
+    {
+      "image": "assets/img/restaurant-6.jpg",
+      "alt": "Restaurant interior with hanging lights at dusk"
+    },
+    {
+      "image": "assets/img/restaurant-8.jpg",
+      "alt": "Inside the natural-wood cathedral restaurant"
+    },
+    {
+      "image": "assets/img/cabana3-6.jpg",
+      "alt": "A-frame cabana raised among the palms"
+    },
+    {
+      "image": "assets/img/cabana3-7.jpg",
+      "alt": "Thatched jungle hut with seating"
+    },
+    {
+      "image": "assets/img/cabana1-8.jpg",
+      "alt": "Garden cabana terrace"
+    },
+    {
+      "image": "assets/img/cabana3-12.jpg",
+      "alt": "A-frame cabana by the sea"
+    },
+    {
+      "image": "assets/img/dome-2.jpg",
+      "alt": "Garden room with sea-facing windows"
+    },
+    {
+      "image": "assets/img/drone-1.jpg",
+      "alt": "Aerial of the retreat in the palm forest"
+    },
+    {
+      "image": "assets/img/drone-7.jpg",
+      "alt": "Aerial of the jungle meeting the sea at sunset"
+    },
+    {
+      "image": "assets/img/others-4.jpg",
+      "alt": "Guest at a coastal rock viewpoint"
+    },
+    {
+      "image": "assets/img/surf-3.jpg",
+      "alt": "Surfer riding a clean green wave at Arugam Bay"
+    },
+    {
+      "image": "assets/img/surf-2.jpg",
+      "alt": "Surfer carving a turn and throwing spray"
+    },
+    {
+      "image": "assets/img/surf-4.jpg",
+      "alt": "Underwater view of a surfer duck-diving a wave"
+    },
+    {
+      "image": "assets/img/surf-1.jpg",
+      "alt": "Surfer walking the beach with a board at dawn"
+    }
+  ],
+  "instagram": [
+    {
+      "image": "assets/img/surf-2.jpg",
+      "alt": "Instagram post — surfing Arugam Bay"
+    },
+    {
+      "image": "assets/img/surf-3.jpg",
+      "alt": "Instagram reel — riding a wave"
+    },
+    {
+      "image": "assets/img/dji0088.jpg",
+      "alt": "Instagram post — aerial of the camp"
+    },
+    {
+      "image": "assets/img/restaurant-14.jpg",
+      "alt": "Instagram post — the restaurant at golden hour"
+    },
+    {
+      "image": "assets/img/dji0086.jpg",
+      "alt": "Instagram reel — sunset drone flight"
+    },
+    {
+      "image": "assets/img/others-1.jpg",
+      "alt": "Instagram post — palm sunset"
+    }
+  ],
+  "_note": "Edited in /admin under \"Images and Video\". Every key here is declared in admin/config.yml - anything not declared there is dropped on the next save."
+}

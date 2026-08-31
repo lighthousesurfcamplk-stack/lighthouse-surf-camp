@@ -2,8 +2,10 @@
 #  Light House Surf Camp — admin configuration (Decap CMS)
 # =============================================================
 #  This file tells the admin panel what the owner is allowed to
-#  edit. It maps 1:1 onto the four files in /content, which are
-#  the single source of truth the website reads at runtime.
+#  edit. It maps 1:1 onto the JSON files in /content, which are
+#  the single source of truth the website reads at runtime: four
+#  for words and numbers, plus one media-*.json per page area
+#  holding every photograph and the homepage background film.
 #
 #  IMPORTANT: the CMS rewrites each JSON file from the fields
 #  declared below. Any key that is NOT declared here would be
@@ -265,7 +267,345 @@ collections:
                 hint: "Three featured reviews appear on the homepage. The rest live on the reviews page."
 
   # ===========================================================
-  #  4. SITE SETTINGS
+  #  4. IMAGES & VIDEO — every photograph on the public site
+  # ===========================================================
+  #  One entry per page area. Each maps to content/media-<name>.json,
+  #  which the pages read at runtime through data-cms="media:…" hooks
+  #  in the HTML — so changing a picture here changes it on the live
+  #  site with no code edit and no rebuild.
+  #
+  #  The JSON files were seeded FROM the current markup, so on day one
+  #  every field already holds the photo that is on the page now. Your
+  #  first save changes nothing visually; it just puts the site's
+  #  pictures under your control.
+  #
+  #  Two rules worth knowing:
+  #   • Leave a photo field empty and the page keeps the picture it
+  #     shipped with. Nothing ever breaks by being blank.
+  #   • "Photo description" is the alt text. Screen readers read it
+  #     aloud and Google uses it to understand the image, so it is
+  #     worth writing properly. On the Russian, German, Hebrew and
+  #     other translated pages the site keeps its own translation of
+  #     the description rather than showing your English one.
+  # ===========================================================
+  - name: "media"
+    label: "Images & Video"
+    description: "Swap any photograph on the site, and set the background film on the homepage."
+    files:
+      # ---------------------------------------------------------
+      #  HOME PAGE
+      # ---------------------------------------------------------
+      - name: "media-home"
+        label: "Home Page"
+        file: "content/media-home.json"
+        description: "The homepage: the hero film and slideshow, and every photo down the page."
+        fields:
+          - label: "Hero (top of the page)"
+            name: "hero"
+            widget: "object"
+            collapsed: false
+            fields:
+              # ---- BACKGROUND FILM ----------------------------------
+              #  Optional and purely additive. With no film uploaded the
+              #  three photographs below cross-fade exactly as they do
+              #  today; upload one and it fades in over them and the
+              #  slideshow stands down. If a phone refuses to autoplay
+              #  (Low Power Mode does), that phone simply keeps the
+              #  slideshow — visitors never see a black rectangle.
+              - label: "Background film"
+                name: "video"
+                widget: "object"
+                collapsed: false
+                fields:
+                  - label: "Desktop film (landscape)"
+                    name: "videoDesktop"
+                    widget: "file"
+                    required: false
+                    # Films are big and are not photographs — keep them out
+                    # of the image library so the picture pickers above stay
+                    # quick to scroll. The leading slash is the path in the
+                    # repository; the line under it is the path written into
+                    # the JSON, which is what the browser asks for.
+                    media_folder: "/assets/video"
+                    public_folder: "assets/video"
+                    hint: >-
+                      MP4 (H.264), landscape, about 1920×1080, 8–15 seconds,
+                      no sound, under 5 MB. It loops silently behind the
+                      headline. Leave empty to keep the photo slideshow.
+                  - label: "Mobile film (portrait)"
+                    name: "videoMobile"
+                    widget: "file"
+                    required: false
+                    media_folder: "/assets/video"
+                    public_folder: "assets/video"
+                    hint: >-
+                      MP4 (H.264), portrait, about 1080×1920, 8–15 seconds,
+                      no sound, under 3 MB. Phones and narrow windows get
+                      this one. Upload only one film and it is used on every
+                      screen, so this is optional even if you do use video.
+                  - label: "Still frame while the film loads"
+                    name: "poster"
+                    widget: "image"
+                    required: false
+                    media_library: { config: { multiple: false } }
+                    hint: >-
+                      Optional. A single frame from the film, held for the
+                      instant before it starts. Leave empty and the hero
+                      photograph covers that moment instead.
+
+              # ---- HERO SLIDESHOW -----------------------------------
+              #  &photo defines the two fields every photograph on this
+              #  whole site uses — the file, and the sentence describing
+              #  it. Every other picture below simply says `fields: *photo`
+              #  instead of repeating them, so a change to the wording here
+              #  reaches all of them at once.
+              - label: "Slideshow photo 1"
+                name: "slide1"
+                widget: "object"
+                fields: &photo
+                  - label: "Photo"
+                    name: "image"
+                    widget: "image"
+                    required: false
+                    media_library: { config: { multiple: false } }
+                    hint: "At least 1400px on the long edge. JPG, and please keep it under 500KB — big files make the page slow."
+                  - label: "Photo description"
+                    name: "alt"
+                    widget: "string"
+                    required: false
+                    hint: >-
+                      Describe the photo in a few words. Screen readers read
+                      this aloud, and Google uses it to understand the image.
+              - { label: "Slideshow photo 2", name: "slide2", widget: "object", fields: *photo }
+              - { label: "Slideshow photo 3", name: "slide3", widget: "object", fields: *photo }
+
+          - { label: "Our story — the wide photo", name: "story", widget: "object", fields: *photo }
+
+          - label: "Where you sleep — the three room cards"
+            name: "rooms"
+            widget: "object"
+            fields:
+              - { label: "Card 1 — tree house cabana", name: "one", widget: "object", fields: *photo }
+              - { label: "Card 2 — double cabana", name: "two", widget: "object", fields: *photo }
+              - { label: "Card 3 — dorm bed", name: "three", widget: "object", fields: *photo }
+
+          - { label: "Restaurant photo", name: "dining", widget: "object", fields: *photo }
+          - { label: "Wellness photo", name: "wellness", widget: "object", fields: *photo }
+
+          - label: "Photo band — the four small pictures in a row"
+            name: "band"
+            widget: "object"
+            fields:
+              - { label: "Band photo 1", name: "one",   widget: "object", fields: *photo }
+              - { label: "Band photo 2", name: "two",   widget: "object", fields: *photo }
+              - { label: "Band photo 3", name: "three", widget: "object", fields: *photo }
+              - { label: "Band photo 4", name: "four",  widget: "object", fields: *photo }
+
+          - { label: "The place — wide photo", name: "place", widget: "object", fields: *photo }
+          - { label: "Closing banner (above the booking button)", name: "cta", widget: "object", fields: *photo }
+
+          # Not shown in the admin. It is here only so the reminder inside
+          # the JSON file survives your save — an undeclared key is deleted.
+          - { label: "Note", name: "_note", widget: "hidden" }
+
+      # ---------------------------------------------------------
+      #  STAY PAGE
+      # ---------------------------------------------------------
+      - name: "media-stay"
+        label: "Stay Page"
+        file: "content/media-stay.json"
+        description: "The rooms page: the banner, all seven room photos, and the photo band."
+        fields:
+          - { label: "Page banner", name: "hero", widget: "object", fields: *photo }
+          - label: "Room photos"
+            name: "rooms"
+            widget: "object"
+            collapsed: false
+            fields:
+              - { label: "Tree House Cabana",       name: "one",   widget: "object", fields: *photo }
+              - { label: "Triple Tree House Cabana",name: "two",   widget: "object", fields: *photo }
+              - { label: "Single Cabana",           name: "three", widget: "object", fields: *photo }
+              - { label: "Double Cabana",           name: "four",  widget: "object", fields: *photo }
+              - { label: "Dorm bed",                name: "five",  widget: "object", fields: *photo }
+              - { label: "Mountain Cabana",         name: "six",   widget: "object", fields: *photo }
+              - { label: "Buffalo Rock Cabana",     name: "seven", widget: "object", fields: *photo }
+          - label: "Photo band — the four small pictures in a row"
+            name: "band"
+            widget: "object"
+            fields:
+              - { label: "Band photo 1", name: "one",   widget: "object", fields: *photo }
+              - { label: "Band photo 2", name: "two",   widget: "object", fields: *photo }
+              - { label: "Band photo 3", name: "three", widget: "object", fields: *photo }
+              - { label: "Band photo 4", name: "four",  widget: "object", fields: *photo }
+          - { label: "Closing banner", name: "cta", widget: "object", fields: *photo }
+          - { label: "Note", name: "_note", widget: "hidden" }
+
+      # ---------------------------------------------------------
+      #  SURF PAGES — lessons.html and rentals.html share one file
+      # ---------------------------------------------------------
+      - name: "media-surf"
+        label: "Surf Pages"
+        file: "content/media-surf.json"
+        description: "Surf lessons and board rentals, including the nine surf-spot photos."
+        fields:
+          - label: "Surf Lessons page"
+            name: "lessons"
+            widget: "object"
+            collapsed: false
+            fields:
+              - { label: "Page banner",              name: "hero",    widget: "object", fields: *photo }
+              - { label: "Wide photo beside the copy", name: "feature", widget: "object", fields: *photo }
+              - { label: "Closing banner",           name: "cta",     widget: "object", fields: *photo }
+          - label: "Surf spots — the nine break cards"
+            name: "spots"
+            widget: "object"
+            fields:
+              - { label: "Main Point",      name: "main",       widget: "object", fields: *photo }
+              - { label: "Baby Point",      name: "baby",       widget: "object", fields: *photo }
+              - { label: "Whisky Point",    name: "whisky",     widget: "object", fields: *photo }
+              - { label: "Pottuvil Point",  name: "pottuvil",   widget: "object", fields: *photo }
+              - { label: "Light House",     name: "lighthouse", widget: "object", fields: *photo }
+              - { label: "Elephant Rock",   name: "elephant",   widget: "object", fields: *photo }
+              - { label: "Peanut Farm",     name: "peanut",     widget: "object", fields: *photo }
+              - { label: "Okanda",          name: "okanda",     widget: "object", fields: *photo }
+              - { label: "Panama Point",    name: "panama",     widget: "object", fields: *photo }
+          - label: "Board Rentals page"
+            name: "rentals"
+            widget: "object"
+            fields:
+              - { label: "Page banner",      name: "hero",       widget: "object", fields: *photo }
+              - { label: "Board photo 1",    name: "boardOne",   widget: "object", fields: *photo }
+              - { label: "Board photo 2",    name: "boardTwo",   widget: "object", fields: *photo }
+              - { label: "Board photo 3",    name: "boardThree", widget: "object", fields: *photo }
+              - { label: "Board photo 4",    name: "boardFour",  widget: "object", fields: *photo }
+              - { label: "Closing banner",   name: "cta",        widget: "object", fields: *photo }
+          - { label: "Note", name: "_note", widget: "hidden" }
+
+      # ---------------------------------------------------------
+      #  WELLNESS PAGE
+      # ---------------------------------------------------------
+      - name: "media-wellness"
+        label: "Wellness Page"
+        file: "content/media-wellness.json"
+        description: "Ayurveda, yoga and sound healing."
+        fields:
+          - { label: "Page banner",                 name: "hero",  widget: "object", fields: *photo }
+          - { label: "Section 1 — Ayurveda",        name: "one",   widget: "object", fields: *photo }
+          - { label: "Section 2 — Yoga & breathwork", name: "two", widget: "object", fields: *photo }
+          - { label: "Section 3 — Sound healing",   name: "three", widget: "object", fields: *photo }
+          - { label: "Closing banner",              name: "cta",   widget: "object", fields: *photo }
+          - { label: "Note", name: "_note", widget: "hidden" }
+
+      # ---------------------------------------------------------
+      #  THINGS TO DO PAGE
+      # ---------------------------------------------------------
+      - name: "media-explore"
+        label: "Things To Do Page"
+        file: "content/media-explore.json"
+        description: "Safari, viewpoints, temples and the twelve excursion tiles."
+        fields:
+          - { label: "Page banner",                name: "hero",    widget: "object", fields: *photo }
+          - { label: "Wide photo beside the copy", name: "feature", widget: "object", fields: *photo }
+          - label: "The twelve tiles"
+            name: "tiles"
+            widget: "object"
+            collapsed: false
+            fields:
+              - { label: "Kumana National Park",  name: "kumana",       widget: "object", fields: *photo }
+              - { label: "Elephant Rock",         name: "elephantRock", widget: "object", fields: *photo }
+              - { label: "Pottuvil Lagoon",       name: "lagoon",       widget: "object", fields: *photo }
+              - { label: "Kudumbigala Monastery", name: "kudumbigala",  widget: "object", fields: *photo }
+              - { label: "Lahugala National Park",name: "lahugala",     widget: "object", fields: *photo }
+              - { label: "Muhudu Maha Viharaya",  name: "muhudu",       widget: "object", fields: *photo }
+              - { label: "Beach yoga",            name: "yoga",         widget: "object", fields: *photo }
+              - { label: "Lagoon fishing",        name: "fishing",      widget: "object", fields: *photo }
+              - { label: "Shopping",              name: "shopping",     widget: "object", fields: *photo }
+              - { label: "Nightlife",             name: "nightlife",    widget: "object", fields: *photo }
+              - { label: "Sri Lankan food",       name: "culinary",     widget: "object", fields: *photo }
+              - { label: "Sunrise & sunset",      name: "sunrise",      widget: "object", fields: *photo }
+          - { label: "Closing wide photo", name: "closing", widget: "object", fields: *photo }
+          - { label: "Closing banner",     name: "cta",     widget: "object", fields: *photo }
+          - { label: "Note", name: "_note", widget: "hidden" }
+
+      # ---------------------------------------------------------
+      #  ABOUT PAGE
+      # ---------------------------------------------------------
+      - name: "media-about"
+        label: "About Page"
+        file: "content/media-about.json"
+        description: "The camp's story."
+        fields:
+          - { label: "Page banner",      name: "hero", widget: "object", fields: *photo }
+          - { label: "Story photo 1",    name: "one",  widget: "object", fields: *photo }
+          - { label: "Story photo 2",    name: "two",  widget: "object", fields: *photo }
+          - { label: "Closing banner",   name: "cta",  widget: "object", fields: *photo }
+          - { label: "Note", name: "_note", widget: "hidden" }
+
+      # ---------------------------------------------------------
+      #  GALLERY PAGE
+      # ---------------------------------------------------------
+      - name: "media-gallery"
+        label: "Gallery Page"
+        file: "content/media-gallery.json"
+        description: "The full photo wall and the Instagram strip. Drag to reorder, or add and remove photos freely."
+        fields:
+          - { label: "Page banner", name: "hero", widget: "object", fields: *photo }
+          # Unlike every other picture on the site these two are LISTS, so
+          # you can add a photo, delete one, or drag the order around. The
+          # page rebuilds itself from whatever is here.
+          - label: "Photo wall"
+            name: "photos"
+            widget: "list"
+            label_singular: "Photo"
+            collapsed: true
+            summary: "{{fields.alt}}"
+            fields: *photo
+            hint: >-
+              The main gallery grid. Mix tall and wide photos — the wall is a
+              masonry layout and reflows around whatever you give it.
+          - label: "Instagram strip"
+            name: "instagram"
+            widget: "list"
+            label_singular: "Tile"
+            collapsed: true
+            summary: "{{fields.alt}}"
+            fields: *photo
+            hint: >-
+              The six square tiles at the foot of the page. Square-ish crops
+              look best; they are cropped to a square either way.
+          - { label: "Note", name: "_note", widget: "hidden" }
+
+      # ---------------------------------------------------------
+      #  PACKAGES, BOOKING & REVIEWS — one banner each
+      # ---------------------------------------------------------
+      - name: "media-pages"
+        label: "Packages, Booking & Reviews"
+        file: "content/media-pages.json"
+        description: "The banners on the three remaining pages."
+        fields:
+          - label: "Packages page"
+            name: "packages"
+            widget: "object"
+            collapsed: false
+            fields:
+              - { label: "Page banner",              name: "hero",    widget: "object", fields: *photo }
+              - { label: "Wide photo beside the copy", name: "feature", widget: "object", fields: *photo }
+              - { label: "Closing banner",           name: "cta",     widget: "object", fields: *photo }
+          - label: "Booking page"
+            name: "book"
+            widget: "object"
+            fields:
+              - { label: "Page banner", name: "hero", widget: "object", fields: *photo }
+          - label: "Reviews page"
+            name: "reviews"
+            widget: "object"
+            fields:
+              - { label: "Page banner",    name: "hero", widget: "object", fields: *photo }
+              - { label: "Closing banner", name: "cta",  widget: "object", fields: *photo }
+          - { label: "Note", name: "_note", widget: "hidden" }
+
+  # ===========================================================
+  #  5. SITE SETTINGS
   # ===========================================================
   - name: "settings"
     label: "Site Settings"

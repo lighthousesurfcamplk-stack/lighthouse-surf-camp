@@ -318,13 +318,56 @@ p{color:var(--ink-soft);text-wrap:pretty}
 /* ---------- Hero ---------- */
 /* svh keeps the hero clear of the mobile URL bar; vh is the fallback */
 .hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;overflow:hidden}
-.hero-media{position:absolute;inset:0;z-index:-2;overflow:hidden}
+/* THE HERO STACKING LADDER — media 0 · scrim 1 · cue 2 · copy 3 · dots 4.
+   These used to be -2 and -1, painting the media and its wash BEHIND the
+   header's own box. That works until something inside the media gets its own
+   compositing layer — which is exactly what a playing <video> is. Measured in
+   Chrome at a phone viewport: adding .hero-video promoted .hero-media, the
+   promoted negative layer went behind the opaque page background, and the
+   hero photograph disappeared entirely, leaving the gradient over white.
+
+   A non-negative ladder gives the identical picture with no reliance on
+   negative painting order at all: .hero-media still opens its own stacking
+   context, so the film and the slides inside it remain trapped underneath
+   the scrim above them, which is what keeps the headline readable. */
+.hero-media{position:absolute;inset:0;z-index:0;overflow:hidden}
 .hero-media>img{width:100%;height:100%;object-fit:cover;animation:slowzoom 20s ease-out forwards}
 @keyframes slowzoom{from{transform:scale(1.14)}to{transform:scale(1)}}
 /* slideshow */
 .hero-media.slideshow .slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 1.7s ease-in-out;animation:none}
 .hero-media.slideshow .slide.active{opacity:1;animation:kenburns 7s ease-out forwards}
 @keyframes kenburns{from{transform:scale(1.1)}to{transform:scale(1)}}
+
+/* ---------- Hero background video ----------
+   The film lives INSIDE .hero-media, which is positioned and therefore opens
+   a stacking context of its own. Nothing in here can climb above the
+   .hero::after scrim one rung up the ladder — which is the whole point:
+   the video is graded by exactly the same gradient wash that makes the
+   headline readable over the photographs, so nothing about .hero-inner,
+   the type, or the layout has to change to accommodate it.
+
+   It ships invisible. main.js reveals it only once frames are genuinely
+   playing, so a phone in Low Power Mode — which silently refuses to
+   autoplay even muted inline video — simply keeps the slideshow instead of
+   showing a black rectangle. The espresso ground behind it covers the
+   split second between the poster and the first frame. */
+.hero-video{position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  background:var(--espresso);
+  opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+.hero.has-video .hero-video{opacity:1}
+/* With the film running the photographs behind it are only its poster
+   frame: stop the Ken Burns pass nobody can see, and take away dots that
+   would offer to page through a slideshow that is no longer moving. */
+.hero.has-video .hero-media .slide{animation:none}
+.hero.has-video .hero-dots{display:none}
+@media(prefers-reduced-motion:reduce){
+  /* A moving full-bleed background is precisely what this preference is
+     asking us not to serve. main.js never even attaches a src; this is the
+     belt to that braces, in case the film is hard-coded in the markup. */
+  .hero-video{display:none}
+}
+
 .hero-dots{position:absolute;bottom:24px;inset-inline-end:calc(var(--gutter) + 2px);z-index:4;display:flex;gap:4px}
 .hero-dots button{
   width:34px;height:var(--tap);padding:0;border:none;background:none;cursor:pointer;
@@ -336,9 +379,11 @@ p{color:var(--ink-soft);text-wrap:pretty}
   transition:width .35s,background .35s,border-radius .35s;
 }
 .hero-dots button.on::after{background:#fff;width:28px;border-radius:6px}
-.hero::after{content:"";position:absolute;inset:0;z-index:-1;
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:linear-gradient(180deg,rgba(34,27,20,.4) 0%,rgba(34,27,20,.12) 38%,rgba(34,27,20,.45) 72%,rgba(34,27,20,.92) 100%)}
-.hero-inner{padding-top:calc(var(--nav-h) + 24px);padding-bottom:9vh;max-width:940px}
+/* position + z-index so the copy still sits above the scrim now that the
+   scrim is a positive layer rather than a negative one. */
+.hero-inner{position:relative;z-index:3;padding-top:calc(var(--nav-h) + 24px);padding-bottom:9vh;max-width:940px}
 .hero h1{margin:18px 0 24px;color:#fff;font-weight:300;text-shadow:0 4px 40px rgba(0,0,0,.4)}
 .hero h1 .glow{color:var(--sand);font-style:italic}
 .hero .lead{color:rgba(255,255,255,.92);text-shadow:0 2px 20px rgba(0,0,0,.5)}

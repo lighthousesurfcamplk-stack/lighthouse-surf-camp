@@ -37,7 +37,7 @@
 <meta name="theme-color" content="#0d333b">
 <!-- The hero image is the LCP element; fetch it in parallel with the CSS. -->
 <link rel="preload" as="image" href="assets/img/dji0088.jpg" fetchpriority="high">
-<link rel="stylesheet" href="assets/css/style.css?v=30">
+<link rel="stylesheet" href="assets/css/style.css?v=31">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org","@type":"Resort", "inLanguage": "en",
@@ -50,7 +50,7 @@
 }
 </script>
 </head>
-<body>
+<body data-media="home">
 <svg class="flag-sprite" width="0" height="0" aria-hidden="true" focusable="false"><symbol id="flag-gb" viewBox="0 0 20 15"><path fill="#012169" d="M0 0h20v15H0z"/><path stroke="#fff" stroke-width="3" d="m0 0 20 15m0-15L0 15"/><path stroke="#C8102E" stroke-width="2" d="m0 0 20 15m0-15L0 15"/><path stroke="#fff" stroke-width="5" d="M10 0v15M0 7.5h20"/><path stroke="#C8102E" stroke-width="3" d="M10 0v15M0 7.5h20"/></symbol><symbol id="flag-de" viewBox="0 0 20 15"><path fill="#000" d="M0 0h20v5H0z"/><path fill="#DD0000" d="M0 5h20v5H0z"/><path fill="#FFCE00" d="M0 10h20v5H0z"/></symbol><symbol id="flag-ch" viewBox="0 0 20 15"><path fill="#D52B1E" d="M0 0h20v15H0z"/><path fill="#fff" d="M8.55 3.3h2.9v2.75h2.75v2.9h-2.75v2.75h-2.9V8.95H5.8v-2.9h2.75z"/></symbol><symbol id="flag-fr" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><path fill="#002395" d="M0 0h6.67v15H0z"/><path fill="#ED2939" d="M13.33 0H20v15h-6.67z"/></symbol><symbol id="flag-it" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><path fill="#009246" d="M0 0h6.67v15H0z"/><path fill="#CE2B37" d="M13.33 0H20v15h-6.67z"/></symbol><symbol id="flag-es" viewBox="0 0 20 15"><path fill="#AA151B" d="M0 0h20v15H0z"/><path fill="#F1BF00" d="M0 3.75h20v7.5H0z"/></symbol><symbol id="flag-ru" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v5H0z"/><path fill="#0039A6" d="M0 5h20v5H0z"/><path fill="#D52B1E" d="M0 10h20v5H0z"/></symbol><symbol id="flag-jp" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><circle cx="10" cy="7.5" r="4.05" fill="#BC002D"/></symbol><symbol id="flag-il" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><path fill="#0038B8" d="M0 2h20v1.9H0zM0 11.1h20V13H0z"/><path fill="none" stroke="#0038B8" stroke-width=".8" d="m10 4.75 2.34 4.05H7.66zM10 10.25 7.66 6.2h4.68z"/></symbol></svg>
 
 <a class="skip-link" href="#main" data-i18n="index.a--skip-to-content">Skip to content</a>
@@ -81,9 +81,26 @@
 <!-- HERO -->
 <header class="hero">
   <div class="hero-media slideshow">
-    <img width="1700" height="956" class="slide active" src="assets/img/dji0088.jpg" alt="Aerial view of Light House Surf Camp and the Arugam Bay coastline" decoding="async" fetchpriority="high" data-i18n-alt="index.alt--aerial-view-of-light-house-surf">
-    <img width="1537" height="1023" class="slide" src="assets/img/img1155.jpg" alt="A surfer riding a wave at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-surfer-riding-a-wave-at">
-    <img width="1700" height="956" class="slide" src="assets/img/dji0086.jpg" alt="Aerial of the palm coastline at golden hour, Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-palm-coastline-at">
+    <img width="1700" height="956" class="slide active" src="assets/img/dji0088.jpg" data-cms="media:hero.slide1" alt="Aerial view of Light House Surf Camp and the Arugam Bay coastline" decoding="async" fetchpriority="high" data-i18n-alt="index.alt--aerial-view-of-light-house-surf">
+    <img width="1537" height="1023" class="slide" src="assets/img/img1155.jpg" data-cms="media:hero.slide2" alt="A surfer riding a wave at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-surfer-riding-a-wave-at">
+    <img width="1700" height="956" class="slide" src="assets/img/dji0086.jpg" data-cms="media:hero.slide3" alt="Aerial of the palm coastline at golden hour, Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-palm-coastline-at">
+
+    <!-- BACKGROUND FILM (optional, set in /admin → Images & Video → Home Page).
+         Ships with no src on purpose. main.js reads the desktop and mobile
+         cuts off data-desktop / data-mobile — which content.js writes from
+         content/media-home.json — picks the one that fits this viewport via
+         matchMedia, and only fades it in once it is genuinely playing. Until
+         a film is uploaded this element is an empty, invisible 0-cost node
+         and the three photographs above remain the hero.
+
+         preload="none" keeps the download out of the race for the largest
+         contentful paint: the hero photograph still paints first, exactly as
+         the preload hint in the <head> intends. muted + playsinline are what
+         make autoplay legal on iOS and Android; aria-hidden and tabindex=-1
+         keep a decorative background out of the reading order. -->
+    <video class="hero-video" data-cms="video:hero.video"
+           autoplay loop muted playsinline preload="none"
+           tabindex="-1" aria-hidden="true"></video>
   </div>
   <div class="hero-dots" aria-label="Slideshow controls"></div>
   <div class="wrap hero-inner">
@@ -134,7 +151,7 @@
       </ul>
       <div style="margin-top:34px"><a class="btn btn-gold" href="about.html" data-i18n="index.a--our-story">Our Story <span class="arrow">→</span></a></div>
     </div>
-    <div class="split-media"><img width="956" height="1700" src="assets/img/dji0064.jpg" alt="Aerial of the turquoise bay and white-sand beach at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-turquoise-bay-and"></div>
+    <div class="split-media"><img width="956" height="1700" src="assets/img/dji0064.jpg" data-cms="media:story" alt="Aerial of the turquoise bay and white-sand beach at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-turquoise-bay-and"></div>
   </div>
 </section>
 
@@ -210,9 +227,9 @@
   <div class="wrap">
     <div class="section-head reveal"><span class="eyebrow" data-i18n="index.span--the-stay">The Stay</span><h2 data-i18n="index.h2--sleep-wrapped-in-the-jungle">Sleep wrapped in the jungle.</h2><p data-i18n="index.p--from-sea-view-tree-house-cabanas">From sea-view tree-house cabanas to cosy private rooms and a bright mixed dorm — every space is hand-built from timber, natural-wood and thatch, and opens onto green.</p></div>
     <div class="grid g-3">
-      <article class="mcard reveal"><img width="1242" height="820" src="assets/img/cabana3-11.jpg" alt="Tree house cabana with sea view" loading="lazy" decoding="async" data-i18n-alt="index.alt--tree-house-cabana-with-sea-view"><div class="body"><span class="tag" data-i18n="index.span--sea-view-sleeps-2">Sea View · Sleeps 2</span><h3 data-i18n="index.h3--tree-house-cabana">Tree House Cabana</h3><p data-i18n="index.p--elevated-a-frame-raised-among-the">Elevated A-frame raised among the palms with sweeping ocean views from your deck.</p></div></article>
-      <article class="mcard reveal"><img width="957" height="1700" src="assets/img/cabana2-3.jpg" alt="Double cabana with sea-view terrace and hammock" loading="lazy" decoding="async" data-i18n-alt="index.alt--double-cabana-with-sea-view-terrace"><div class="body"><span class="tag" data-i18n="index.span--sea-view-sleeps-2-2">Sea View · Sleeps 2</span><h3 data-i18n="index.h3--double-room-sea-view">Double Room Sea View</h3><p data-i18n="index.p--a-comfortable-double-opening-onto-a">A comfortable double opening onto a hammock terrace with uninterrupted sea views.</p></div></article>
-      <article class="mcard reveal"><img width="960" height="1280" src="assets/img/dome-3.jpg" alt="Bed in the bright 6-bed mixed dorm" loading="lazy" decoding="async" data-i18n-alt="index.alt--bed-in-the-bright-6-bed"><div class="body"><span class="tag" data-i18n="index.span--shared-budget">Shared · Budget</span><h3 data-i18n="index.h3--6-bed-mixed-dorm">6-Bed Mixed Dorm</h3><p data-i18n="index.p--a-single-bed-in-our-bright">A single bed in our bright, social dorm — the budget-friendly way to stay.</p></div></article>
+      <article class="mcard reveal"><img width="1242" height="820" src="assets/img/cabana3-11.jpg" data-cms="media:rooms.one" alt="Tree house cabana with sea view" loading="lazy" decoding="async" data-i18n-alt="index.alt--tree-house-cabana-with-sea-view"><div class="body"><span class="tag" data-i18n="index.span--sea-view-sleeps-2">Sea View · Sleeps 2</span><h3 data-i18n="index.h3--tree-house-cabana">Tree House Cabana</h3><p data-i18n="index.p--elevated-a-frame-raised-among-the">Elevated A-frame raised among the palms with sweeping ocean views from your deck.</p></div></article>
+      <article class="mcard reveal"><img width="957" height="1700" src="assets/img/cabana2-3.jpg" data-cms="media:rooms.two" alt="Double cabana with sea-view terrace and hammock" loading="lazy" decoding="async" data-i18n-alt="index.alt--double-cabana-with-sea-view-terrace"><div class="body"><span class="tag" data-i18n="index.span--sea-view-sleeps-2-2">Sea View · Sleeps 2</span><h3 data-i18n="index.h3--double-room-sea-view">Double Room Sea View</h3><p data-i18n="index.p--a-comfortable-double-opening-onto-a">A comfortable double opening onto a hammock terrace with uninterrupted sea views.</p></div></article>
+      <article class="mcard reveal"><img width="960" height="1280" src="assets/img/dome-3.jpg" data-cms="media:rooms.three" alt="Bed in the bright 6-bed mixed dorm" loading="lazy" decoding="async" data-i18n-alt="index.alt--bed-in-the-bright-6-bed"><div class="body"><span class="tag" data-i18n="index.span--shared-budget">Shared · Budget</span><h3 data-i18n="index.h3--6-bed-mixed-dorm">6-Bed Mixed Dorm</h3><p data-i18n="index.p--a-single-bed-in-our-bright">A single bed in our bright, social dorm — the budget-friendly way to stay.</p></div></article>
     </div>
     <div style="text-align:center;margin-top:46px" class="reveal"><a class="btn btn-ghost" href="stay.html" data-i18n="index.a--view-all-accommodation">View All Accommodation <span class="arrow">→</span></a></div>
   </div>
@@ -221,7 +238,7 @@
 <!-- DINING -->
 <section class="section bg-paper">
   <div class="wrap split rev reveal">
-    <div class="split-media"><img width="961" height="1280" src="assets/img/restaurant-14.jpg" alt="Inside the natural-wood A-frame restaurant lit at golden hour" loading="lazy" decoding="async" data-i18n-alt="index.alt--inside-the-natural-wood-a-frame"></div>
+    <div class="split-media"><img width="961" height="1280" src="assets/img/restaurant-14.jpg" data-cms="media:dining" alt="Inside the natural-wood A-frame restaurant lit at golden hour" loading="lazy" decoding="async" data-i18n-alt="index.alt--inside-the-natural-wood-a-frame"></div>
     <div>
       <span class="eyebrow" data-i18n="index.span--the-table">The Table</span>
       <h2 data-i18n="index.h2--dine-under-the-natural-wood-cathedral">Dine under the natural-wood cathedral.</h2>
@@ -255,7 +272,7 @@
       </ul>
       <div style="margin-top:34px"><a class="btn btn-gold" href="wellness.html" data-i18n="index.a--explore-wellness">Explore Wellness <span class="arrow">→</span></a></div>
     </div>
-    <div class="split-media"><img width="1242" height="1533" src="assets/img/imge0018.jpg" alt="A-frame sea-view cabana at Light House Surf Camp — surf and restore" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-frame-sea-view-cabana-at"></div>
+    <div class="split-media"><img width="1242" height="1533" src="assets/img/imge0018.jpg" data-cms="media:wellness" alt="A-frame sea-view cabana at Light House Surf Camp — surf and restore" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-frame-sea-view-cabana-at"></div>
   </div>
 </section>
 
@@ -273,10 +290,10 @@
 
 <!-- PHOTO BAND -->
 <section class="photoband">
-  <div class="ph"><img width="957" height="1700" src="assets/img/cabana2-3.jpg" alt="Hammock with sea view" loading="lazy" decoding="async" data-i18n-alt="index.alt--hammock-with-sea-view"><span class="cap" data-i18n="index.span--slow-mornings">Slow mornings</span></div>
-  <div class="ph"><img width="1700" height="956" src="assets/img/drone-3.jpg" alt="Aerial of the Arugam Bay coastline and surf" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-arugam-bay-coastline"><span class="cap" data-i18n="index.span--empty-lineups">Empty lineups</span></div>
-  <div class="ph"><img width="919" height="1280" src="assets/img/restaurant-12.jpg" alt="Sunset through the natural-wood restaurant" loading="lazy" decoding="async" data-i18n-alt="index.alt--sunset-through-the-natural-wood-restaurant"><span class="cap" data-i18n="index.span--golden-hour">Golden hour</span></div>
-  <div class="ph"><img width="1275" height="1700" src="assets/img/others-1.jpg" alt="Palm and beach at sunset" loading="lazy" decoding="async" data-i18n-alt="index.alt--palm-and-beach-at-sunset"><span class="cap" data-i18n="index.span--endless-coast">Endless coast</span></div>
+  <div class="ph"><img width="957" height="1700" src="assets/img/cabana2-3.jpg" data-cms="media:band.one" alt="Hammock with sea view" loading="lazy" decoding="async" data-i18n-alt="index.alt--hammock-with-sea-view"><span class="cap" data-i18n="index.span--slow-mornings">Slow mornings</span></div>
+  <div class="ph"><img width="1700" height="956" src="assets/img/drone-3.jpg" data-cms="media:band.two" alt="Aerial of the Arugam Bay coastline and surf" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-arugam-bay-coastline"><span class="cap" data-i18n="index.span--empty-lineups">Empty lineups</span></div>
+  <div class="ph"><img width="919" height="1280" src="assets/img/restaurant-12.jpg" data-cms="media:band.three" alt="Sunset through the natural-wood restaurant" loading="lazy" decoding="async" data-i18n-alt="index.alt--sunset-through-the-natural-wood-restaurant"><span class="cap" data-i18n="index.span--golden-hour">Golden hour</span></div>
+  <div class="ph"><img width="1275" height="1700" src="assets/img/others-1.jpg" data-cms="media:band.four" alt="Palm and beach at sunset" loading="lazy" decoding="async" data-i18n-alt="index.alt--palm-and-beach-at-sunset"><span class="cap" data-i18n="index.span--endless-coast">Endless coast</span></div>
 </section>
 
 <!-- LOCATION -->
@@ -297,7 +314,7 @@
       </ul>
       <div style="margin-top:34px"><a class="btn btn-primary" href="book.html" data-i18n="index.a--plan-your-trip">Plan Your Trip <span class="arrow">→</span></a></div>
     </div>
-    <div class="split-media wide"><img width="1402" height="1122" src="assets/img/ea001.jpg" alt="Sri Lanka's wild east coast at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--sri-lanka-s-wild-east-coast"></div>
+    <div class="split-media wide"><img width="1402" height="1122" src="assets/img/ea001.jpg" data-cms="media:place" alt="Sri Lanka's wild east coast at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--sri-lanka-s-wild-east-coast"></div>
   </div>
 </section>
 
@@ -354,7 +371,7 @@
 <section class="section bg-deep" style="padding-top:0;background:var(--espresso)">
   <div class="wrap" style="padding-top:clamp(78px,10vw,140px)">
     <div class="cta-band reveal">
-      <img width="919" height="1280" src="assets/img/restaurant-12.jpg" alt="Sunset over Light House Surf Camp" loading="lazy" decoding="async" data-i18n-alt="index.alt--sunset-over-light-house-surf-camp">
+      <img width="919" height="1280" src="assets/img/restaurant-12.jpg" data-cms="media:cta" alt="Sunset over Light House Surf Camp" loading="lazy" decoding="async" data-i18n-alt="index.alt--sunset-over-light-house-surf-camp">
       <span class="eyebrow" data-i18n="index.span--your-escape-awaits">Your Escape Awaits</span>
       <h2 data-i18n="index.h2--reserve-your-place-in-paradise">Reserve your place in paradise.</h2>
       <p class="lead" data-i18n="index.p--peak-season-runs-june-to-october">Peak season runs June to October and we have a handful of cabanas. Hold yours with a 25% deposit — the balance is settled when you arrive, and cancellation is free up to 14 days before.</p>
@@ -407,7 +424,7 @@
 
 <script type="application/ld+json" data-seo="auto">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"When is the best time to surf Arugam Bay?","acceptedAnswer":{"@type":"Answer","text":"Peak surf season runs June to October, when the swell is most consistent and the bay is at its best. Our cabanas are limited and fill first for those months, so book early. Outside the peak the coast is quieter, greener and ideal if you are learning."}},{"@type":"Question","name":"I have never surfed before. Is this camp for me?","acceptedAnswer":{"@type":"Answer","text":"Yes — most of our guests arrive as complete beginners. Lessons run in small groups with certified local coaches, and we read the swell each morning to pick a break that suits your level. Soft-tops and rash guards are provided."}},{"@type":"Question","name":"How do I pay, and what if my plans change?","acceptedAnswer":{"@type":"Answer","text":"You reserve with a 25% deposit online and settle the balance on arrival in Arugam Bay. Cancellation is free up to 14 days before check-in. If you would rather not pay online at all, message us on WhatsApp and we will arrange it with you directly."}},{"@type":"Question","name":"What is included in an all-inclusive camp?","acceptedAnswer":{"@type":"Answer","text":"Your cabana, every meal, your coached surf sessions and your board hire — all in one price. Longer camps add Ayurvedic treatments, video coaching and surf-safari trips up the coast. The full list sits on each package card above."}},{"@type":"Question","name":"How do I get to the camp from the airport?","acceptedAnswer":{"@type":"Answer","text":"Tell us your flight and we will arrange the transfer. Tuk-tuks and bikes can be organised once you are here, so you can explore the coast at your own pace."}},{"@type":"Question","name":"Can you cater for vegetarians and vegans?","acceptedAnswer":{"@type":"Answer","text":"Always. Vegetarian and vegan options are available at every meal, alongside authentic Sri Lankan rice and curry, hoppers and the daily catch. Tell us about any allergies when you book and the kitchen will plan around them."}}]}</script>
 
-<script src="assets/js/main.js?v=9"></script>
-<script src="assets/js/content.js?v=4"></script>
+<script src="assets/js/main.js?v=10"></script>
+<script src="assets/js/content.js?v=5"></script>
 </body>
 </html>
