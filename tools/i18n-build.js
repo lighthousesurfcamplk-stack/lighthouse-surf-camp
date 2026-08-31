@@ -351,8 +351,30 @@ function rewriteHead(html, lang, page, dict) {
      the number on the wrong side. Setting it here means the RTL CSS can key
      off [dir="rtl"] and needs no per-page class. */
   const dir = lang.rtl ? ' dir="rtl"' : '';
+
+  /* LANGUAGE MEMORY (the runtime half lives in assets/js/main.js).
+     Only six of the twelve pages have a localized build, so the nav on a
+     /it/ page genuinely has to send the visitor out to the English Gallery
+     or Reviews — and from there every onward link is English, which is how
+     a visitor reading Italian ends up stranded in English. main.js repairs
+     that by re-pointing the links that DO have an Italian twin, and to do
+     it safely it needs three facts only the build knows:
+
+       data-lang-dir    which directory this page was written into ('' = English)
+       data-i18n-dirs   which language directories actually exist
+       data-i18n-pages  which pages actually have a localized build
+
+     Stamping them here keeps LANGS and TRANSLATED_PAGES the single source of
+     truth: the JS hard-codes no language list, so adding a language stays a
+     one-line change in this file. English pages are rewritten in place by
+     this same code path, which is exactly why they get the stamp too — they
+     are the pages that need to know how to send a visitor back. */
+  const langDir   = ' data-lang-dir="' + lang.dir + '"';
+  const i18nDirs  = ' data-i18n-dirs="' + LANGS.filter(l => l.dir).map(l => l.dir).join(' ') + '"';
+  const i18nPages = ' data-i18n-pages="' + TRANSLATED_PAGES.join(' ') + '"';
+
   html = html.replace(/<html[^>]*>/i,
-    '<html lang="' + lang.htmlLang + '"' + dir + root + '>');
+    '<html lang="' + lang.htmlLang + '"' + dir + root + langDir + i18nDirs + i18nPages + '>');
 
   /* Every head field falls back to the English original when the dictionary
      has no translation for it. Without this guard an empty $pages block

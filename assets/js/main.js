@@ -9,6 +9,88 @@
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   /* ---------------------------------------------------------
+     Language memory
+
+     WHY THIS EXISTS. The site is statically translated: /it/index.html is a
+     real file, so Google indexes every language separately, and the nav on a
+     localized page already links to its localized neighbours — i18n-build.js
+     rewrites those hrefs at build time and that part works correctly.
+
+     The leak is COVERAGE, not rewriting. Only six of the twelve pages have a
+     localized build (data-i18n-pages, stamped on <html> by the build so the
+     list lives in exactly ONE place). Surf, Explore, Gallery and Reviews
+     therefore point out of /it/ and back to the English original — and once
+     the visitor is standing on an English page, that page's nav is entirely
+     English, so every click after it stays English too. A one-way door.
+
+     THE FIX. Remember the language the visitor was last reading, and on an
+     English page re-point the links that DO have a localized twin back into
+     that directory. Nothing is redirected and no content is swapped: the
+     document served is the document read. This only changes where the NEXT
+     click goes.
+
+     SEO SAFETY. Googlebot carries no localStorage, so a crawler always sees
+     the English links exactly as they were served; canonical and hreflang are
+     never touched. The language switcher is deliberately left alone — it is
+     the one control whose whole job is to leave the current language, and
+     rewriting it would trap the visitor.
+     --------------------------------------------------------- */
+  (function(){
+    var KEY   = 'lhsc:lang';
+    var here  = docEl.getAttribute('data-lang-dir')    || '';   // '' on English
+    var dirs  = (docEl.getAttribute('data-i18n-dirs')  || '').split(' ');
+    var pages = (docEl.getAttribute('data-i18n-pages') || '').split(' ');
+
+    /* Private mode, storage disabled by policy and cross-origin iframes all
+       throw on the very first touch of localStorage, so every access is
+       guarded and every failure degrades to "no memory" — i.e. exactly the
+       site the build produced. */
+    function recall(){ try { return localStorage.getItem(KEY) || ''; } catch(e){ return ''; } }
+    function remember(v){
+      try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch(e){}
+    }
+
+    /* Choosing from the switcher is the visitor stating a preference out
+       loud — including choosing English, which MUST clear the memory or they
+       could never get back out of Italian. Delegated from the document so it
+       covers both copies of the switcher (bar and drawer) without caring
+       which one the build injected where. */
+    document.addEventListener('click', function(ev){
+      var a = ev.target && ev.target.closest && ev.target.closest('.lang-menu a[hreflang]');
+      if(!a) return;
+      if(a.getAttribute('hreflang') === 'en'){ remember(''); return; }
+      // 'de/index.html' and '../de/index.html' both yield 'de'.
+      var parts = (a.getAttribute('href') || '').split('/');
+      for(var k = 0; k < parts.length; k++){
+        if(dirs.indexOf(parts[k]) > -1){ remember(parts[k]); return; }
+      }
+      // Own-language link on a localized page: the href carries no directory.
+      if(here) remember(here);
+    });
+
+    /* Reading a localized page IS the preference — record it and stop. Every
+       link on this page that CAN be localized already is. */
+    if(here){ remember(here); return; }
+
+    var want = recall();
+    if(!want || dirs.indexOf(want) < 0) return;  // no memory, or a language that no longer builds
+
+    /* Only bare, same-directory page links qualify. Absolute URLs, mailto:,
+       tel:, #anchors and anything already inside a language directory fall
+       straight through, and so does any page with no localized twin. */
+    var self  = (location.pathname.split('/').pop() || 'index.html').replace(/.html$/i, '');
+    var links = document.querySelectorAll('a[href]');
+    for(var i = 0; i < links.length; i++){
+      var a = links[i];
+      if(a.closest('.lang')) continue;                    // never touch the switcher
+      var m = /^([a-z0-9-]+).html((?:[?#].*)?)$/i.exec(a.getAttribute('href') || '');
+      if(!m || pages.indexOf(m[1]) < 0) continue;         // external, anchor, or untranslated
+      if(m[1] === self) continue;                         // the link back to the page you are on
+      a.setAttribute('href', want + '/' + m[1] + '.html' + m[2]);
+    }
+  })();
+
+  /* ---------------------------------------------------------
      Sticky nav
      `data-solid="true"` pins the light nav on pages with no hero
      behind it (thank-you.html) — previously that page hardcoded
@@ -398,6 +480,65 @@
       if(on && stopSlideshow) stopSlideshow();
     }
 
+    /* The source we WANT playing, tracked separately from the element's own
+       src attribute. Those two diverge in exactly the case that goes wrong —
+       file fully loaded, element paused — and the old guard could not tell
+       that apart from "already mounted", so a single refused autoplay attempt
+       froze the hero on the photograph for good. */
+    var wanted    = '';
+    var armed     = false;
+    var retryOn   = ['pointerdown', 'touchstart', 'keydown', 'scroll'];
+    /* ONE object, reused for both add and remove: browsers that understand
+       options read {passive:true} and default capture to false, and the few
+       that still coerce it to a boolean get `true` on both calls. Either way
+       the pair matches and the listener genuinely comes back off. */
+    var retryOpts = { passive: true };
+
+    function attemptPlay(){
+      if(!wanted || reduceMotion.matches) return;
+      var token   = attempt;
+      var started = heroVideo.play();
+      if(started && started['catch']) started['catch'](function(err){
+        /* A rejection is not always a refusal. Pointing the element at a new
+           source aborts whatever play() was still in flight for the old one,
+           and that rejects with AbortError — treating it as "autoplay
+           declined" would hide a film that is about to start perfectly well.
+           Only the newest attempt gets to draw any conclusion.
+
+           A real refusal — iOS Low Power Mode, data-saver, some corporate
+           policies, all of which decline even muted inline video — puts the
+           photographs back on screen without nagging. It is no longer the end
+           of the story: armRetry() below will ask again. */
+        if(token !== attempt || (err && err.name === 'AbortError')) return;
+        live(false);
+      });
+    }
+
+    /* MEASURED, not theorised. With the film the owner pasted into the CMS,
+       a phone-width viewport reaches readyState 4 — fully buffered, no error
+       at all — and still sits paused, because the autoplay attempt fired
+       before the browser was willing to grant it. One refusal used to be
+       fatal: nothing ever asked again, so the hero stayed on the photograph
+       and the film looked to the owner like it had failed to load.
+
+       So ask again, twice over: once when frames actually arrive (see the
+       loadeddata/canplay listeners below), and once on the visitor's first
+       interaction of any kind — which on a full-bleed hero is a scroll within
+       a second or two. Both are free when the film is already running: each
+       checks .paused first, and the gesture listeners take themselves off. */
+    function armRetry(){
+      if(armed) return;
+      armed = true;
+      function go(){
+        for(var r = 0; r < retryOn.length; r++)
+          window.removeEventListener(retryOn[r], go, retryOpts);
+        armed = false;
+        if(heroVideo.paused) attemptPlay();
+      }
+      for(var r = 0; r < retryOn.length; r++)
+        window.addEventListener(retryOn[r], go, retryOpts);
+    }
+
     function mount(){
       /* A full-bleed moving background is the exact thing this preference
          asks us not to do, so there is no film at all — the slideshow,
@@ -415,33 +556,35 @@
       if(!window.innerWidth) return;
 
       var src = pickSource();
-      if(!src || heroVideo.getAttribute('src') === src) return;
+      if(!src) return;
 
-      var token = ++attempt;
+      /* Same film as last time: never re-download it, but do give a stalled
+         one another push. Separating "which file" from "is it running" is the
+         whole point — the old single guard conflated them. */
+      if(src === wanted){
+        if(heroVideo.paused) attemptPlay();
+        armRetry();
+        return;
+      }
+
+      wanted = src;
+      attempt++;
       heroVideo.setAttribute('src', src);
       heroVideo.load();
-
-      var started = heroVideo.play();
-      if(started && started['catch']) started['catch'](function(err){
-        /* A rejection is not always a refusal. Pointing the element at a
-           new source aborts whatever play() was still in flight for the old
-           one, and that rejects with AbortError — treating it as "autoplay
-           declined" would hide a film that is about to start perfectly
-           well. Only the newest attempt gets to draw that conclusion.
-
-           A real refusal — iOS Low Power Mode, data-saver, some corporate
-           policies, all of which decline even muted inline video — has
-           nothing to recover and nothing to nag about: take the film back
-           off screen and let the photographs do their job. */
-        if(token !== attempt || (err && err.name === 'AbortError')) return;
-        live(false);
-      });
+      attemptPlay();
+      armRetry();
     }
 
     // Only reveal it once frames are actually on screen, never on the
     // optimistic assumption that play() worked.
     heroVideo.addEventListener('playing', function(){ live(true); });
     heroVideo.addEventListener('error',   function(){ live(false); });
+
+    /* The film may finish buffering AFTER the autoplay attempt was refused.
+       The moment there are real frames, ask once more; .paused keeps this a
+       no-op whenever the film is already running. */
+    heroVideo.addEventListener('loadeddata', function(){ if(heroVideo.paused) attemptPlay(); });
+    heroVideo.addEventListener('canplay',    function(){ if(heroVideo.paused) attemptPlay(); });
 
     // Rotating the phone, or dragging a desktop window across 760px, re-picks.
     if(portrait.addEventListener) portrait.addEventListener('change', mount);
