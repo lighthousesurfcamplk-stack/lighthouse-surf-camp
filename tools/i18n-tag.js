@@ -22,7 +22,7 @@ const VOID = new Set(['area','base','br','col','embed','hr','img','input','link'
    keep the <b> or <a> - so their presence does not stop us tagging the parent. */
 const INLINE = new Set(['a','b','strong','em','i','span','small','sup','sub','br','u','mark','abbr','time','bdi']);
 /* Only these elements are considered copy holders. */
-const TARGET = new Set(['h1','h2','h3','h4','h5','h6','p','li','button','figcaption','label','summary','td','th','dt','dd','blockquote','caption','legend']);
+const TARGET = new Set(['h1','h2','h3','h4','h5','h6','p','li','button','figcaption','label','summary','td','th','dt','dd','blockquote','caption','legend','option','address']);
 /* Plus call-to-action anchors. A bare <a> is NOT a copy holder — the nav is
    nine of them, and every one is already carried by its <li> — but the
    buttons are, and they were the last English strings left standing on a
@@ -31,6 +31,41 @@ const TARGET = new Set(['h1','h2','h3','h4','h5','h6','p','li','button','figcapt
    expensive words on the page to leave untranslated. Matched on the class
    rather than added to TARGET so the rule stays exactly that narrow. */
 const isCTA = tag => /\bclass="[^"]*\bbtn\b/.test(tag);
+
+/* Match a class as a WHOLE token. A bare \bname\b also matches the hyphenated
+   compounds this stylesheet is full of — "brand" hits <div class="foot-brand">,
+   "per" hits "price-per" — and one of those false positives made an entire
+   footer column opaque and silently dropped the paragraph inside it. */
+const hasClass = (tag, name) =>
+  new RegExp('\\sclass="(?:[^"]*\\s)?' + name + '(?:\\s[^"]*)?"').test(tag);
+
+/* Copy that lives in an element TARGET deliberately excludes, matched on the
+   class exactly like the .btn rule so each entry stays a decision rather than
+   a category. These are tagged WHOLE — the breadcrumb's own <a> travels with
+   it — because the separator ("/ Stay") is a bare text node with no element
+   of its own to hang a key on. */
+const isCopyClass = tag => ['crumb', 'scroll-cue', 'per'].some(c => hasClass(tag, c));
+
+/* A leaf <span>, <small> or <a> holding real words is copy too, and it is
+   where most of the English left standing on a translated page was hiding:
+   section eyebrows, the footer link columns, the marquee, "Subtotal", the
+   country under a review. "Leaf" is the safety rail. An element WITH element
+   children is a container — the brand lockup is <span><b>Light House</b>
+   <small>Surf Camp · Sri Lanka</small></span>, the contact strip wraps a
+   label around a phone number — and swapping a container's innerHTML would
+   hand a translator the company name or a telephone number to localise. */
+const LEAF_COPY = new Set(['span', 'small', 'a']);
+
+/* One character is a glyph or an avatar initial, never a sentence. */
+const MIN_LEAF_LEN = 2;
+
+/* Strings that read the same in every language. Tagging them would invite a
+   translator to "fix" a payment network or the company's own name, and every
+   one of those edits is a bug that only shows up in a language nobody on the
+   team reads. Contact details are matched by shape, not by listing them. */
+const NEVER_COPY = /^(Visa|Mastercard|Amex|PayHere|Light House|Instagram|WhatsApp)$/;
+const isContactDetail = plain => /\S+@\S+/.test(plain) || /^@\w/.test(plain) || /\+?\d[\d\s()–-]{7,}/.test(plain);
+
 /* Never descend into these. */
 const OPAQUE = new Set(['script','style','svg','noscript','template','code','pre']);
 /* Nor into the language switcher. i18n-build.js regenerates it wholesale on
@@ -38,7 +73,11 @@ const OPAQUE = new Set(['script','style','svg','noscript','template','code','pre
    "Deutsch" on the Russian page or the one control a lost visitor needs
    stops working. data-lang is the marker the switcher already carries for
    main.js, so there is nothing new to add to the markup. */
-const isOpaqueTag = tag => /\sdata-lang(?=[\s=>])/.test(tag);
+/* The brand lockup is opaque for the same reason: "Light House" is a name,
+   and the <small>Surf Camp · Sri Lanka</small> under it is set as part of the
+   logotype. Both are branding the user asked to leave alone, and marking the
+   anchor opaque is what stops the leaf rule above from reaching inside it. */
+const isOpaqueTag = tag => /\sdata-lang(?=[\s=>])/.test(tag) || hasClass(tag, 'brand');
 
 function tokenize(html) {
   const toks = [];
@@ -99,7 +138,11 @@ function tagPage(file, pageKey, dict) {
       }
       if (opaqueDepth) continue;
       if (tk.selfClose) continue;
-      if (!TARGET.has(tk.name) && !(tk.name === 'a' && isCTA(tk.raw))) { stack.push(tk); continue; }
+      const mayHold = TARGET.has(tk.name) ||
+                      (tk.name === 'a' && isCTA(tk.raw)) ||
+                      isCopyClass(tk.raw) ||
+                      LEAF_COPY.has(tk.name);
+      if (!mayHold) { stack.push(tk); continue; }
 
       // Find this element's matching close tag.
       let depth = 1, m = n + 1, closeTok = null;
@@ -117,6 +160,19 @@ function tagPage(file, pageKey, dict) {
       // (we tag the innermost holder so replacement never nests).
       const hasBlockChild = /<\s*(div|section|article|ul|ol|figure|picture|h[1-6]|p|li|table|form|nav|header|footer|aside|main)\b/i.test(inner);
       if (!plain || !/[A-Za-z]/.test(plain) || hasBlockChild) { stack.push(tk); continue; }
+
+      /* The leaf rule earns its safety from these three checks. A span or an
+         anchor is only copy when it holds words and nothing else: an element
+         child means it is a wrapper, one character means it is a glyph or an
+         avatar initial, and a phone number, address or @handle is the same
+         string in every language. Fall through to stack.push so the walk
+         still descends — the words inside a rejected wrapper may well be
+         copy in their own right. */
+      if (LEAF_COPY.has(tk.name) && !TARGET.has(tk.name) && !isCTA(tk.raw) && !isCopyClass(tk.raw)) {
+        const hasElementChild = /<[a-zA-Z]/.test(inner);
+        if (hasElementChild || plain.length < MIN_LEAF_LEN ||
+            NEVER_COPY.test(plain) || isContactDetail(plain)) { stack.push(tk); continue; }
+      }
       /* Already tagged by an earlier run. The header promises this script is
          safe to re-run, but en.json is written from scratch each time out of
          `dict` — so skipping the element outright dropped its key, and a
@@ -183,7 +239,7 @@ function tagPage(file, pageKey, dict) {
 // ---- run ----------------------------------------------------------------
 const root = path.resolve(__dirname, '..');
 const dict = {};
-const pages = ['index', 'packages'];
+const pages = ['index', 'packages', 'stay', 'book', 'wellness', 'about'];
 let total = 0;
 for (const p of pages) {
   const n = tagPage(path.join(root, p + '.html'), p, dict);

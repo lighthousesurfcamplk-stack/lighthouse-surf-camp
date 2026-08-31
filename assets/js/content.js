@@ -48,6 +48,43 @@
     if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|\/)/i.test(p)) return p;
     return ROOT + p.replace(/^(?:\.\/)+/, '');
   }
+  /* THE RUNTIME DICTIONARY.
+
+     All nine languages share ONE content directory, so every string that
+     arrives from /content/*.json arrives in English. Hydration therefore
+     used to overwrite a correctly translated German package name with the
+     English one about a second after the page painted — the visitor watched
+     the page revert. tools/i18n-build.js now stamps an inline
+     window.__LHSC_I18N onto every translated page (English gets none), and
+     everything that writes CMS copy goes through t() first.
+
+     Keyed by the English string itself, not by an id: the same sentence is
+     translated once no matter which package, room or lesson carries it, and
+     a string the owner adds in /admin simply falls through untranslated
+     rather than rendering an empty element. */
+  var I18N = global.__LHSC_I18N || {};
+  var DICT = I18N.t || {};
+
+  function t(s) {
+    if (typeof s !== 'string' || !s) return s;
+    var hit = DICT[s];
+    if (hit) return hit;
+    // The admin round-trips values through form fields, so a stray trailing
+    // space would otherwise silently miss an entry that is right there.
+    hit = DICT[s.trim()];
+    return hit || s;
+  }
+
+  /* Fill {x}/{n}/{p} in a translated template. Word order differs by
+     language — Hebrew puts the item name where English puts the verb — so
+     the placeholder travels inside the translation instead of the caller
+     concatenating fragments in English order. */
+  function tf(s, vars) {
+    var out = t(s);
+    for (var k in vars) out = out.split('{' + k + '}').join(vars[k]);
+    return out;
+  }
+
   var FILES = ['settings', 'packages', 'experiences', 'reviews'];
   var cache = null;
   var pending = null;
@@ -94,10 +131,16 @@
     return pending;
   }
 
+  /* Italian and Spanish write the symbol after the amount ("190 $"); the
+     other seven write it before. The flag comes from the ALL_LANGS table in
+     tools/i18n-build.js so the runtime and the static pages agree — the
+     hand-written prices in it/*.html are already postfixed, and a hydrated
+     card sitting next to them must not flip to "$190" a second later. */
   function money(n, settings) {
     var s = (settings && settings.booking && settings.booking.currencySymbol) || '$';
     var v = Number(n) || 0;
-    return s + v.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    var amount = v.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    return I18N.postfix ? amount + ' ' + s : s + amount;
   }
 
   /* Fill every [data-cms] on the page. Safe to call more than once. */
@@ -114,10 +157,10 @@
           if (item) el.textContent = money(item.price, data.settings);
           break;
         case 'name':
-          if (item) el.textContent = item.name;
+          if (item) el.textContent = t(item.name);
           break;
         case 'meta':
-          if (item) el.textContent = item.meta || item.tagline || '';
+          if (item) el.textContent = t(item.meta || item.tagline || '');
           break;
         case 'img':
           /* Only swap when the CMS actually holds an image, so a package
@@ -131,7 +174,8 @@
           if (!item || !Array.isArray(item.includes) || !item.includes.length) break;
           var proto = el.firstElementChild;
           el.textContent = '';
-          item.includes.forEach(function (line) {
+          item.includes.forEach(function (raw) {
+            var line = t(raw);
             var li;
             if (proto) {
               li = proto.cloneNode(true);
@@ -175,6 +219,10 @@
     /* Exported so booking.js resolves its thumbnails through the same
        rule instead of keeping a second copy of it. */
     asset: asset,
+    /* booking.js renders the whole catalogue and the form's own UI strings;
+       both go through this dictionary rather than a second copy of it. */
+    t: t,
+    tf: tf,
     get data() { return cache; }
   };
 

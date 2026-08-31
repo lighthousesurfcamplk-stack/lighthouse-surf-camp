@@ -71,8 +71,8 @@ const ALL_LANGS = [
   { code: 'de',    dir: 'de', label: 'DE', flag: 'de', name: 'Deutsch',   menuLabel: 'Sprache',  htmlLang: 'de',    ogLocale: 'de_DE' },
   { code: 'de-CH', dir: 'ch', label: 'CH', flag: 'ch', name: 'Schweiz',   menuLabel: 'Sprache',  htmlLang: 'de-CH', ogLocale: 'de_CH' },
   { code: 'fr',    dir: 'fr', label: 'FR', flag: 'fr', name: 'Français',  menuLabel: 'Langue',   htmlLang: 'fr',    ogLocale: 'fr_FR' },
-  { code: 'it',    dir: 'it', label: 'IT', flag: 'it', name: 'Italiano',  menuLabel: 'Lingua',   htmlLang: 'it',    ogLocale: 'it_IT' },
-  { code: 'es',    dir: 'es', label: 'ES', flag: 'es', name: 'Español',   menuLabel: 'Idioma',   htmlLang: 'es',    ogLocale: 'es_ES' },
+  { code: 'it',    dir: 'it', label: 'IT', flag: 'it', name: 'Italiano',  menuLabel: 'Lingua',   htmlLang: 'it',    ogLocale: 'it_IT', pricePostfix: true },
+  { code: 'es',    dir: 'es', label: 'ES', flag: 'es', name: 'Español',   menuLabel: 'Idioma',   htmlLang: 'es',    ogLocale: 'es_ES', pricePostfix: true },
   { code: 'ru',    dir: 'ru', label: 'RU', flag: 'ru', name: 'Русский',   menuLabel: 'Язык',     htmlLang: 'ru',    ogLocale: 'ru_RU' },
   { code: 'ja',    dir: 'ja', label: 'JA', flag: 'jp', name: '日本語',     menuLabel: '言語',      htmlLang: 'ja',    ogLocale: 'ja_JP' },
   { code: 'he',    dir: 'he', label: 'HE', flag: 'il', name: 'עברית',     menuLabel: 'שפה',      htmlLang: 'he',    ogLocale: 'he_IL', rtl: true }
@@ -188,7 +188,7 @@ function injectFlagSprite(html) {
    now; the switcher sends visitors on those pages to the translated HOME page
    rather than to a 404, and — importantly — those pages emit NO hreflang, so
    we never tell Google a translation exists when it does not. */
-const TRANSLATED_PAGES = ['index', 'packages'];
+const TRANSLATED_PAGES = ['index', 'packages', 'stay', 'book', 'wellness', 'about'];
 
 /* Every page on the site, needed so links can be rewritten correctly. */
 const ALL_PAGES = ['index','about','gallery','lessons','packages','rentals',
@@ -278,6 +278,46 @@ function rewritePaths(html, lang) {
       : 'href="../' + page + '.html' + hash + '"');
 
   return html;
+}
+
+/* ---------------------------------------------------------------------
+   RUNTIME DICTIONARY — the half of the site the build cannot reach.
+
+   Everything above translates HTML that exists on disk. But two scripts
+   write copy into the page AFTER it loads, from ONE shared English source:
+
+     assets/js/content.js  hydrates [data-cms] elements from /content/*.json
+     assets/js/booking.js  renders the entire experience catalogue + form UI
+
+   All nine languages deliberately share that single content directory —
+   the camp owner edits prices and packages once, not nine times. The cost
+   is that hydration used to overwrite perfectly translated German package
+   names with English about a second after the page painted, which reads to
+   a visitor as a broken page rather than a missing translation.
+
+   So the dictionary's $cms block ships to the browser as a plain
+   English-string -> translated-string map, and the two scripts look every
+   CMS string up through it before writing. INLINE, not a separate file:
+   an external fetch would be a second request that hydrate() does not wait
+   for, which is the same race in a new costume.
+
+   pricePostfix rides along because it is a language fact, not a CMS one —
+   Italian and Spanish write "190 $", everyone else writes "$190". */
+function injectRuntimeDict(html, lang, dict) {
+  const cms = dict.$cms;
+  if (!cms || !Object.keys(cms).length) return html;
+
+  const payload = JSON.stringify({ postfix: !!lang.pricePostfix, t: cms })
+    // A literal </script> inside a JSON string ends the block early, and the
+    // two Unicode line separators are newlines to a JS parser but not to JSON.
+    .replace(/<\//g, '<\/')
+    .replace(/\u2028/g, '\u2028')
+    .replace(/\u2029/g, '\u2029');
+
+  const tag = '<script>window.__LHSC_I18N=' + payload + ';</script>\n';
+  const anchor = html.match(/<script src="[^"]*assets\/js\/content\.js[^"]*"><\/script>/);
+  if (!anchor) return html;   // page has no CMS layer, nothing to translate
+  return html.replace(anchor[0], tag + anchor[0]);
 }
 
 /* ---------------------------------------------------------------------
@@ -542,6 +582,7 @@ function build() {
       html = schema.rebuildFaq(html, lang.htmlLang).html;
       html = schema.translateSchemaText(html, dict, schemaStats);
       html = rewritePaths(html, lang);
+      html = injectRuntimeDict(html, lang, dict);
       html = html.replace(/style\.css\?v=(\d+)/g, 'style.css?v=$1');
 
       const outDir = path.join(ROOT, lang.dir);

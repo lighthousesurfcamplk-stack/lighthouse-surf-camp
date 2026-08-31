@@ -33,6 +33,24 @@
 
   var $ = function (id) { return document.getElementById(id); };
 
+  /* Every visible string below arrives from one of two English sources: the
+     shared /content/*.json catalogue (all nine languages read the same file,
+     by design — the owner edits prices once) or this file's own UI copy. The
+     dictionary that translates both is defined in content.js and stamped onto
+     the page by tools/i18n-build.js; borrow it rather than keep a second one.
+
+     On the English site both are the identity function, so nothing below
+     needs to know which language it is rendering.
+
+       t('Nights')                        -> 'Naechte'
+       tf('Remove one {x}', {x: 'Dorm'})  -> 'Ein Dorm entfernen'
+
+     Word order is why the templated strings carry {x} instead of being
+     concatenated: Hebrew and Japanese put the item name where English puts
+     the verb, and string addition cannot express that. */
+  var t = window.LHSC.t || function (v) { return v; };
+  var tf = window.LHSC.tf || function (v) { return v; };
+
   var state = {
     data: null,
     mode: 'packages',
@@ -155,30 +173,30 @@
     body.className = 'opt-body';
 
     var h = document.createElement('h4');
-    h.textContent = item.name;
+    h.textContent = t(item.name);
     body.appendChild(h);
 
     var meta = item.meta || item.tagline;
     if (meta) {
       var p = document.createElement('p');
       p.className = 'opt-meta';
-      p.textContent = meta;
+      p.textContent = t(meta);
       body.appendChild(p);
     }
 
     if (big && item.blurb) {
       var b = document.createElement('p');
       b.className = 'opt-blurb';
-      b.textContent = item.blurb;
+      b.textContent = t(item.blurb);
       body.appendChild(b);
     }
 
     if (big && Array.isArray(item.includes) && item.includes.length) {
       var ul = document.createElement('ul');
       ul.className = 'opt-inc';
-      item.includes.forEach(function (t) {
+      item.includes.forEach(function (line) {
         var li = document.createElement('li');
-        li.textContent = t;
+        li.textContent = t(line);
         ul.appendChild(li);
       });
       body.appendChild(ul);
@@ -189,7 +207,7 @@
     var strong = document.createElement('b');
     strong.textContent = money(item.price);
     var em = document.createElement('em');
-    em.textContent = item.unit || '';
+    em.textContent = t(item.unit || '');
     price.appendChild(strong);
     price.appendChild(em);
     body.appendChild(price);
@@ -209,22 +227,22 @@
       add.className = 'btn btn-gold opt-btn';
       add.dataset.act = 'add';
       add.dataset.id = item.id;
-      add.textContent = 'Add';
-      add.setAttribute('aria-label', 'Add ' + item.name + ' to your booking');
+      add.textContent = t('Add');
+      add.setAttribute('aria-label', tf('Add {x} to your booking', { x: t(item.name) }));
       wrap.appendChild(add);
       return wrap;
     }
 
     var st = document.createElement('div');
     st.className = 'stepper';
-    st.appendChild(stepBtn('dec', '−', item, 'Remove one ' + item.name));
+    st.appendChild(stepBtn('dec', '−', item, tf('Remove one {x}', { x: t(item.name) })));
     var n = document.createElement('span');
     n.className = 'stepper-n';
     n.textContent = String(qty);
     n.setAttribute('aria-live', 'polite');
-    n.setAttribute('aria-label', qty + ' × ' + item.name);
+    n.setAttribute('aria-label', qty + ' × ' + t(item.name));
     st.appendChild(n);
-    st.appendChild(stepBtn('inc', '+', item, 'Add another ' + item.name));
+    st.appendChild(stepBtn('inc', '+', item, tf('Add another {x}', { x: t(item.name) })));
     wrap.appendChild(st);
 
     var unit = document.createElement('span');
@@ -248,8 +266,8 @@
   function unitWord(item) {
     var cats = (state.data.experiences.categories || []);
     var c = cats.find(function (x) { return x.id === item.category; });
-    if (c && c.unitWord) return c.unitWord;
-    return item.kind === 'package' ? 'People' : 'Qty';
+    if (c && c.unitWord) return t(c.unitWord);
+    return t(item.kind === 'package' ? 'People' : 'Qty');
   }
 
   function renderOptions() {
@@ -273,7 +291,7 @@
     var chips = document.createElement('div');
     chips.className = 'cat-chips';
     chips.setAttribute('role', 'tablist');
-    chips.setAttribute('aria-label', 'Experience category');
+    chips.setAttribute('aria-label', t('Experience category'));
     cats.forEach(function (c) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -281,7 +299,7 @@
       b.dataset.cat = c.id;
       b.setAttribute('role', 'tab');
       b.setAttribute('aria-selected', c.id === state.category ? 'true' : 'false');
-      b.textContent = c.label;
+      b.textContent = t(c.label);
       var n = itemsIn(c.id).reduce(function (s, it) { return s + qtyOf(it.id); }, 0);
       if (n) {
         var dot = document.createElement('span');
@@ -297,7 +315,7 @@
     if (active && active.note) {
       var note = document.createElement('p');
       note.className = 'cat-note';
-      note.textContent = active.note;
+      note.textContent = t(active.note);
       host.appendChild(note);
     }
 
@@ -325,7 +343,7 @@
     if (!ls.length) {
       var empty = document.createElement('p');
       empty.className = 'cart-empty';
-      empty.textContent = 'Nothing reserved yet — pick a camp package or build your own trip above.';
+      empty.textContent = t('Nothing reserved yet — pick a camp package or build your own trip above.');
       host.appendChild(empty);
     } else {
       ls.forEach(function (l) {
@@ -335,20 +353,20 @@
         var main = document.createElement('div');
         main.className = 'ci-main';
         var b = document.createElement('b');
-        b.textContent = l.item.name;
+        b.textContent = t(l.item.name);
         var em = document.createElement('em');
-        em.textContent = money(l.item.price) + ' ' + (l.item.unit || '');
+        em.textContent = money(l.item.price) + ' ' + t(l.item.unit || '');
         main.appendChild(b);
         main.appendChild(em);
         row.appendChild(main);
 
         var q = document.createElement('div');
         q.className = 'ci-qty';
-        q.appendChild(stepBtn('dec', '−', l.item, 'Remove one ' + l.item.name));
+        q.appendChild(stepBtn('dec', '−', l.item, tf('Remove one {x}', { x: t(l.item.name) })));
         var n = document.createElement('span');
         n.textContent = String(l.qty);
         q.appendChild(n);
-        q.appendChild(stepBtn('inc', '+', l.item, 'Add another ' + l.item.name));
+        q.appendChild(stepBtn('inc', '+', l.item, tf('Add another {x}', { x: t(l.item.name) })));
         row.appendChild(q);
 
         var price = document.createElement('span');
@@ -362,7 +380,7 @@
         x.dataset.act = 'del';
         x.dataset.id = l.id;
         x.textContent = '×';
-        x.setAttribute('aria-label', 'Remove ' + l.item.name + ' from your booking');
+        x.setAttribute('aria-label', tf('Remove {x} from your booking', { x: t(l.item.name) }));
         row.appendChild(x);
 
         host.appendChild(row);
@@ -386,7 +404,9 @@
     if (!bar) return;
     var n = count();
     bar.classList.toggle('on', n > 0 && state.step === 1);
-    setText('barCount', n + (n === 1 ? ' item' : ' items'));
+    /* Plural as a whole sentence, not " item" + "s": Russian needs a third
+       form and Japanese needs none, and neither survives concatenation. */
+    setText('barCount', tf(n === 1 ? '{n} item' : '{n} items', { n: n }));
     setText('barTotal', money(subtotal()));
   }
 
@@ -403,7 +423,7 @@
      --------------------------------------------------------------- */
   function goStep(n) {
     if (n >= 2 && !state.cart.length) {
-      toast('Add at least one item before continuing.', 'warn');
+      toast(t('Add at least one item before continuing.'), 'warn');
       var opts = $('bkOptions');
       if (opts) opts.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
@@ -507,7 +527,7 @@
       if (!input) return;
       var v = input.value || '';
       var ok = RULES[id].optional && !v.trim() ? true : RULES[id].test(v);
-      fieldError(id, ok ? null : RULES[id].msg);
+      fieldError(id, ok ? null : t(RULES[id].msg));
       if (!ok && !firstBad) firstBad = input;
     });
 
@@ -516,7 +536,7 @@
         firstBad.focus();
         firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-      toast('Please check the highlighted fields.', 'warn');
+      toast(t('Please check the highlighted fields.'), 'warn');
       return false;
     }
     return true;
@@ -535,7 +555,7 @@
       var row = document.createElement('div');
       row.className = 'rv-line';
       var name = document.createElement('span');
-      name.textContent = l.item.name + ' × ' + l.qty;
+      name.textContent = t(l.item.name) + ' × ' + l.qty;
       var amt = document.createElement('b');
       amt.textContent = money(l.total);
       row.appendChild(name);
@@ -543,9 +563,9 @@
       box.appendChild(row);
     });
 
-    box.appendChild(rvTotal('Subtotal', money(sub), false));
-    box.appendChild(rvTotal('Deposit due now (' + Math.round(depositRate() * 100) + '%)', money(dep), true));
-    box.appendChild(rvTotal('Balance on arrival', money(sub - dep), false));
+    box.appendChild(rvTotal(t('Subtotal'), money(sub), false));
+    box.appendChild(rvTotal(tf('Deposit due now ({p}%)', { p: Math.round(depositRate() * 100) }), money(dep), true));
+    box.appendChild(rvTotal(t('Balance on arrival'), money(sub - dep), false));
 
     var who = document.createElement('p');
     who.className = 'rv-who';
@@ -606,7 +626,7 @@
     var orderId = 'LHSC-' + Date.now();
 
     if (!ph.enabled) {
-      toast('Sending your booking to our team on WhatsApp…');
+      toast(t('Sending your booking to our team on WhatsApp…'));
       openWhatsApp('DEPOSIT BOOKING (' + money(deposit()) + ')');
       return;
     }
@@ -653,7 +673,7 @@
         console.warn('[LHSC] PayHere unavailable —', err.message);
         btn.disabled = false;
         btn.classList.remove('is-loading');
-        toast('Card payment is unavailable right now — sending via WhatsApp instead.', 'warn');
+        toast(t('Card payment is unavailable right now — sending via WhatsApp instead.'), 'warn');
         openWhatsApp();
       });
   }
@@ -673,10 +693,10 @@
       if (!item) return;
 
       switch (btn.dataset.act) {
-        case 'add': setQty(id, 1, item.name + ' added — nice choice.'); break;
+        case 'add': setQty(id, 1, tf('{x} added — nice choice.', { x: t(item.name) })); break;
         case 'inc': setQty(id, qtyOf(id) + 1); break;
         case 'dec': setQty(id, qtyOf(id) - 1); break;
-        case 'del': setQty(id, 0, item.name + ' removed.'); break;
+        case 'del': setQty(id, 0, tf('{x} removed.', { x: t(item.name) })); break;
       }
     });
 
@@ -726,7 +746,7 @@
         if (!state.touched) return;
         var v = input.value || '';
         var ok = RULES[id].optional && !v.trim() ? true : RULES[id].test(v);
-        fieldError(id, ok ? null : RULES[id].msg);
+        fieldError(id, ok ? null : t(RULES[id].msg));
       });
       input.addEventListener('input', function () {
         if (input.getAttribute('aria-invalid') !== 'true') return;
@@ -766,7 +786,7 @@
     if (shell) shell.remove();
     root.classList.add('bk-ready');
 
-    if (state.cart.length) toast('We saved your last selection.');
+    if (state.cart.length) toast(t('We saved your last selection.'));
   }).catch(function (err) {
     console.error('[LHSC] booking content failed to load —', err);
     var host = $('bkOptions');
@@ -775,15 +795,15 @@
       var box = document.createElement('div');
       box.className = 'bk-fallback';
       var h = document.createElement('h4');
-      h.textContent = 'Our live booking form is having a moment.';
+      h.textContent = t('Our live booking form is having a moment.');
       var p = document.createElement('p');
-      p.textContent = 'Message us on WhatsApp and we will set the whole trip up for you personally — usually within the hour.';
+      p.textContent = t('Message us on WhatsApp and we will set the whole trip up for you personally — usually within the hour.');
       var a = document.createElement('a');
       a.className = 'btn btn-gold';
       a.href = 'https://wa.me/94702828819';
       a.target = '_blank';
       a.rel = 'noopener';
-      a.textContent = 'Book on WhatsApp';
+      a.textContent = t('Book on WhatsApp');
       box.appendChild(h); box.appendChild(p); box.appendChild(a);
       host.appendChild(box);
     }
