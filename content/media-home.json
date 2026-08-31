@@ -55,7 +55,7 @@
   "hero": {
     "video": {
       "videoDesktop": "",
-      "videoMobile": "https://rxjiavqevrdwfxtgmkho.supabase.co/storage/v1/object/sign/lighthouse-media/LIght%20house-.mp4?token=eyJraWQiOiI5NjRiZmRlOC1lNGMxLTRkMmItYTNjNi0wOTBmM2Q2ZTAxNmIiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJsaWdodGhvdXNlLW1lZGlhL0xJZ2h0IGhvdXNlLS5tcDQiLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg4MjEwNjc1LCJleHAiOjE4MTk3NDY2NzV9.MfrHtjs7ZyDvHWyt2TSDXwzdOH30M_mmXCf429MUdaM6if7E8YJaJOaAlQj1s1FO4ODsFe29kUQ3Rn1X5aPagw",
+      "videoMobile": "https://rxjiavqevrdwfxtgmkho.supabase.co/storage/v1/object/public/lighthouse-media1/LIght%20house-.mp4",
       "poster": ""
     },
     "slide1": {
