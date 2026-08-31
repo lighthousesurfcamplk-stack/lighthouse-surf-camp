@@ -1,6 +1,6 @@
 {
   "hero": {
-    "image": "assets/img/dji0086.jpg",
+    "image": "assets/img/whatsapp-image-2023-03-30-at-2.04.56-am-3-.jpeg",
     "alt": "Aerial of the Arugam Bay coastline and palm forest, Sri Lanka"
   },
   "feature": {
@@ -8,9 +8,45 @@
     "alt": "The wild east coast around Arugam Bay"
   },
   "tiles": {
+    "muhudu": {
+      "image": "assets/img/td-muhudu.jpg",
+      "alt": "Muhudu Maha Viharaya temple by the sea"
+    },
+    "shopping": {
+      "image": "assets/img/td-shopping.jpg",
+      "alt": "Arugam Bay main street shopping"
+    },
+    "kudumbigala": {
+      "image": "assets/img/td-kudumbigala.jpg",
+      "alt": "Kudumbigala forest monastery"
+    },
+    "culinary": {
+      "image": "assets/img/td-culinary.jpg",
+      "alt": "Sri Lankan cuisine — rice and curry"
+    },
+    "fishing": {
+      "image": "assets/img/td-fishing.jpg",
+      "alt": "Lagoon fishing at sunset"
+    },
+    "yoga": {
+      "image": "assets/img/td-yoga.jpg",
+      "alt": "Sunrise beach yoga at Arugam Bay"
+    },
+    "lahugala": {
+      "image": "assets/img/td-lahugala.jpg",
+      "alt": "Elephant at Lahugala National Park"
+    },
     "kumana": {
       "image": "assets/img/td-kumana.jpg",
       "alt": "Kumana National Park safari at sunset"
+    },
+    "nightlife": {
+      "image": "assets/img/td-nightlife.jpg",
+      "alt": "Beach nightlife in Arugam Bay"
+    },
+    "sunrise": {
+      "image": "assets/img/td-sunrise.jpg",
+      "alt": "Sunrise and sunset over Arugam Bay"
     },
     "elephantRock": {
       "image": "assets/img/td-elephantsunset.jpg",
@@ -19,42 +55,6 @@
     "lagoon": {
       "image": "assets/img/td-lagoon.jpg",
       "alt": "Pottuvil Lagoon mangrove boat trip"
-    },
-    "kudumbigala": {
-      "image": "assets/img/td-kudumbigala.jpg",
-      "alt": "Kudumbigala forest monastery"
-    },
-    "lahugala": {
-      "image": "assets/img/td-lahugala.jpg",
-      "alt": "Elephant at Lahugala National Park"
-    },
-    "muhudu": {
-      "image": "assets/img/td-muhudu.jpg",
-      "alt": "Muhudu Maha Viharaya temple by the sea"
-    },
-    "yoga": {
-      "image": "assets/img/td-yoga.jpg",
-      "alt": "Sunrise beach yoga at Arugam Bay"
-    },
-    "fishing": {
-      "image": "assets/img/td-fishing.jpg",
-      "alt": "Lagoon fishing at sunset"
-    },
-    "shopping": {
-      "image": "assets/img/td-shopping.jpg",
-      "alt": "Arugam Bay main street shopping"
-    },
-    "nightlife": {
-      "image": "assets/img/td-nightlife.jpg",
-      "alt": "Beach nightlife in Arugam Bay"
-    },
-    "culinary": {
-      "image": "assets/img/td-culinary.jpg",
-      "alt": "Sri Lankan cuisine — rice and curry"
-    },
-    "sunrise": {
-      "image": "assets/img/td-sunrise.jpg",
-      "alt": "Sunrise and sunset over Arugam Bay"
     }
   },
   "closing": {
