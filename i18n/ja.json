@@ -17,7 +17,6 @@
       "ogImageAlt": "アルガムベイ、Light House Surf Campの夕景とビーチの灯り"
     }
   },
-
   "$schema": {
     "Boutique surf and eco retreat in Arugam Bay, Sri Lanka with jungle cabanas, a beachfront restaurant, and surf lessons.": "スリランカ・アルガムベイのブティックサーフ＆エコリトリート。ジャングルのカバナ、ビーチフロントのレストラン、サーフィンレッスン。",
     "Home": "ホーム",
@@ -30,7 +29,6 @@
     "10-Day Pro Trip": "10日間プロトリップ",
     "All-inclusive, 9 nights": "オールインクルーシブ・9泊"
   },
-
   "index.li--home": "<a href=\"index.html\" class=\"active\">ホーム</a>",
   "index.li--stay": "<a href=\"stay.html\">宿泊</a>",
   "index.li--surf": "<a href=\"lessons.html\">サーフィン</a>",
@@ -40,14 +38,12 @@
   "index.li--gallery": "<a href=\"gallery.html\">ギャラリー</a>",
   "index.li--reviews": "<a href=\"reviews.html\">口コミ</a>",
   "index.li--about": "<a href=\"about.html\">私たちについて</a>",
-
   "index.h1--where-the-jungle-meets-the-surf": "ジャングルが<span class=\"glow\">波と出会う場所。</span>",
-  "index.p--a-boutique-surf-and-eco-retreat": "スリランカの手つかずの東海岸に建つ、ブティックサーフ＆エコリトリート。手づくりのAフレーム・カバナで眠り、天然木の大聖堂のような空間で食事をし、地球でもっとも美しい波のいくつかを味わってください。",
+  "index.p--a-boutique-surf-and-eco-retreat": "スリランカの手つかずの東海岸に建つ、ブティックサーフ＆エコリトリート。<span class=\"m-hide\">手づくりのAフレーム・カバナで眠り、天然木の大聖堂のような空間で食事をし、地球でもっとも美しい波のいくつかを味わってください。</span>",
   "index.li--4-9-5-from-180-guests": "<span aria-hidden=\"true\">★</span> 180名以上のゲストから4.9 / 5",
   "index.li--free-cancellation-up-to-14-days": "<span aria-hidden=\"true\">✓</span> 14日前まで無料キャンセル",
   "index.li--25-deposit-balance-on-arrival": "<span aria-hidden=\"true\">✓</span> デポジット25%、残金は現地で",
   "index.li--english-speaking-local-coaches": "<span aria-hidden=\"true\">✓</span> 英語が話せるローカルコーチ",
-
   "index.h2--an-untamed-paradise-thoughtfully-tamed": "野生の楽園を、心地よく整えて。",
   "index.p--tucked-between-palm-forest-and-the": "ヤシの林とインド洋のあいだにひっそりと佇むLight House Surf Campは、冒険と静けさの両方を求める人のための隠れ家です。木と茅でできたカバナはジャングルから自然に立ち上がり、天然木のレストランは夕日を切り取り、波はいつも裸足で歩ける距離にあります。",
   "index.p--it-is-the-rare-place-where": "夜明けにチューブを追い、昼にヨガをし、夜はハンモックから星を眺める。それが一歩も外に出ずにできる、数少ない場所です。",
@@ -55,7 +51,6 @@
   "index.li--beachfront-natural-wood-restaurant-bar": "<span class=\"tick\">✓</span> ビーチフロントの天然木レストラン＆バー",
   "index.li--surf-lessons-coaching-board-rentals": "<span class=\"tick\">✓</span> サーフィンレッスン、コーチング、ボードレンタル",
   "index.li--safaris-yoga-and-east-coast-sunsets": "<span class=\"tick\">✓</span> サファリ、ヨガ、東海岸の夕日",
-
   "index.h2--everything-handled-just-bring-boardshorts": "手配はすべてこちらで。あなたは水着だけ。",
   "index.p--one-price-covers-your-cabana-every": "カバナ、全食事、認定ローカルガイドによるコーチング、ボードまで、ひとつの料金に含まれます。デポジット25%でご予約、残金は到着時のお支払いです。",
   "index.p--swipe-to-compare-camps": "スワイプしてキャンプを比較 →",
@@ -83,7 +78,6 @@
   "index.li--full-video-analysis-package": "ビデオ分析フルパッケージ",
   "index.li--airport-transfers-both-ways": "空港送迎（往復）",
   "index.p--prefer-to-build-your-own-add": "自分で組み立てたい方へ。客室、レッスン、トリートメントを個別に追加できます — 1泊<b data-cms=\"price:stay-dorm\">$10</b>から。<a href=\"book.html\">組み立てをはじめる →</a>",
-
   "index.h2--sleep-wrapped-in-the-jungle": "ジャングルに包まれて眠る。",
   "index.p--from-sea-view-tree-house-cabanas": "オーシャンビューのツリーハウス・カバナから、居心地のよいプライベートルーム、明るいドミトリーまで。どの空間も木と茅で手づくりされ、緑に向かって開いています。",
   "index.h3--tree-house-cabana": "ツリーハウス・カバナ",
@@ -92,20 +86,17 @@
   "index.p--a-comfortable-double-opening-onto-a": "ハンモックのあるテラスに続く快適なダブルルーム。遮るもののない海の眺め。",
   "index.h3--6-bed-mixed-dorm": "6ベッド混合ドミトリー",
   "index.p--a-single-bed-in-our-bright": "明るく賑やかなドミトリーのシングルベッド。もっともお手頃な選択です。",
-
   "index.h2--dine-under-the-natural-wood-cathedral": "天然木の大聖堂で食事を。",
   "index.p--our-open-air-restaurant-soars-three": "オープンエアのレストランは3層分の高さまで空へ伸びています。天然木と茅の大聖堂は、夕暮れにはすべてが黄金色に。朝はトロピカルフルーツとホッパーで目覚め、海から戻れば炊きたてのライス＆カリー、その日の魚、そして冷えたドリンク。太陽が湾に溶けていきます。",
   "index.li--authentic-sri-lankan-rice-curry-hoppers": "<span class=\"tick\">✓</span> 本格的なスリランカのライス＆カリー、ホッパー、魚料理",
   "index.li--beach-bbq-nights-bonfires-live-music": "<span class=\"tick\">✓</span> ビーチBBQナイト、焚き火、ライブ音楽",
   "index.li--fresh-juices-smoothies-sunset-cocktails": "<span class=\"tick\">✓</span> フレッシュジュース、スムージー、サンセットカクテル",
   "index.li--vegetarian-vegan-options-always-available": "<span class=\"tick\">✓</span> ベジタリアン・ヴィーガン対応は常時ご用意",
-
   "index.h2--surf-hard-restore-deeply": "しっかり乗って、深く回復する。",
   "index.p--balance-your-adventure-with-our-holistic": "冒険とのバランスを取るホリスティックなプログラム。常駐ドクターによるアーユルヴェーダのトリートメントと食事指導、日の出のヨガと呼吸法、そして深い安らぎをもたらすサウンドヒーリング。休み、整え、養い、浄化する。",
   "index.li--ayurveda-consultations-abhyanga-shirodhara-panchakarma": "<span class=\"tick\">✓</span> アーユルヴェーダ — 診察、アビヤンガ、シロダーラ、パンチャカルマ",
   "index.li--sunrise-yoga-pranayama-all-levels": "<span class=\"tick\">✓</span> 日の出のヨガとプラーナヤーマ、全レベル対応",
   "index.li--sound-healing-baths-for-deep-relaxation": "<span class=\"tick\">✓</span> 深いリラクゼーションのためのサウンドバス",
-
   "index.h2--ten-world-class-breaks-at-your": "世界クラスのポイントが10か所、すぐそこに。",
   "index.p--arugam-bay-is-ranked-among-the": "アルガムベイは世界のサーフ・デスティネーション上位10に数えられます。毎朝うねりを読み、あなたのレベルに合った波へご案内します。初めての一本から、初めてのチューブまで。",
   "index.h3--surf-lessons": "サーフィンレッスン",
@@ -114,18 +105,15 @@
   "index.p--video-analysis-and-dawn-patrol-missions": "ビデオ分析と、メインポイント、ポットゥヴィル、ピーナッツファーム、そして私たちの秘密のポイント Light House への夜明けのセッション。",
   "index.h3--board-rentals": "ボードレンタル",
   "index.p--soft-tops-to-performance-shortboards-all": "ソフトトップからパフォーマンス・ショートボードまで、状態のよいボードを砂浜までお届け。時間単位・1日・1週間から。",
-
   "index.h2--sri-lanka-s-wild-east-all": "スリランカの野生の東海岸を、ひとり占め。",
   "index.p--we-sit-near-sangamankanda-the-eastern": "私たちがいるのはスリランカ最東端のサンガマンカンダ近く。白い砂浜はいまも空いていて、うねりはクリーンに届き、メインベイの人混みは遠い話です。周囲には野生動物であふれるラグーン、古い寺院、ゾウが点在する国立公園、そして島でもっとも壮大な朝日があります。",
   "index.li--kumana-lahugala-safaris-pottuvil-lagoon-trips": "<span class=\"tick\">✓</span> クマナ／ラフガラのサファリ、ポットゥヴィル・ラグーンのツアー",
   "index.li--elephant-rock-sunsets-temple-visits": "<span class=\"tick\">✓</span> エレファントロックの夕日と寺院めぐり",
   "index.li--airport-transfers-tuk-tuks-bikes-arranged": "<span class=\"tick\">✓</span> 空港送迎、トゥクトゥク、バイクの手配",
-
   "index.h2--loved-by-travellers-worldwide": "世界中の旅人に愛されています。",
   "index.p--waking-up-in-a-jungle-a": "「ジャングルのAフレームで目を覚まし、日の出にサーフして、あの見事な木造レストランで食事する。夢みたいでした。これまでで一番特別な場所です。」",
   "index.p--they-took-us-to-a-different": "「毎朝ちがうポイントへ連れて行ってくれました。手づくりで、本気で心を配るローカルの人たちが運営していて、場所そのものに魂があります。もう次の予約をしました。」",
   "index.p--travelled-solo-and-never-felt-alone": "「ひとり旅でしたが、寂しさは一度も。ハンモックからの夕日、サーフィン、ヨガ、サファリ、そして最高に新鮮な魚。東海岸の純粋な魔法です。」",
-
   "index.h2--everything-travellers-ask-us": "旅の方からよくいただく質問。",
   "index.button--when-is-the-best-time-to": "アルガムベイでサーフィンをするベストシーズンは？<span class=\"acc-ico\" aria-hidden=\"true\">+</span>",
   "index.p--peak-surf-season-runs-june-to": "ハイシーズンは6月から10月。うねりがもっとも安定し、湾が本領を発揮する時期です。カバナの数は少なく、この時期から先に埋まりますので早めのご予約を。オフシーズンの海岸は静かで緑が濃く、これから覚える方には最適です。",
@@ -139,7 +127,6 @@
   "index.p--tell-us-your-flight-and-we": "フライト情報をお知らせいただければ送迎を手配します。トゥクトゥクやバイクは到着後に予約でき、ご自分のペースで海岸を巡れます。",
   "index.button--can-you-cater-for-vegetarians-and": "ベジタリアンやヴィーガンにも対応できますか？<span class=\"acc-ico\" aria-hidden=\"true\">+</span>",
   "index.p--always-vegetarian-and-vegan-options-are": "もちろんです。本格的なスリランカのライス＆カリー、ホッパー、その日の魚とあわせて、毎食ベジタリアン・ヴィーガンのご用意があります。アレルギーはご予約時にお知らせください。キッチンが対応します。",
-
   "index.h2--reserve-your-place-in-paradise": "楽園にあなたの場所を。",
   "index.p--peak-season-runs-june-to-october": "ハイシーズンは6月から10月、カバナの数はごくわずかです。デポジット25%でお席を確保してください。残金は到着時、14日前までキャンセル無料です。",
   "index.p--takes-about-two-minutes-no-account": "所要約2分・アカウント登録不要・数時間以内に返信します",
@@ -147,7 +134,6 @@
   "index.h4--explore": "見どころ",
   "index.h4--retreat": "リトリート",
   "index.h4--get-in-touch": "お問い合わせ",
-
   "index.alt--aerial-view-of-light-house-surf": "Light House Surf Campとアルガムベイ海岸の空撮",
   "index.alt--a-surfer-riding-a-wave-at": "アルガムベイで波に乗るサーファー",
   "index.alt--aerial-of-the-palm-coastline-at": "ゴールデンアワーのヤシの海岸線の空撮、アルガムベイ",
@@ -166,7 +152,6 @@
   "index.alt--palm-and-beach-at-sunset": "夕暮れのヤシとビーチ",
   "index.alt--sri-lanka-s-wild-east-coast": "アルガムベイに広がるスリランカの野生の東海岸",
   "index.alt--sunset-over-light-house-surf-camp": "Light House Surf Campに沈む夕日",
-
   "packages.li--home": "<a href=\"index.html\">ホーム</a>",
   "packages.li--stay": "<a href=\"stay.html\">宿泊</a>",
   "packages.li--surf": "<a href=\"lessons.html\">サーフィン</a>",
@@ -176,7 +161,6 @@
   "packages.li--gallery": "<a href=\"gallery.html\">ギャラリー</a>",
   "packages.li--reviews": "<a href=\"reviews.html\">口コミ</a>",
   "packages.li--about": "<a href=\"about.html\">私たちについて</a>",
-
   "packages.h1--all-inclusive-surf-camps-just-bring": "オールインクルーシブのサーフキャンプ。<br>持ち物は水着だけ。",
   "packages.p--surf-stay-eat-stretch-and-explore": "サーフィン、宿泊、食事、ストレッチ、周辺の探索まですべて込み。パッケージはこれらをひとつの料金にまとめているので、あなたは波のことだけ考えていられます。ひとり旅にも、カップルにも、グループにも。",
   "packages.h2--packages-built-around-your-surf-goals": "あなたのサーフィンの目標に合わせたパッケージ。",
@@ -202,7 +186,6 @@
   "packages.li--daily-breakfast-dinners": "毎日の朝食と夕食",
   "packages.li--kumana-safari-lagoon-trip": "クマナ・サファリ＋ラグーンツアー",
   "packages.li--all-transfers-tuk-tuks": "すべての送迎とトゥクトゥク",
-
   "packages.h2--the-full-arugam-bay-experience": "アルガムベイをまるごと。",
   "packages.h3--daily-surfing": "毎日のサーフィン",
   "packages.p--guided-sessions-at-the-break-that": "その日のうねりとあなたのレベルにいちばん合うポイントでのガイド付きセッション。",
@@ -220,22 +203,45 @@
   "packages.p--optional-ayurveda-yoga-and-sound-healing": "セッションの合間に整えるアーユルヴェーダ、ヨガ、サウンドヒーリング（オプション）。",
   "packages.h3--sunset-sessions": "サンセットセッション",
   "packages.p--golden-hour-surfs-and-the-best": "ゴールデンアワーのサーフィンと、東海岸で最高の朝日と夕日の眺め。",
-
   "packages.h2--your-trip-your-way": "旅は、あなたの思うままに。",
   "packages.p--want-a-luxury-room-a-private": "ラグジュアリーな客室、プライベートコーチ、ファミリー向けパッケージ、長期滞在。どのキャンプも自由にカスタマイズできます。手頃なカバナから5つ星リゾートまで、宿泊・サーフィン・アクティビティをご希望どおりに手配します。",
   "packages.li--solo-couple-family-group-rates": "<span class=\"tick\">✓</span> ひとり旅・カップル・ファミリー・グループ料金",
   "packages.li--accommodation-upgrades-available": "<span class=\"tick\">✓</span> 客室のアップグレード可",
   "packages.li--custom-trip-length-add-on-tours": "<span class=\"tick\">✓</span> 日数のカスタマイズと追加ツアー",
   "packages.li--bike-tuk-tuk-rentals-on-request": "<span class=\"tick\">✓</span> バイク・トゥクトゥクのレンタル（ご要望に応じて）",
-
   "packages.h2--lock-in-your-surf-camp": "サーフキャンプを確保しましょう。",
   "packages.p--june-to-october-is-peak-season": "6月から10月はハイシーズンで、週単位で早く埋まっていきます。今日オンラインでデポジットを入れてご予約ください。",
   "packages.p--premium-surf-lessons-camps-and-rentals": "世界トップ10のサーフ・デスティネーション、アルガムベイでのプレミアムなレッスン、キャンプ、レンタル。",
   "packages.h4--explore": "見どころ",
   "packages.h4--camp": "キャンプ",
   "packages.h4--get-in-touch": "お問い合わせ",
-
   "packages.alt--sunset-and-beach-lights-at-light": "アルガムベイ、Light House Surf Campの夕景とビーチの灯り",
   "packages.alt--sea-view-cabana-terrace-with-hammock": "ハンモックのあるオーシャンビュー・カバナのテラス",
-  "packages.alt--sunset-over-light-house-surf-camp": "Light House Surf Campに沈む夕日"
+  "packages.alt--sunset-over-light-house-surf-camp": "Light House Surf Campに沈む夕日",
+  "index.a--book-now": "今すぐ予約",
+  "index.a--reserve-your-escape": "旅を予約する",
+  "index.a--see-packages-prices": "パッケージと料金",
+  "index.a--our-story": "私たちの物語 <span class=\"arrow\">→</span>",
+  "index.a--choose-this-camp": "このキャンプを選ぶ",
+  "index.a--reserve-this-camp": "このキャンプを予約",
+  "index.a--choose-this-camp-2": "このキャンプを選ぶ",
+  "index.a--view-all-accommodation": "宿泊施設をすべて見る <span class=\"arrow\">→</span>",
+  "index.a--see-the-restaurant": "レストランを見る <span class=\"arrow\">→</span>",
+  "index.a--explore-wellness": "ウェルネスを見る <span class=\"arrow\">→</span>",
+  "index.a--plan-your-trip": "旅を計画する <span class=\"arrow\">→</span>",
+  "index.a--read-all-reviews": "すべてのレビューを読む <span class=\"arrow\">→</span>",
+  "index.a--check-availability": "空室を確認する",
+  "index.a--ask-on-whatsapp": "WhatsAppで質問",
+  "index.a--whatsapp": "WhatsApp",
+  "index.a--book-your-stay": "滞在を予約する",
+  "packages.a--book-now": "今すぐ予約",
+  "packages.a--book-a-package": "パッケージを予約 <span class=\"arrow\">→</span>",
+  "packages.a--book-weekend": "週末プランを予約",
+  "packages.a--book-7-day-camp": "7日間キャンプを予約",
+  "packages.a--book-pro-trip": "プロトリップを予約",
+  "packages.a--plan-my-camp": "自分のキャンプを組む <span class=\"arrow\">→</span>",
+  "packages.a--book-pay-online": "オンラインで予約・決済 <span class=\"arrow\">→</span>",
+  "packages.a--ask-on-whatsapp": "WhatsAppで質問",
+  "packages.a--whatsapp": "WhatsApp",
+  "packages.a--book-your-stay": "滞在を予約する"
 }

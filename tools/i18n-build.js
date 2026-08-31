@@ -40,10 +40,16 @@ const ORIGIN = 'https://lighthousesurfcamp.lk';
    `code`     is BOTH the hreflang value and the dictionary filename, so the
               two can never drift apart.
    `dir`      is the URL segment. English is the source and has none.
-   `flag`     is a regional-indicator pair. It is decoration only — it sits in
-              an aria-hidden span, because a flag is a country and never a
-              language, and a screen reader announcing "flag of Israel" where
-              the user needs "Hebrew" is worse than silence. `name` carries
+   `flag`     names a <symbol> in FLAG_SPRITE below, NOT an emoji. Emoji flags
+              are regional-indicator pairs, and Segoe UI Emoji — the font every
+              Windows Chrome and Edge falls back to — deliberately ships no
+              glyphs for them, so the German flag renders as the bare letters
+              "DE" for the largest single slice of this site's traffic. Drawn
+              SVG renders identically everywhere and costs one 2 KB sprite per
+              page. It is decoration only — it sits in an aria-hidden <svg>,
+              because a flag is a country and never a language, and a screen
+              reader announcing "flag of Israel" where the user needs "Hebrew"
+              is worse than silence. `name` carries
               the meaning, written in the language it names (endonym), which
               is the one string a visitor who cannot read the current page is
               still guaranteed to recognise.
@@ -61,15 +67,15 @@ const ORIGIN = 'https://lighthousesurfcamp.lk';
    Helvetisms differ (Velo, Znüni, parkieren). If you would rather /ch/ were
    fr-CH, swap the two fields — nothing else in this file needs to change. */
 const ALL_LANGS = [
-  { code: 'en',    dir: '',   label: 'EN', flag: '🇬🇧', name: 'English',   menuLabel: 'Language', htmlLang: 'en',    ogLocale: 'en_US' },
-  { code: 'de',    dir: 'de', label: 'DE', flag: '🇩🇪', name: 'Deutsch',   menuLabel: 'Sprache',  htmlLang: 'de',    ogLocale: 'de_DE' },
-  { code: 'de-CH', dir: 'ch', label: 'CH', flag: '🇨🇭', name: 'Schweiz',   menuLabel: 'Sprache',  htmlLang: 'de-CH', ogLocale: 'de_CH' },
-  { code: 'fr',    dir: 'fr', label: 'FR', flag: '🇫🇷', name: 'Français',  menuLabel: 'Langue',   htmlLang: 'fr',    ogLocale: 'fr_FR' },
-  { code: 'it',    dir: 'it', label: 'IT', flag: '🇮🇹', name: 'Italiano',  menuLabel: 'Lingua',   htmlLang: 'it',    ogLocale: 'it_IT' },
-  { code: 'es',    dir: 'es', label: 'ES', flag: '🇪🇸', name: 'Español',   menuLabel: 'Idioma',   htmlLang: 'es',    ogLocale: 'es_ES' },
-  { code: 'ru',    dir: 'ru', label: 'RU', flag: '🇷🇺', name: 'Русский',   menuLabel: 'Язык',     htmlLang: 'ru',    ogLocale: 'ru_RU' },
-  { code: 'ja',    dir: 'ja', label: 'JA', flag: '🇯🇵', name: '日本語',     menuLabel: '言語',      htmlLang: 'ja',    ogLocale: 'ja_JP' },
-  { code: 'he',    dir: 'he', label: 'HE', flag: '🇮🇱', name: 'עברית',     menuLabel: 'שפה',      htmlLang: 'he',    ogLocale: 'he_IL', rtl: true }
+  { code: 'en',    dir: '',   label: 'EN', flag: 'gb', name: 'English',   menuLabel: 'Language', htmlLang: 'en',    ogLocale: 'en_US' },
+  { code: 'de',    dir: 'de', label: 'DE', flag: 'de', name: 'Deutsch',   menuLabel: 'Sprache',  htmlLang: 'de',    ogLocale: 'de_DE' },
+  { code: 'de-CH', dir: 'ch', label: 'CH', flag: 'ch', name: 'Schweiz',   menuLabel: 'Sprache',  htmlLang: 'de-CH', ogLocale: 'de_CH' },
+  { code: 'fr',    dir: 'fr', label: 'FR', flag: 'fr', name: 'Français',  menuLabel: 'Langue',   htmlLang: 'fr',    ogLocale: 'fr_FR' },
+  { code: 'it',    dir: 'it', label: 'IT', flag: 'it', name: 'Italiano',  menuLabel: 'Lingua',   htmlLang: 'it',    ogLocale: 'it_IT' },
+  { code: 'es',    dir: 'es', label: 'ES', flag: 'es', name: 'Español',   menuLabel: 'Idioma',   htmlLang: 'es',    ogLocale: 'es_ES' },
+  { code: 'ru',    dir: 'ru', label: 'RU', flag: 'ru', name: 'Русский',   menuLabel: 'Язык',     htmlLang: 'ru',    ogLocale: 'ru_RU' },
+  { code: 'ja',    dir: 'ja', label: 'JA', flag: 'jp', name: '日本語',     menuLabel: '言語',      htmlLang: 'ja',    ogLocale: 'ja_JP' },
+  { code: 'he',    dir: 'he', label: 'HE', flag: 'il', name: 'עברית',     menuLabel: 'שפה',      htmlLang: 'he',    ogLocale: 'he_IL', rtl: true }
 ];
 
 /* A language is only real once its dictionary exists. Without this guard a
@@ -82,6 +88,101 @@ const ALL_LANGS = [
    row costs one log line; shipping it costs the cluster. */
 const LANGS = ALL_LANGS.filter(l =>
   !l.dir || fs.existsSync(path.join(ROOT, 'i18n', l.code + '.json')));
+
+
+/* ---------------------------------------------------------------------
+   FLAG SPRITE — nine flags, drawn once per document, referenced 20 times.
+
+   WHY NOT EMOJI
+   Windows ships no regional-indicator glyphs. The British flag emoji falls
+   back to the literal letters "GB" in Chrome and Edge on Windows — not a
+   rendering quirk, a deliberate omission in Segoe UI Emoji. The switcher
+   was therefore showing two-letter boxes to a majority of desktop visitors.
+
+   WHY A SPRITE AND NOT 20 INLINE COPIES
+   Every page carries the switcher twice (nav bar + drawer), and each copy
+   lists all nine languages, so the flag markup appears 20 times per
+   document. Inlining the paths 20 times would add tens of kilobytes to
+   every page for no visual gain. One <symbol> set plus 20 short <use>
+   references costs about 2 KB, gzips to almost nothing, and — because
+   <use> instances share one render tree — paints faster too.
+
+   The shapes are simplified to read at 21px: correct field colours and
+   correct proportions, but no heraldry (the Union Jack's counterchange, the
+   Spanish coat of arms) that would turn to mud below 40px anyway. Ratios
+   are normalised to 4:3 so a nine-row list has one column edge, not nine.
+   --------------------------------------------------------------------- */
+const FLAG_SPRITE =
+  '<svg class="flag-sprite" width="0" height="0" aria-hidden="true" focusable="false">' +
+    /* Union Jack, simplified: the diagonals are drawn straight rather than
+       counterchanged, which is invisible at this size. */
+    '<symbol id="flag-gb" viewBox="0 0 20 15">' +
+      '<path fill="#012169" d="M0 0h20v15H0z"/>' +
+      '<path stroke="#fff" stroke-width="3" d="m0 0 20 15m0-15L0 15"/>' +
+      '<path stroke="#C8102E" stroke-width="2" d="m0 0 20 15m0-15L0 15"/>' +
+      '<path stroke="#fff" stroke-width="5" d="M10 0v15M0 7.5h20"/>' +
+      '<path stroke="#C8102E" stroke-width="3" d="M10 0v15M0 7.5h20"/>' +
+    '</symbol>' +
+    '<symbol id="flag-de" viewBox="0 0 20 15">' +
+      '<path fill="#000" d="M0 0h20v5H0z"/>' +
+      '<path fill="#DD0000" d="M0 5h20v5H0z"/>' +
+      '<path fill="#FFCE00" d="M0 10h20v5H0z"/>' +
+    '</symbol>' +
+    /* Switzerland is square in life; cropped to 4:3 here so it lines up with
+       the other eight. The cross keeps its 7:6 arm ratio. */
+    '<symbol id="flag-ch" viewBox="0 0 20 15">' +
+      '<path fill="#D52B1E" d="M0 0h20v15H0z"/>' +
+      '<path fill="#fff" d="M8.55 3.3h2.9v2.75h2.75v2.9h-2.75v2.75h-2.9V8.95H5.8v-2.9h2.75z"/>' +
+    '</symbol>' +
+    '<symbol id="flag-fr" viewBox="0 0 20 15">' +
+      '<path fill="#fff" d="M0 0h20v15H0z"/>' +
+      '<path fill="#002395" d="M0 0h6.67v15H0z"/>' +
+      '<path fill="#ED2939" d="M13.33 0H20v15h-6.67z"/>' +
+    '</symbol>' +
+    '<symbol id="flag-it" viewBox="0 0 20 15">' +
+      '<path fill="#fff" d="M0 0h20v15H0z"/>' +
+      '<path fill="#009246" d="M0 0h6.67v15H0z"/>' +
+      '<path fill="#CE2B37" d="M13.33 0H20v15h-6.67z"/>' +
+    '</symbol>' +
+    /* Coat of arms omitted: at 21px it is four grey pixels. */
+    '<symbol id="flag-es" viewBox="0 0 20 15">' +
+      '<path fill="#AA151B" d="M0 0h20v15H0z"/>' +
+      '<path fill="#F1BF00" d="M0 3.75h20v7.5H0z"/>' +
+    '</symbol>' +
+    '<symbol id="flag-ru" viewBox="0 0 20 15">' +
+      '<path fill="#fff" d="M0 0h20v5H0z"/>' +
+      '<path fill="#0039A6" d="M0 5h20v5H0z"/>' +
+      '<path fill="#D52B1E" d="M0 10h20v5H0z"/>' +
+    '</symbol>' +
+    '<symbol id="flag-jp" viewBox="0 0 20 15">' +
+      '<path fill="#fff" d="M0 0h20v15H0z"/>' +
+      '<circle cx="10" cy="7.5" r="4.05" fill="#BC002D"/>' +
+    '</symbol>' +
+    /* Two stroked triangles, not a filled star: at this size a filled
+       hexagram loses its interior lines and reads as a blue blob. */
+    '<symbol id="flag-il" viewBox="0 0 20 15">' +
+      '<path fill="#fff" d="M0 0h20v15H0z"/>' +
+      '<path fill="#0038B8" d="M0 2h20v1.9H0zM0 11.1h20V13H0z"/>' +
+      '<path fill="none" stroke="#0038B8" stroke-width=".8" ' +
+        'd="m10 4.75 2.34 4.05H7.66zM10 10.25 7.66 6.2h4.68z"/>' +
+    '</symbol>' +
+  '</svg>';
+
+/* One flag reference. `id` is the LANGS row's `flag` field.
+   aria-hidden because the endonym beside it — or the button's aria-label —
+   is what actually names the language. focusable="false" keeps the <svg>
+   out of the tab order in the engines that would otherwise put it there. */
+const flagSVG = id =>
+  '<svg class="lang-flag" viewBox="0 0 20 15" aria-hidden="true" focusable="false">' +
+    '<use href="#flag-' + id + '"/></svg>';
+
+/* Strip-then-inject, exactly like the switcher: re-running the build must
+   never stack a second sprite, and a page built by an older revision of this
+   file must heal itself rather than need a hand edit. */
+function injectFlagSprite(html) {
+  html = html.replace(/\s*<svg class="flag-sprite"[\s\S]*?<\/svg>/g, '');
+  return html.replace(/(<body[^>]*>)/i, '$1\n' + FLAG_SPRITE);
+}
 
 /* Pages that exist in every language. Everything else stays English-only for
    now; the switcher sends visitors on those pages to the translated HOME page
@@ -279,13 +380,19 @@ function switcherHTML(currentLang, page, fromLangDir, variant) {
   const items = LANGS.map(l => {
     const on = l.code === currentLang.code;
     return '<li><a href="' + hrefFor(l) + '" hreflang="' + l.code + '" lang="' + l.htmlLang + '"' +
-           /* Each option is written in its own language, so each needs its own
-              direction — otherwise the Hebrew endonym renders reversed inside
-              an LTR menu. */
-           (l.rtl ? ' dir="rtl"' : '') +
            (on ? ' class="on" aria-current="true"' : '') + '>' +
-           '<span class="lang-flag" aria-hidden="true">' + l.flag + '</span>' +
-           '<span class="lang-name">' + l.name + '</span></a></li>';
+           flagSVG(l.flag) +
+           /* dir belongs on the LABEL, not on the row. Putting it on the <a>
+              reversed that <a>'s flex direction, so on the eight LTR pages the
+              Hebrew option alone put its flag on the right and broke the one
+              straight column edge the uniform 21px flag box exists to create.
+              It bought nothing in return: bidi already orders a pure Hebrew
+              run right-to-left without being told. Scoped to the span it is
+              still doing real work — it fixes where neutrals land if a label
+              ever gains a comma or a numeral — and on /he/ the whole document
+              is dir=rtl anyway, so there all nine rows mirror together. */
+           '<span class="lang-name"' + (l.rtl ? ' dir="rtl"' : '') + '>' +
+             l.name + '</span></a></li>';
   }).join('');
 
   /* Deliberately NOT a <select>. A native select cannot contain an anchor, so
@@ -298,11 +405,11 @@ function switcherHTML(currentLang, page, fromLangDir, variant) {
      aria-hidden on the flag is not an oversight. A flag names a country, never
      a language, and "flag of Switzerland" tells a screen-reader user nothing
      about which of four languages they are choosing. The endonym beside it
-     carries the meaning; the emoji is decoration. */
+     carries the meaning; the flag is decoration. */
   return '<div class="lang lang-' + variant + '" data-lang>' +
     '<button class="lang-toggle" type="button" aria-expanded="false" aria-controls="' + id + '"' +
       ' aria-label="' + currentLang.menuLabel + ': ' + currentLang.name + '">' +
-      '<span class="lang-flag" aria-hidden="true">' + currentLang.flag + '</span>' +
+      flagSVG(currentLang.flag) +
       '<span class="lang-code">' + currentLang.label + '</span>' +
       '<svg class="lang-caret" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.6"' +
         ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
@@ -398,6 +505,7 @@ function build() {
       // (on translated pages) the hreflang block. Their copy is untouched.
       if (lang.code === 'en') {
         let html = read(src);
+        html = injectFlagSprite(html);
         html = injectSwitcher(html, lang, page);
         html = rewriteHead(html, lang, page, { $pages: {} });
         html = schema.rebuildFaq(html, lang.htmlLang).html;
@@ -414,6 +522,7 @@ function build() {
       html = translateContent(html, dict, stats);
       html = translateAlts(html, dict, stats);
       html = rewriteHead(html, lang, page, dict);
+      html = injectFlagSprite(html);
       html = injectSwitcher(html, lang, page);
       html = schema.rebuildFaq(html, lang.htmlLang).html;
       html = schema.translateSchemaText(html, dict, schemaStats);

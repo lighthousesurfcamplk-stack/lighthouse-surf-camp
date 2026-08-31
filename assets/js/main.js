@@ -89,7 +89,16 @@
            and broke the Tab trap. Focus the first control that is
            actually painted instead. */
         var first = Array.prototype.slice.call(links.querySelectorAll('a[href],button'))
-          .filter(function(el){ return getComputedStyle(el).visibility !== 'hidden'; })[0];
+          .filter(function(el){
+            /* Two ways a control in here can be unfocusable, and both
+               fail silently rather than throwing: visibility:hidden (the
+               collapsed language panel) and display:none (the drawer's
+               language row, retired once the switcher moved into the
+               bar). getClientRects() is empty for both, and unlike
+               offsetParent it stays correct for position:fixed. */
+            return el.getClientRects().length > 0 &&
+                   getComputedStyle(el).visibility !== 'hidden';
+          })[0];
         if(first) first.focus({preventScroll:true});
       }else{
         document.body.classList.remove('nav-open');

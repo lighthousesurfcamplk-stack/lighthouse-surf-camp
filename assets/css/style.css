@@ -203,14 +203,39 @@ p{color:var(--ink-soft);text-wrap:pretty}
 .lang-toggle:hover{color:#fff;background:rgba(255,255,255,.2)}
 .lang-toggle[aria-expanded="true"]{color:#fff;background:rgba(255,255,255,.22)}
 
-/* Flags are emoji, so they come from whichever colour-emoji font the OS
-   ships. Naming those families ahead of the UI font stops the browser
-   from resolving a regional-indicator pair in Manrope, which has no such
-   glyphs and renders the bare two-letter fallback box instead. */
+/* Flags are DRAWN, not typed. Naming the colour-emoji families ahead of the
+   UI font was the right fix for the wrong problem: Segoe UI Emoji — the font
+   every Chrome and Edge on Windows falls back to — deliberately ships no
+   glyph for a regional-indicator pair, so there was nothing to fall back TO
+   and the switcher rendered the bare letters "GB", "DE", "IT" for the
+   largest single slice of this site's traffic. Each flag is now a <use> of
+   a <symbol> in the per-page sprite; see FLAG_SPRITE in tools/i18n-build.js.
+
+   One 4:3 box for all nine, so a nine-row menu has a single column edge
+   rather than nine ragged ones — real flag ratios run from 1:1 (Switzerland)
+   to 2:1 (the UK) and would look like a mistake stacked on top of each
+   other. */
 .lang-flag{
-  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif;
-  font-size:1.05rem;line-height:1;text-shadow:none;flex:none
+  display:block;flex:none;width:21px;height:15.75px;
+  border-radius:2.5px;overflow:hidden;
+  /* Japan, Israel and the top band of Russia are white to the edge, so
+     without a hairline they dissolve into the pale dropdown. */
+  box-shadow:0 0 0 1px rgba(11,26,38,.18)
 }
+/* On the photograph the ring has to flip, for exactly the same reason in
+   reverse — and flip back once the nav turns to paper on scroll. */
+.lang-toggle .lang-flag{box-shadow:0 0 0 1px rgba(255,255,255,.42)}
+.nav.scrolled .lang-toggle .lang-flag{box-shadow:0 0 0 1px rgba(11,26,38,.18)}
+/* The drawer is dark at every scroll position, so its flags keep the light
+   ring; (0,3,0) to match .nav.scrolled .lang-toggle .lang-flag above. */
+.lang-drawer .lang-flag,
+.nav.scrolled .lang-drawer .lang-flag{box-shadow:0 0 0 1px rgba(247,241,230,.34)}
+
+/* The sprite itself: nine <symbol> definitions at the top of <body> that
+   never paint. The width/height attributes keep it out of layout and
+   position takes it out of flow, so it cannot open the page with a stray
+   empty line box. */
+.flag-sprite{position:absolute;width:0;height:0;overflow:hidden}
 .lang-code{line-height:1}
 .lang-caret{width:9px;height:6px;flex:none;opacity:.75;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
 .lang-toggle[aria-expanded="true"] .lang-caret{transform:rotate(180deg)}
@@ -1814,4 +1839,125 @@ p,li,dd,blockquote,figcaption,.lead,h1,h2,h3,h4,h5,h6{
 @media(max-width:400px){
   .brand b{font-size:.95rem;letter-spacing:.07em}
   .brand small{font-size:.53rem;letter-spacing:.085em}
+}
+
+/* =====================================================================
+   RELEASE 25 — MINIMAL MOBILE HEADER + REDUCED TEXT DENSITY
+   Appended last, same-specificity-wins, no !important.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   [A] MOBILE HEADER — logo left, flag right, burger far right
+   Release 24 put the switcher at the top of the slide-in drawer. This
+   brings it back out into the bar itself, flag-only, so the language is
+   visible without opening anything — the Island Route pattern.
+
+   The drawer copy is retired rather than kept. Two visible switchers
+   would be two tab stops and eighteen focusable links for one decision,
+   and the ARIA relationship (aria-controls -> lang-menu-*) would point
+   at two panels claiming the same role. One switcher, one panel.
+   To put the drawer copy back, delete the .lang-li rule below.
+   --------------------------------------------------------------------- */
+@media(max-width:1180px){
+  .lang-bar{display:block}
+  .nav-links .lang-li{display:none}
+
+  /* Flag + caret only. The button keeps its aria-label ("Language:
+     English"), which is what carries the meaning once the "EN" text is
+     gone — a flag is decoration to a screen reader, never a label. */
+  .lang-bar .lang-code{display:none}
+  .lang-bar .lang-toggle{
+    height:40px;gap:5px;padding:0 8px 0 10px;border-radius:100px;
+  }
+  /* Scoped to the trigger: the nine options inside the panel keep the
+     standard 21px so the list stays one column. */
+  .lang-bar .lang-toggle .lang-flag{width:23px;height:17.25px}
+  .lang-bar .lang-caret{width:9px;height:6px;opacity:.8}
+
+  /* The panel is anchored to the trigger's right edge. min-width:196px
+     would push it off-canvas on a 320px phone, so it is capped to the
+     viewport minus the two gutters. */
+  .lang-bar .lang-menu{min-width:min(206px,calc(100vw - 36px))}
+
+  .nav-cta{gap:10px}
+}
+
+/* Book Now leaves the bar below 760px. It is not lost: the hero carries
+   "Reserve Your Escape", the drawer carries .nav-drawer-cta, and the
+   sticky .mobile-cta appears as soon as the hero scrolls past. Scoped
+   with > so the drawer's own primary button is untouched. */
+@media(max-width:760px){
+  .nav-cta>.btn-primary{display:none}
+
+  /* The bar now holds three tenants instead of four, so the wordmark
+     gets the reclaimed width back. */
+  .brand{gap:11px}
+  .brand .mark{width:38px;height:38px}
+  .brand b{font-size:1.06rem;letter-spacing:.12em}
+  .brand small{font-size:.6rem;letter-spacing:.13em}
+}
+@media(max-width:400px){
+  .brand b{font-size:1rem;letter-spacing:.095em}
+  .brand small{font-size:.55rem;letter-spacing:.1em}
+}
+
+/* ---------------------------------------------------------------------
+   [B] MOBILE TEXT DENSITY — let the photography talk
+   .m-hide marks prose that is deliberately desktop-only. It stays in the
+   HTML rather than being deleted, so the crawler, the RSS-style scrapers
+   and anyone with CSS disabled still get the full copy; only the phone
+   layout drops it. That is a standard responsive pattern, not cloaking —
+   the text is identical, only its display differs by viewport.
+
+   It is deliberately usable on an inline span as well as a block. The hero
+   lead is ONE paragraph whose tail sentences are wrapped: the phone keeps
+   the opening line — "A boutique surf and eco retreat on Sri Lanka's wild
+   east coast." — and drops the rest. Hiding the whole paragraph would have
+   left the strongest above-the-fold keyword line invisible to a
+   mobile-first crawler, which reads the phone layout first and discounts
+   what that layout hides. A near-duplicate second paragraph would have
+   fixed the visibility and put two versions of the same sentence in the
+   DOM. Splitting one paragraph does neither.
+   --------------------------------------------------------------------- */
+@media(max-width:760px){
+  .m-hide{display:none}
+
+  /* The Retreat now has a single paragraph, so the clamp and its
+     "Read more" button have nothing left to reveal. :has() scopes this
+     to the one block whose secondary text is mobile-hidden — the other
+     read-more sections on the page keep their clamp, which is what is
+     holding their text down in the first place. */
+  .readmore:has(.m-hide) .readmore-body{
+    max-height:none;overflow:visible;
+    -webkit-mask-image:none;mask-image:none;
+  }
+  .readmore:has(.m-hide) .readmore-btn{display:none}
+}
+
+/* One pill width for every language, so swapping the flag — or falling
+   back to its two-letter code on a platform with no flag glyphs — never
+   nudges the burger sideways. */
+@media(max-width:1180px){
+  .lang-bar .lang-toggle{min-width:54px;justify-content:center}
+}
+
+/* ---------------------------------------------------------------------
+   [C] HERO FOOTER CLEARANCE — the trust row vs the scroll cue
+   The 980px block above already hides .scroll-cue because it and the
+   stats were landing on top of each other. The same collision survives
+   ABOVE that breakpoint, where the cue is still drawn: it is 73px tall
+   and sits 26px off the hero floor, so it claims 99px of the hero''s
+   bottom edge, while .hero-inner only reserves 9vh of padding — 81px on
+   a 1440x900 laptop, the single most common desktop viewport there is.
+   Measured on this build: the trust row wrapped to a second line and
+   overlapped the cue by 19px vertically and 78px horizontally, in every
+   language.
+
+   max() rather than a flat value so tall monitors keep the airier 9vh
+   the design asks for; the floor only engages on short viewports, which
+   is exactly where the padding was running out. Scoped to min-width:981
+   so it cannot add dead space at the widths where the cue is hidden and
+   the shorter padding is correct. */
+@media(min-width:981px){
+  .hero-inner{padding-bottom:max(9vh, 116px)}
 }

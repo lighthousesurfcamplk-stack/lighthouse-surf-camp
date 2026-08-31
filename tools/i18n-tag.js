@@ -23,8 +23,22 @@ const VOID = new Set(['area','base','br','col','embed','hr','img','input','link'
 const INLINE = new Set(['a','b','strong','em','i','span','small','sup','sub','br','u','mark','abbr','time','bdi']);
 /* Only these elements are considered copy holders. */
 const TARGET = new Set(['h1','h2','h3','h4','h5','h6','p','li','button','figcaption','label','summary','td','th','dt','dd','blockquote','caption','legend']);
+/* Plus call-to-action anchors. A bare <a> is NOT a copy holder — the nav is
+   nine of them, and every one is already carried by its <li> — but the
+   buttons are, and they were the last English strings left standing on a
+   Russian page: "Book Now", "Reserve Your Escape", "Plan Your Trip". A CTA
+   the visitor cannot read is a CTA they do not press, so these are the most
+   expensive words on the page to leave untranslated. Matched on the class
+   rather than added to TARGET so the rule stays exactly that narrow. */
+const isCTA = tag => /\bclass="[^"]*\bbtn\b/.test(tag);
 /* Never descend into these. */
 const OPAQUE = new Set(['script','style','svg','noscript','template','code','pre']);
+/* Nor into the language switcher. i18n-build.js regenerates it wholesale on
+   every run, and its nine options are endonyms — "Deutsch" must read
+   "Deutsch" on the Russian page or the one control a lost visitor needs
+   stops working. data-lang is the marker the switcher already carries for
+   main.js, so there is nothing new to add to the markup. */
+const isOpaqueTag = tag => /\sdata-lang(?=[\s=>])/.test(tag);
 
 function tokenize(html) {
   const toks = [];
@@ -74,14 +88,18 @@ function tagPage(file, pageKey, dict) {
   const used = new Set();
   const stack = [];
   let opaqueDepth = 0;
+  const opaqueName = [];
 
   for (let n = 0; n < toks.length; n++) {
     const tk = toks[n];
     if (tk.t === 'open') {
-      if (OPAQUE.has(tk.name)) { if (!tk.selfClose) opaqueDepth++; continue; }
+      if (OPAQUE.has(tk.name) || isOpaqueTag(tk.raw)) {
+        if (!tk.selfClose) { opaqueDepth++; opaqueName.push(tk.name); }
+        continue;
+      }
       if (opaqueDepth) continue;
       if (tk.selfClose) continue;
-      if (!TARGET.has(tk.name)) { stack.push(tk); continue; }
+      if (!TARGET.has(tk.name) && !(tk.name === 'a' && isCTA(tk.raw))) { stack.push(tk); continue; }
 
       // Find this element's matching close tag.
       let depth = 1, m = n + 1, closeTok = null;
@@ -99,7 +117,21 @@ function tagPage(file, pageKey, dict) {
       // (we tag the innermost holder so replacement never nests).
       const hasBlockChild = /<\s*(div|section|article|ul|ol|figure|picture|h[1-6]|p|li|table|form|nav|header|footer|aside|main)\b/i.test(inner);
       if (!plain || !/[A-Za-z]/.test(plain) || hasBlockChild) { stack.push(tk); continue; }
-      if (/data-i18n=/.test(tk.raw)) { stack.push(tk); continue; }
+      /* Already tagged by an earlier run. The header promises this script is
+         safe to re-run, but en.json is written from scratch each time out of
+         `dict` — so skipping the element outright dropped its key, and a
+         second run left a file holding only whatever was new. Record the
+         string under the key it already carries, then jump the subtree so a
+         CTA nested inside a tagged holder cannot pick up a second, nested
+         data-i18n (translateContent replaces the outer element wholesale,
+         which would delete the inner one it just wrote). */
+      const had = tk.raw.match(/\bdata-i18n="([^"]+)"/);
+      if (had) {
+        dict[had[1]] = inner.replace(/\s+/g, ' ').trim();
+        used.add(had[1]);
+        if (!/data-i18n=/.test(inner)) { n = m; continue; }
+        stack.push(tk); continue;
+      }
 
       let key = pageKey + '.' + tk.name + '--' + (slug(plain) || 'text');
       let k = key, c = 2; while (used.has(k)) k = key + '-' + (c++);
@@ -111,7 +143,12 @@ function tagPage(file, pageKey, dict) {
       continue;
     }
     if (tk.t === 'close') {
-      if (OPAQUE.has(tk.name)) { if (opaqueDepth) opaqueDepth--; continue; }
+      /* OPAQUE is decided by tag name, but data-lang is decided by attribute
+         — and a </div> carries no attributes. The open tag's name is pushed
+         onto opaqueName so the matching close can be recognised. */
+      if (opaqueDepth && opaqueName[opaqueName.length - 1] === tk.name) {
+        opaqueDepth--; opaqueName.pop(); continue;
+      }
       if (opaqueDepth) continue;
       for (let s = stack.length - 1; s >= 0; s--) if (stack[s].name === tk.name) { stack.length = s; break; }
     }
@@ -123,9 +160,12 @@ function tagPage(file, pageKey, dict) {
   const imgRe = /<img\b[^>]*>/gi; let mm;
   while ((mm = imgRe.exec(html))) {
     const tag = mm[0];
-    if (/data-i18n-alt=/.test(tag)) continue;
     const alt = tag.match(/\balt\s*=\s*"([^"]*)"/i);
     if (!alt || !alt[1].trim()) continue;
+    /* Already stamped: record the string under the key it carries and move
+       on, rather than skipping it out of the dictionary entirely. */
+    const hadAlt = tag.match(/\bdata-i18n-alt="([^"]+)"/);
+    if (hadAlt) { dict[hadAlt[1]] = alt[1]; used.add(hadAlt[1]); continue; }
     let key = pageKey + '.alt--' + (slug(alt[1]) || 'image');
     let k = key, c = 2; while (used.has(k)) k = key + '-' + (c++);
     used.add(k);
