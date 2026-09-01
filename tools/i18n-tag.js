@@ -239,7 +239,14 @@ function tagPage(file, pageKey, dict) {
 // ---- run ----------------------------------------------------------------
 const root = path.resolve(__dirname, '..');
 const dict = {};
-const pages = ['index', 'packages', 'stay', 'book', 'wellness', 'about'];
+/* Every page the site has. The six that were missing here — gallery,
+   lessons, rentals, reviews, things-to-do, thank-you — were the entire
+   language leak: untagged pages have no dictionary keys, so i18n-build had
+   nothing to translate and TRANSLATED_PAGES could not list them, so the nav
+   on /it/ had to send visitors OUT of /it/ to reach them. Tag them and the
+   leak closes at the source. */
+const pages = ['index', 'packages', 'stay', 'book', 'wellness', 'about',
+               'gallery', 'lessons', 'rentals', 'reviews', 'things-to-do', 'thank-you'];
 let total = 0;
 for (const p of pages) {
   const n = tagPage(path.join(root, p + '.html'), p, dict);

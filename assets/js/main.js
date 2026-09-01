@@ -78,12 +78,12 @@
     /* Only bare, same-directory page links qualify. Absolute URLs, mailto:,
        tel:, #anchors and anything already inside a language directory fall
        straight through, and so does any page with no localized twin. */
-    var self  = (location.pathname.split('/').pop() || 'index.html').replace(/.html$/i, '');
+    var self  = (location.pathname.split('/').pop() || 'index.html').replace(/\.html$/i, '');
     var links = document.querySelectorAll('a[href]');
     for(var i = 0; i < links.length; i++){
       var a = links[i];
       if(a.closest('.lang')) continue;                    // never touch the switcher
-      var m = /^([a-z0-9-]+).html((?:[?#].*)?)$/i.exec(a.getAttribute('href') || '');
+      var m = /^([a-z0-9-]+)\.html((?:[?#].*)?)$/i.exec(a.getAttribute('href') || '');
       if(!m || pages.indexOf(m[1]) < 0) continue;         // external, anchor, or untranslated
       if(m[1] === self) continue;                         // the link back to the page you are on
       a.setAttribute('href', want + '/' + m[1] + '.html' + m[2]);

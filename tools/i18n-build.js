@@ -189,11 +189,26 @@ function injectFlagSprite(html) {
   return html.replace(/(<body[^>]*>)/i, '$1\n' + FLAG_SPRITE);
 }
 
-/* Pages that exist in every language. Everything else stays English-only for
-   now; the switcher sends visitors on those pages to the translated HOME page
-   rather than to a 404, and — importantly — those pages emit NO hreflang, so
-   we never tell Google a translation exists when it does not. */
-const TRANSLATED_PAGES = ['index', 'packages', 'stay', 'book', 'wellness', 'about'];
+/* Pages that exist in every language.
+
+   This list is what makes the nav stay inside a language directory:
+   rewritePaths() keeps a link bare ('stay.html') when the page is listed here,
+   and pushes it out to the English root ('../stay.html') when it is not. So
+   every page MISSING from this list is a hole in the language — a visitor on
+   /it/index.html who clicks it is sent back to English and stays there.
+
+   Until now only six pages were listed, because only six had ever been tagged
+   with data-i18n keys. The other six (gallery, lessons, rentals, reviews,
+   things-to-do, thank-you) are now tagged and translated in all eight
+   dictionaries, so the list covers the whole site and no internal link leaves
+   the language directory any more.
+
+   Do not add a page here before its strings exist in EVERY i18n/<code>.json.
+   A page emitted under a language URL while still 100% English is duplicate
+   content under a language claim, and Google's documented response is to
+   discard the hreflang cluster for the whole site. */
+const TRANSLATED_PAGES = ['index','about','gallery','lessons','packages','rentals',
+                          'reviews','stay','things-to-do','wellness','book','thank-you'];
 
 /* Every page on the site, needed so links can be rewritten correctly. */
 const ALL_PAGES = ['index','about','gallery','lessons','packages','rentals',
