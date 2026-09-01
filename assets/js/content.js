@@ -322,7 +322,15 @@
           var film = dig(data.media, arg) || {};
           if (film.videoDesktop) el.setAttribute('data-desktop', asset(film.videoDesktop));
           if (film.videoMobile)  el.setAttribute('data-mobile',  asset(film.videoMobile));
-          if (film.poster)       el.setAttribute('poster',       asset(film.poster));
+          /* data-poster, NOT poster. A real poster attribute is fetched the
+             instant it is set — preload="none" governs the film, not the still
+             frame, and a <video> with no src at all still downloads its poster.
+             That frame is a MOBILE asset, so writing it here would pull it down
+             on every desktop visit as well: a megabyte-plus image for an element
+             that style.css holds at opacity:0 until a film is genuinely playing,
+             and desktop has no film. main.js promotes this to the real attribute
+             only on the viewport that actually mounts one. */
+          if (film.poster)       el.setAttribute('data-poster',  asset(film.poster));
           document.dispatchEvent(new CustomEvent('lhsc:video', { detail: el }));
           break;
         }

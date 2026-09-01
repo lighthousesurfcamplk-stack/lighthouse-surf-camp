@@ -467,11 +467,22 @@
     function pickSource(){
       var mob  = heroVideo.getAttribute('data-mobile');
       var desk = heroVideo.getAttribute('data-desktop');
-      /* Fall back to whichever cut the owner did upload, so one film is
-         enough to get a video hero on every screen — a portrait clip
-         letterboxes gracefully under object-fit:cover, and no film at
-         all is still a perfectly good slideshow. */
-      return (portrait.matches ? (mob || desk) : (desk || mob)) || '';
+      /* The fallback runs ONE WAY, and only one way.
+
+         A landscape desktop cut dropped onto a phone is fine: object-fit:cover
+         takes the middle band of it and it reads as intended, so a single
+         upload is still enough to get a film onto every screen.
+
+         The reverse is not. A phone cut is portrait, and very often 9:16
+         padded into a 16:9 container by whatever exported it. Covering a wide
+         desktop hero with that either blows a narrow strip up past the
+         resolution it was encoded at or — when the padding is baked into the
+         frame — paints the black bars straight across the hero. The old
+         two-way fallback did exactly that whenever the owner filled in the
+         mobile film and left the desktop one empty, which is the ordinary
+         case, because the footage came off a phone. Desktop now keeps the
+         photo slideshow, which is the right hero for it. */
+      return (portrait.matches ? (mob || desk) : desk) || '';
     }
 
     function live(on){
@@ -557,6 +568,15 @@
 
       var src = pickSource();
       if(!src) return;
+
+      /* Only now is the still frame worth having. content.js parks it on
+         data-poster rather than poster because the real attribute downloads
+         immediately — even on an element with no src — and the frame is a
+         mobile asset. A desktop visit mounts no film, so it should never pay
+         for a phone-shaped image that .hero-video, pinned at opacity:0 until
+         something is genuinely playing, has no way to show. */
+      var still = heroVideo.getAttribute('data-poster');
+      if(still && heroVideo.getAttribute('poster') !== still) heroVideo.setAttribute('poster', still);
 
       /* Same film as last time: never re-download it, but do give a stalled
          one another push. Separating "which file" from "is it running" is the
