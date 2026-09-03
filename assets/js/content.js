@@ -209,6 +209,78 @@
      heading and paragraph in the grid with the first card's. That is why
      the room cards and the surf-spot cards use one media: hook per picture
      instead. */
+  /* ---- Swap a photograph, and take its srcset with it --------------------
+     Every photograph on this site ships a width-descriptor srcset, so a
+     browser can pull an 800px file for a 331px masonry tile instead of the
+     full-size original. That list names ONE photograph, at several widths.
+
+     srcset BEATS src. So the moment the CMS points a slot at a different
+     image, the list left behind is describing the OLD file at six widths and
+     the browser goes on painting it -- the owner changes a photo in /admin,
+     publishes, reloads, and nothing happens, because the src underneath is
+     being overruled by an attribute nobody thought about. In fillGrid it is
+     worse, since every tile is a clone of the first: one stale srcset pins
+     the entire grid to the prototype's photograph.
+
+     THE COMPARISON COMES FIRST, and it is the whole reason this is a
+     function rather than two lines at each call site. /content/*.json ships
+     naming the same photographs the markup was designed around, so on a page
+     nobody has edited in /admin this returns immediately and the designed
+     srcset survives untouched -- which matters enormously, because the CMS
+     hooks sit on the heroes and the galleries, precisely the images the
+     srcset was added to shrink. Without the guard, hydration would strip the
+     optimisation off every CMS-backed image on every load, and the work
+     would silently buy nothing on the pages that needed it most.
+
+     On a genuine change, REWRITE beats drop wherever the page can be honest
+     about the replacement. `known` is a lookup the caller harvests off the
+     markup it is about to rebuild -- photograph to the exact srcset, sizes
+     and width/height the build shipped for it. Those are not derived names:
+     they were written next to files that demonstrably exist, and read back
+     verbatim. So a photograph already on the page keeps every variant no
+     matter which slot it moves to, which is what a reorder in /admin -- by
+     far the likeliest edit -- actually is.
+
+     Only a photograph the page has never seen falls back to clearing, and
+     there clearing is right rather than deriving a candidate list: /admin
+     uploads land in assets/img/ beside the originals (media_folder in
+     admin/config.yml) and arrive with no variants next to them, so derived
+     names would be a guess -- and a guessed candidate that 404s is a broken
+     image, where a dropped srcset is only a larger download. Take the cheap
+     failure. sizes goes with it; it means nothing without a srcset.
+
+     Returns whether it changed anything, so callers can skip further work. */
+  function applyImage(img, url, node, known) {
+    if (img.getAttribute('src') === url) return false;
+    img.setAttribute('src', url);
+    var v = known && known[url];
+    if (v) {
+      /* A photograph the page already knows. Hand back the exact list the
+         build wrote for it, and the width/height that belong to it. */
+      img.setAttribute('srcset', v.srcset);
+      if (v.sizes) img.setAttribute('sizes', v.sizes);
+      else img.removeAttribute('sizes');
+      if (v.width) img.setAttribute('width', v.width);
+      else img.removeAttribute('width');
+      if (v.height) img.setAttribute('height', v.height);
+      else img.removeAttribute('height');
+    } else {
+      img.removeAttribute('srcset');
+      img.removeAttribute('sizes');
+    }
+    /* A matching <source> beats the <img src> underneath it for exactly the
+       same reason, so a cloned <picture> would pin a rebuilt grid to the
+       prototype's photograph just as a stale srcset would. No grid ships one
+       today; this is here so that stops being one edit away from a silent
+       bug. The hero <picture> in index.html is not rebuilt through here --
+       it is kept in step deliberately, see case 'video'. */
+    if (node && node !== img && node.querySelectorAll) {
+      var ss = node.querySelectorAll('source');
+      for (var i = 0; i < ss.length; i++) ss[i].parentNode.removeChild(ss[i]);
+    }
+    return true;
+  }
+
   function fillGrid(el, items) {
     if (!Array.isArray(items) || !items.length) return;
     var proto = el.firstElementChild;
@@ -224,8 +296,29 @@
        per photograph and the browser has already reserved the right boxes
        from them; rebuilding would trade that for a layout shift and buy
        nothing. Day one is therefore a no-op. */
+    /* Harvest those srcsets in the same walk, keyed by photograph.
+
+       A rebuild clones the FIRST tile, so every tile would otherwise inherit
+       the prototype's list -- and clearing it, the safe fallback, would cost
+       the whole grid its width-descriptor sizing the first time the owner
+       merely REORDERS photos in /admin. Reading the lists back off the markup
+       keeps them, because a photograph that is still in the grid still has
+       the variants the build made for it, whatever slot it now sits in.
+
+       Locale pages need no special handling: their markup already carries
+       ../assets/... in both src and srcset, and asset() prefixes the same
+       way, so the keys line up and the harvested list is already correct for
+       the page it came from. */
+    var known = {};
     var current = Array.prototype.map.call(el.querySelectorAll('img'), function (i) {
-      return i.getAttribute('src');
+      var src = i.getAttribute('src');
+      if (i.getAttribute('srcset')) known[src] = {
+        srcset: i.getAttribute('srcset'),
+        sizes: i.getAttribute('sizes'),
+        width: i.getAttribute('width'),
+        height: i.getAttribute('height')
+      };
+      return src;
     });
     if (current.join('|') === wanted.join('|')) return;
 
@@ -235,13 +328,20 @@
       var node = proto.cloneNode(true);
       var img = node.tagName === 'IMG' ? node : node.querySelector('img');
       if (!img) return;
-      img.setAttribute('src', asset(m.image));
-      /* The template's dimensions describe the photograph it shipped with,
-         not this one. Every grid here crops with object-fit or flows in a
-         masonry column, so the honest answer is to drop the pair and let
-         the browser read the real file. */
-      img.removeAttribute('width');
-      img.removeAttribute('height');
+      /* A clone carries the prototype's srcset, which would outrank the src
+         set here and show the first tile's photograph in every position.
+         applyImage swaps in this photograph's own list when the page shipped
+         one -- unless this tile IS the prototype's picture, in which case
+         nothing needs touching at all. */
+      var url = asset(m.image);
+      if (applyImage(img, url, node, known) && !known[url]) {
+        /* Only reached for a photograph the page has never seen, so the
+           template's width/height describe a different file. Every grid here
+           crops with object-fit or flows in a masonry column; drop the pair
+           and let the browser read the real one. */
+        img.removeAttribute('width');
+        img.removeAttribute('height');
+      }
       img.setAttribute('loading', 'lazy');
       img.setAttribute('decoding', 'async');
       setAlt(img, m.alt);
@@ -274,7 +374,7 @@
         case 'img':
           /* Only swap when the CMS actually holds an image, so a package
              the owner has not given a photo keeps the designed one. */
-          if (item && item.image) el.setAttribute('src', asset(item.image));
+          if (item && item.image) applyImage(el, asset(item.image));
           break;
         case 'list': {
           /* Rebuild the "what's included" bullets. The first existing child
@@ -304,7 +404,7 @@
              so a slot the owner has not filled keeps its designed photo. */
           var pic = dig(data.media, arg);
           if (pic && pic.image) {
-            el.setAttribute('src', asset(pic.image));
+            applyImage(el, asset(pic.image));
             setAlt(el, pic.alt);
           }
           break;

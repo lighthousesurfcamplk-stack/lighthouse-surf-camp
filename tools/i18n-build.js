@@ -289,13 +289,31 @@ function rewritePaths(html, lang) {
   // assets, sitemap, robots, manifest…
   // `poster` joins href/src/content: the hero film's poster frame is an
   // asset path like any other, and a translated page is one level down.
-  /* srcset is in here because the hero <picture> in index.html carries the
-     phone poster on a <source>, and a locale page that did not rewrite it
-     would resolve /ru/assets/video/... and paint nothing on every phone.
-     Single-candidate srcsets only -- which is all this site uses, and all a
-     media-gated art-direction source ever needs. A width-descriptor list
-     would need splitting on commas first. */
-  html = html.replace(/\b(href|srcset|src|content|poster)="(assets\/[^"]*)"/g, '$1="../$2"');
+  /* srcset gets its own pass, BEFORE the others, because it is the one
+     attribute here that holds a LIST rather than a single path.
+
+     Every photograph on the site now ships a width-descriptor srcset --
+     "assets/img/x-400.jpg 400w, assets/img/x-640.jpg 640w, ..." -- so the
+     browser can fetch a 400px file for a 391px masonry tile instead of the
+     full-size original. Prefixing the attribute as a whole, which is what
+     the single regex below does, puts ../ on the front of the FIRST
+     candidate and leaves every other one resolving to /ru/assets/img/...
+     Those 404, and they 404 on precisely the widths a phone picks, so the
+     bug would have been invisible in English on a desktop and total on a
+     German phone. Split on commas, prefix each candidate URL, hand the
+     width descriptor back untouched.
+
+     Single-candidate srcsets pass through with identical behaviour, which
+     keeps the hero <picture>'s phone poster in index.html working: a
+     <source> that did not get its ../ would paint nothing on every phone. */
+  html = html.replace(/\bsrcset="([^"]*)"/g, function (all, list) {
+    return 'srcset="' + list.split(',').map(function (c) {
+      const parts = c.trim().split(/\s+/);   // ["assets/img/x-400.jpg", "400w"]
+      if (/^assets\//.test(parts[0])) parts[0] = '../' + parts[0];
+      return parts.join(' ');
+    }).join(', ') + '"';
+  });
+  html = html.replace(/\b(href|src|content|poster)="(assets\/[^"]*)"/g, '$1="../$2"');
   html = html.replace(/\bhref="(favicon[^"]*)"/g, 'href="../$1"');
 
   // Internal page links: same-language if that page is translated, else back
