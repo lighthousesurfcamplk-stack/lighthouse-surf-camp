@@ -355,17 +355,39 @@ p{color:var(--ink-soft);text-wrap:pretty}
   object-fit:cover;object-position:center;
   background:var(--espresso);
   opacity:0;transition:opacity 1.2s ease;pointer-events:none}
-.hero.has-video .hero-video{opacity:1}
-/* With the film running the photographs behind it are only its poster
-   frame: stop the Ken Burns pass nobody can see, and take away dots that
-   would offer to page through a slideshow that is no longer moving. */
-.hero.has-video .hero-media .slide{animation:none}
-.hero.has-video .hero-dots{display:none}
+/* TWO ways this element earns its opacity, and they are not the same thing.
+
+     .has-video  — frames are genuinely playing (the 'playing' event fired).
+     .has-still  — the phone poster has decoded and is on the element, with or
+                   without a film behind it.
+
+   The second one is new, and it is the whole iOS story. Low Power Mode, Data
+   Saver and several MDM profiles all decline autoplay on muted inline video,
+   and Reduce Motion means we never even ask. In every one of those cases the
+   element used to sit at opacity:0 for ever, so a phone got the DESKTOP photo
+   slideshow — which is exactly what the client was seeing. The poster now goes
+   up on its own, and the film, if it is ever allowed to start, takes over
+   inside the same box with no crossfade to pay for. */
+.hero.has-video .hero-video,
+.hero.has-still .hero-video{opacity:1}
+/* Whichever of the two is showing, the photographs behind it are covered:
+   stop the Ken Burns pass nobody can see, and take away dots that would offer
+   to page through a slideshow no one can look at. */
+.hero.has-video .hero-media .slide,
+.hero.has-still .hero-media .slide{animation:none}
+.hero.has-video .hero-dots,
+.hero.has-still .hero-dots{display:none}
 @media(prefers-reduced-motion:reduce){
   /* A moving full-bleed background is precisely what this preference is
      asking us not to serve. main.js never even attaches a src; this is the
      belt to that braces, in case the film is hard-coded in the markup. */
   .hero-video{display:none}
+  /* A STILL FRAME IS NOT MOTION. Hiding the element outright also hid the
+     owner's own phone hero from everyone running Reduce Motion — a setting a
+     great many iPhones have on — and handed them the slideshow instead.
+     main.js pauses and disowns any film before it adds this class, so what
+     comes through this door is a photograph and nothing else. */
+  .hero.has-still .hero-video{display:block}
 }
 
 .hero-dots{position:absolute;bottom:24px;inset-inline-end:calc(var(--gutter) + 2px);z-index:4;display:flex;gap:4px}
@@ -863,13 +885,57 @@ section{position:relative}
     text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 12px rgba(0,0,0,.4)
   }
 
-  /* ---------- Buttons sit ON the film, not on a plate ----------------------
-     Neither button gets a background layer. The clay CTA is brand colour and
-     stays exactly as it is; the ghost button stays genuinely transparent so the
-     wave runs behind it. A soft drop shadow grounds it instead — depth, not a
-     panel — and the hairline goes .55 -> .72 because a lighter veil no longer
-     holds a 55%-white rule against bright whitewater. The :hover line restores
-     the white border the base rule gives on tap-hold. */
+  /* ---------- The CTA is glass here, not a plate ---------------------------
+     Solid --clay is a 100%-opaque rectangle laid across the widest part of the
+     film, and it was also — measured — the weakest contrast in the whole hero:
+     white on #b3623d is 4.44:1, a shade UNDER the 4.5:1 that 13px bold uppercase
+     needs. The opaque version was hiding the wave AND failing the check it was
+     nominally there to pass.
+
+     Frosted clay fixes both without touching the brand. The hue is the same
+     --clay, so this still reads unmistakably as the clay CTA and still dominates
+     the ghost button beneath it; at .38 the film comes through 62% of it, and
+     backdrop-filter settles whatever is behind the label into a calm, even
+     ground instead of a busy one.
+
+     MEASURED over the same 96 frames the veil above was tuned on, composited
+     exactly as the phone does it (film -> veil -> glass), with the blur modelled
+     pessimistically as a box of radius 14 against the real Gaussian sigma of 14:
+         white on the glass          3.11:1     the label on its own
+         white + its shadow halo     7.16:1     what the eye actually reads
+         same, blur unsupported      6.65:1     the @supports branch below
+     against 4.44:1 for the solid button it replaces. */
+  .hero .btn-primary{
+    background:rgba(179,98,61,.38);                  /* --clay at 38% */
+    border:1px solid rgba(255,255,255,.42);          /* the lit edge that reads as glass */
+    -webkit-backdrop-filter:blur(14px) saturate(130%);   /* iOS needs the prefix below 18 */
+            backdrop-filter:blur(14px) saturate(130%);
+    /* Depth underneath, a specular hairline along the top: the two cues that
+       stop a transparent panel reading as a hole punched in the page. */
+    box-shadow:0 10px 30px -12px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.28);
+    text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 10px rgba(0,0,0,.4);
+  }
+  /* Tap-hold and press. Both stay translucent — going solid on :hover would
+     undo the whole point on the one interaction a phone actually has — and both
+     restate the shadow, because the @media(hover:none) block further down zeroes
+     .btn:hover box-shadow and would otherwise win on source order. */
+  .hero .btn-primary:hover,
+  .hero .btn-primary:active{
+    background:rgba(154,79,46,.54);                  /* --clay-dk at 54% */
+    border-color:rgba(255,255,255,.58);
+    box-shadow:0 10px 30px -12px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.28);
+  }
+  /* No blur means the film behind the label stays sharp and busy, so trade some
+     transparency back for a denser, darker tint. Measured 3.89:1 plain,
+     8.41:1 with the halo. */
+  @supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
+    .hero .btn-primary{background:rgba(154,79,46,.62)}
+  }
+
+  /* The ghost button keeps its hairline and gets depth rather than a panel, so
+     the wave runs straight through it. .55 -> .72 because a lighter veil no
+     longer holds a 55%-white rule against bright whitewater; the :hover line
+     restores the white border the base rule gives on tap-hold. */
   .hero .btn-ghost{border-color:rgba(255,255,255,.72);box-shadow:0 6px 24px -10px rgba(0,0,0,.5)}
   .hero .btn-ghost:hover{border-color:#fff}
   .hero h1{margin:14px 0 18px}

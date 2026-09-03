@@ -362,8 +362,10 @@
      Hero slideshow — dots, swipe, pause when hidden
      --------------------------------------------------------- */
   /* Assigned by the slideshow below and called by the video controller
-     further down, so the two never both own the hero at once. */
-  var stopSlideshow = null;
+     further down, so the two never both own the hero at once. Two-way,
+     because the cover can come off again: a phone turned landscape crosses
+     760px, drops the portrait still frame, and wants a moving hero back. */
+  var setSlideshow = null;
 
   var show = document.querySelector('.hero-media.slideshow');
   if(show){
@@ -405,14 +407,16 @@
         else if(!stood) reset();   // …and never restart one we stood down
       });
 
-      /* The background film has started playing, so the photographs behind
-         it are now only its poster frame. Stop paying for a crossfade
-         nobody can see — and stop it permanently, so the visibilitychange
-         handler above does not quietly start it again on the way back. */
-      stopSlideshow = function(){
-        stood = true;
+      /* Something is covering the photographs — the film, or the phone still
+         frame. Either way they are nobody's hero any more: stop paying for a
+         crossfade that cannot be seen, and set `stood` so the visibilitychange
+         handler above does not quietly start it again on the way back into the
+         tab. Passing true undoes both, for the one case that needs it. */
+      setSlideshow = function(on){
+        stood = !on;
         clearInterval(timer);
         timer = null;
+        if(on && slides.length > 1) timer = setInterval(function(){ go(idx + 1); }, DURATION);
       };
 
       // Swipe between slides on touch
@@ -488,7 +492,7 @@
     function live(on){
       if(!heroEl) return;
       heroEl.classList.toggle('has-video', !!on);
-      if(on && stopSlideshow) stopSlideshow();
+      if(on && setSlideshow) setSlideshow(false);
     }
 
     /* The source we WANT playing, tracked separately from the element's own
@@ -550,12 +554,63 @@
         window.addEventListener(retryOn[r], go, retryOpts);
     }
 
-    function mount(){
-      /* A full-bleed moving background is the exact thing this preference
-         asks us not to do, so there is no film at all — the slideshow,
-         already frozen by the guard in style.css, carries the hero. */
-      if(reduceMotion.matches) return;
+    /* ---- The still frame, which is NOT the film -------------------------
+       Autoplay is a request a phone is free to refuse. iOS Low Power Mode,
+       Data Saver and several MDM profiles all decline muted inline video, and
+       under Reduce Motion we never even ask. The poster is none of those
+       things: it is a JPEG the owner uploaded as the phone hero, and it should
+       be on screen in every one of those cases.
 
+       It used to be hostage to the film. content.js parks the path on
+       data-poster rather than poster — a real poster attribute downloads the
+       instant it is set, even on an element with no src, and this is a portrait
+       phone asset no desktop visit should ever pay for — and main.js promoted
+       it only AFTER deciding a film was going to mount, onto an element
+       style.css held at opacity:0 until something was genuinely playing.
+       Refused autoplay therefore showed the DESKTOP photo slideshow on a phone,
+       which is precisely the report that came back from the client's iPhone.
+
+       So it now stands on its own: decode first, then reveal. Decoding first is
+       not fussiness — .hero-video sits on an espresso ground, so revealing the
+       element before the JPEG is ready would swap a live slideshow for a brown
+       rectangle, which is worse than the thing being fixed. If the poster 404s
+       or fails to decode, nothing is revealed at all and the slideshow keeps
+       the hero exactly as it does today.
+
+       There is a second, quieter win in here. iOS weighs whether an element is
+       actually visible when it decides whether to grant autoplay, and this puts
+       the video at opacity:1 BEFORE play() is ever called — it used to ask from
+       behind opacity:0, which is the weakest position to ask from. */
+    var stillSrc = '';
+
+    function showStill(){
+      var still = heroVideo.getAttribute('data-poster');
+      if(!still || still === stillSrc) return;
+      stillSrc = still;
+      var probe = new Image();
+      probe.onload = function(){
+        if(stillSrc !== still) return;        // a rotation changed its mind mid-decode
+        heroVideo.setAttribute('poster', still);
+        if(heroEl) heroEl.classList.add('has-still');
+        if(setSlideshow) setSlideshow(false);
+      };
+      /* Missing or broken: forget it, so a later mount() is free to try again,
+         and leave the slideshow holding the hero in the meantime. */
+      probe.onerror = function(){ if(stillSrc === still) stillSrc = ''; };
+      probe.src = still;
+    }
+
+    function hideStill(){
+      if(!stillSrc) return;
+      stillSrc = '';
+      if(heroEl) heroEl.classList.remove('has-still');
+      /* Only hand the hero back to the slideshow if nothing else is holding
+         it — a phone turned landscape keeps playing the film it already has. */
+      if(setSlideshow && !(heroEl && heroEl.classList.contains('has-video')))
+        setSlideshow(true);
+    }
+
+    function mount(){
       /* A viewport of zero width satisfies '(max-width: 760px)', so a page
          laid out before the browser has a real width — a prerender, a
          background tab, an in-app webview mid-open — would pick the phone
@@ -563,20 +618,34 @@
          pay for the film twice. Measured, not theorised: without this the
          network log shows BOTH files downloaded on a desktop visit. Wait
          for a real width; the listener below fires as soon as there is one,
-         and after that every change event is a genuine rotation or resize. */
+         and after that every change event is a genuine rotation or resize.
+
+         This gate now guards the still frame as well as the film, which is
+         why it moved above the reduced-motion return below: a zero-width
+         prerender must not pull down a phone poster for what turns out to
+         be a desktop. */
       if(!window.innerWidth) return;
+
+      /* Portrait only, and independently of everything after it. The poster is
+         an 810x1440 portrait crop: on a desktop hero it would be both the wrong
+         shape and a download that surface has no use for, so desktop keeps the
+         photo slideshow and still fetches nothing at all from /assets/video. */
+      if(portrait.matches) showStill(); else hideStill();
+
+      /* A full-bleed MOVING background is the exact thing this preference asks
+         us not to do, so there is no film — but the still above has already
+         gone up, and a photograph is not motion. Disown any film hard-coded
+         into the markup on the way out, because the reduced-motion rule in
+         style.css now has a .has-still door in it and an autoplaying <video>
+         must not be able to walk through it. */
+      if(reduceMotion.matches){
+        heroVideo.removeAttribute('autoplay');
+        if(!heroVideo.paused) heroVideo.pause();
+        return;
+      }
 
       var src = pickSource();
       if(!src) return;
-
-      /* Only now is the still frame worth having. content.js parks it on
-         data-poster rather than poster because the real attribute downloads
-         immediately — even on an element with no src — and the frame is a
-         mobile asset. A desktop visit mounts no film, so it should never pay
-         for a phone-shaped image that .hero-video, pinned at opacity:0 until
-         something is genuinely playing, has no way to show. */
-      var still = heroVideo.getAttribute('data-poster');
-      if(still && heroVideo.getAttribute('poster') !== still) heroVideo.setAttribute('poster', still);
 
       /* Same film as last time: never re-download it, but do give a stalled
          one another push. Separating "which file" from "is it running" is the
