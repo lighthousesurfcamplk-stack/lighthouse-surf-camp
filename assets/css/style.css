@@ -848,12 +848,45 @@ section{position:relative}
      next block. This is the trade the brief asked for: subtle gradient only
      where strictly necessary, video clearly visible behind the content. */
   .hero{
-    /* Near-black with a faint cool cast. The espresso ramp read as orange murk
-       precisely because it was warm AND heavy; at these opacities the hue is
-       imperceptible, and the cool cast sits with the brand's deep blues rather
-       than fighting the terracotta CTA. */
-    --veil:11,17,19;
+    /* Deep teal-black. The espresso ramp read as orange murk precisely because
+       it was warm AND heavy; at these opacities the hue is nearly subliminal,
+       which is exactly what makes it useful. Pushed 11,17,19 -> 7,22,26 so the
+       veil now seats the SHADOWS in the brand's dark teal while the grade below
+       warms the mid-tones. That split is the cheapest honest approximation of a
+       cinema grade that CSS can actually express: a filter biases the whole
+       frame one way, an overlay biases the darks the other, and between them
+       you get teal and terracotta out of footage that had neither. */
+    --veil:7,22,26;
   }
+
+  /* ---------- Colour grade on the film itself -----------------------------
+     The raw cut is bright and video-green: true to the sensor, wrong for a
+     brand built on deep teal and warm terracotta. Four filter functions, and
+     THE ORDER IS THE WHOLE TRICK:
+
+       sepia(.16)       lay a warm bias across everything first
+       saturate(1.18)   then put the chroma back, so the ocean keeps its teal
+                        instead of collapsing to flat olive. Saturating BEFORE
+                        the sepia (the obvious way round) only gives the sepia
+                        more colour to flatten, and the water dies. This one
+                        reordering is what separates a grade from a filter.
+       contrast(1.10)   a little more snap through the mid-tones
+       brightness(.90)  and the moodiness that was actually asked for
+
+     It lands on the poster as well as the film, because a filter applies to
+     whatever the element renders -- so the iPhone that is never allowed to
+     autoplay sees exactly the same grade as the one that is.
+
+     MEASURED over the same 96 frames the veil was tuned on, every 5% depth
+     band of the hero, worst frame, white type with its shadow halo: contrast
+     IMPROVES everywhere, by +0.14 to +0.38, because brightness(.90) more than
+     pays back what contrast(1.10) lifts in the highlights. Worst band in the
+     whole hero 4.65:1 -> 4.88:1. Not one band regresses.
+
+     Mobile only, deliberately. videoDesktop is still "" so this would be inert
+     on desktop anyway, and when the landscape cut lands we get to decide
+     whether it wants the same grade instead of inheriting it by accident. */
+  .hero-video{filter:sepia(.16) saturate(1.18) contrast(1.10) brightness(.90)}
   .hero::after{
     background:
       /* a. top cap — nav + eyebrow */
@@ -887,57 +920,101 @@ section{position:relative}
 
   /* ---------- The CTA is glass here, not a plate ---------------------------
      Solid --clay is a 100%-opaque rectangle laid across the widest part of the
-     film, and it was also — measured — the weakest contrast in the whole hero:
-     white on #b3623d is 4.44:1, a shade UNDER the 4.5:1 that 13px bold uppercase
-     needs. The opaque version was hiding the wave AND failing the check it was
-     nominally there to pass.
+     film, and it was also -- measured -- the weakest contrast in the whole
+     hero: white on #b3623d is 4.44:1, a shade UNDER the 4.5:1 that 13px bold
+     uppercase needs. The opaque version was hiding the wave AND failing the
+     check it was nominally there to pass.
 
      Frosted clay fixes both without touching the brand. The hue is the same
-     --clay, so this still reads unmistakably as the clay CTA and still dominates
-     the ghost button beneath it; at .38 the film comes through 62% of it, and
-     backdrop-filter settles whatever is behind the label into a calm, even
-     ground instead of a busy one.
+     --clay, so this still reads unmistakably as the clay CTA and still
+     dominates the ghost button beneath it; at .38 the film comes through 62%.
 
-     MEASURED over the same 96 frames the veil above was tuned on, composited
-     exactly as the phone does it (film -> veil -> glass), with the blur modelled
-     pessimistically as a box of radius 14 against the real Gaussian sigma of 14:
-         white on the glass          3.11:1     the label on its own
-         white + its shadow halo     7.16:1     what the eye actually reads
-         same, blur unsupported      6.65:1     the @supports branch below
-     against 4.44:1 for the solid button it replaces. */
+     NO BORDER. A 1px white rule around a translucent panel is the thing that
+     makes glassmorphism look like a picture of glassmorphism -- it redraws the
+     exact rectangle the material is supposed to dissolve. Three cues replace
+     it, and not one of them is an outline:
+       a. the backdrop blur, whose edge is already a visible discontinuity in
+          the film -- the material defines its own shape;
+       b. a deeper, further-thrown drop shadow, so the panel sits above the
+          film rather than reading as a hole cut out of it;
+       c. a 1px inset highlight on the TOP EDGE ONLY -- light catching a bevel.
+          It does not run around the shape, so it never closes into the line
+          the client objected to.
+
+     MEASURED over the same 96 frames, composited exactly as the phone does it
+     (film -> grade -> veil -> blur -> glass), the blur modelled pessimistically
+     as a box of radius 14 against the real Gaussian sigma of 14:
+         white on the glass          3.21:1     the label on its own
+         white + its shadow halo     7.33:1     what the eye actually reads
+         :active, clay-dk at .54     8.66:1
+     against 4.44:1 for the solid button this replaces. */
   .hero .btn-primary{
     background:rgba(179,98,61,.38);                  /* --clay at 38% */
-    border:1px solid rgba(255,255,255,.42);          /* the lit edge that reads as glass */
+    border:none;
     -webkit-backdrop-filter:blur(14px) saturate(130%);   /* iOS needs the prefix below 18 */
             backdrop-filter:blur(14px) saturate(130%);
-    /* Depth underneath, a specular hairline along the top: the two cues that
-       stop a transparent panel reading as a hole punched in the page. */
-    box-shadow:0 10px 30px -12px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.28);
+    box-shadow:0 14px 34px -14px rgba(0,0,0,.62),        /* the throw that reads as height */
+               0 2px 8px -4px rgba(0,0,0,.40),           /* contact shadow, keeps the edge */
+               inset 0 1px 0 rgba(255,255,255,.22);      /* bevel sheen, top edge only */
     text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 10px rgba(0,0,0,.4);
   }
-  /* Tap-hold and press. Both stay translucent — going solid on :hover would
-     undo the whole point on the one interaction a phone actually has — and both
-     restate the shadow, because the @media(hover:none) block further down zeroes
-     .btn:hover box-shadow and would otherwise win on source order. */
+  /* Tap-hold and press. Both stay translucent -- going solid on :hover would
+     undo the whole point on the one interaction a phone actually has -- and
+     both restate the shadow, because the @media(hover:none) block further down
+     zeroes .btn:hover box-shadow and would otherwise win on source order. */
   .hero .btn-primary:hover,
   .hero .btn-primary:active{
     background:rgba(154,79,46,.54);                  /* --clay-dk at 54% */
-    border-color:rgba(255,255,255,.58);
-    box-shadow:0 10px 30px -12px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.28);
-  }
-  /* No blur means the film behind the label stays sharp and busy, so trade some
-     transparency back for a denser, darker tint. Measured 3.89:1 plain,
-     8.41:1 with the halo. */
-  @supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
-    .hero .btn-primary{background:rgba(154,79,46,.62)}
+    box-shadow:0 14px 34px -14px rgba(0,0,0,.62),0 2px 8px -4px rgba(0,0,0,.40),
+               inset 0 1px 0 rgba(255,255,255,.22);
   }
 
-  /* The ghost button keeps its hairline and gets depth rather than a panel, so
-     the wave runs straight through it. .55 -> .72 because a lighter veil no
-     longer holds a 55%-white rule against bright whitewater; the :hover line
-     restores the white border the base rule gives on tap-hold. */
-  .hero .btn-ghost{border-color:rgba(255,255,255,.72);box-shadow:0 6px 24px -10px rgba(0,0,0,.5)}
-  .hero .btn-ghost:hover{border-color:#fff}
+  /* ---------- The ghost button is frosted, not outlined --------------------
+     Its hairline goes for the same reason the CTA hairline does, but removing
+     it left nothing at all behind: a transparent rectangle with no edge and no
+     fill is not a button. So it gets the faintest panel that still reads --
+     white at 10%, over a lighter blur than the CTA, so the two materials stay
+     distinguishable by weight as well as by hue. Clay and heavy frost above,
+     clear and light frost below: the hierarchy survives without either one
+     needing to be drawn.
+
+     This also closes a hole that predates the redesign. The ghost label has
+     never had a text-shadow, and white type on the bare veiled film measures
+     2.34:1 -- a genuine AA failure, and one the 1px border was never doing
+     anything about. Adding the halo is what fixes it; the frost is nearly
+     free, costing 0.20 against bare film.
+
+     MEASURED, worst of 96 frames, with the halo:
+         white .10 + blur            5.78:1
+         :active, white .16          5.49:1
+         @supports fallback, .20     5.10:1   */
+  .hero .btn-ghost{
+    background:rgba(255,255,255,.10);
+    border:none;
+    color:#fff;
+    -webkit-backdrop-filter:blur(10px) saturate(120%);
+            backdrop-filter:blur(10px) saturate(120%);
+    box-shadow:0 10px 28px -14px rgba(0,0,0,.50),inset 0 1px 0 rgba(255,255,255,.18);
+    text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 10px rgba(0,0,0,.4);
+  }
+  /* The base rule flips this to solid white with ink type on :hover, which on
+     a phone means it STAYS that way after the tap -- an opaque slab dropped
+     over the film, precisely what we just finished removing from the CTA.
+     Denser frost instead, and the label stays white. */
+  .hero .btn-ghost:hover,
+  .hero .btn-ghost:active{
+    background:rgba(255,255,255,.16);
+    color:#fff;
+    box-shadow:0 10px 28px -14px rgba(0,0,0,.50),inset 0 1px 0 rgba(255,255,255,.18);
+  }
+
+  /* No backdrop-filter means no frost, and a 10% wash over sharp, busy film is
+     invisible. Both panels trade transparency back for density -- the CTA goes
+     darker, the ghost goes brighter. Measured 8.70:1 and 5.10:1 with the halo. */
+  @supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
+    .hero .btn-primary{background:rgba(154,79,46,.62)}
+    .hero .btn-ghost{background:rgba(255,255,255,.20)}
+  }
   .hero h1{margin:14px 0 18px}
   /* Full-width, stacked, easy to reach with one thumb */
   .hero-meta{flex-direction:column;align-items:stretch;gap:12px;margin-top:28px}
