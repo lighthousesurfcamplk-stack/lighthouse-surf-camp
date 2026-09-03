@@ -289,7 +289,13 @@ function rewritePaths(html, lang) {
   // assets, sitemap, robots, manifest…
   // `poster` joins href/src/content: the hero film's poster frame is an
   // asset path like any other, and a translated page is one level down.
-  html = html.replace(/\b(href|src|content|poster)="(assets\/[^"]*)"/g, '$1="../$2"');
+  /* srcset is in here because the hero <picture> in index.html carries the
+     phone poster on a <source>, and a locale page that did not rewrite it
+     would resolve /ru/assets/video/... and paint nothing on every phone.
+     Single-candidate srcsets only -- which is all this site uses, and all a
+     media-gated art-direction source ever needs. A width-descriptor list
+     would need splitting on commas first. */
+  html = html.replace(/\b(href|srcset|src|content|poster)="(assets\/[^"]*)"/g, '$1="../$2"');
   html = html.replace(/\bhref="(favicon[^"]*)"/g, 'href="../$1"');
 
   // Internal page links: same-language if that page is translated, else back

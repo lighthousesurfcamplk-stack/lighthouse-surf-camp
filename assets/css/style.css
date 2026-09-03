@@ -331,7 +331,14 @@ p{color:var(--ink-soft);text-wrap:pretty}
    context, so the film and the slides inside it remain trapped underneath
    the scrim above them, which is what keeps the headline readable. */
 .hero-media{position:absolute;inset:0;z-index:0;overflow:hidden}
-.hero-media>img{width:100%;height:100%;object-fit:cover;animation:slowzoom 20s ease-out forwards}
+/* Descendant, not direct child: slide 1 sits inside a <picture> now, so a
+   > would step straight over it. Same specificity as the > version it
+   replaces (0,1,1), so nothing anywhere else in the cascade moves.
+   Today .hero-media.slideshow .slide overrides every declaration in here
+   on the one page that has a hero-media, which is why the <picture> wrap
+   changed nothing visible -- but that is luck, and this is the rule that
+   is supposed to catch a hero image that is not part of a slideshow. */
+.hero-media img{width:100%;height:100%;object-fit:cover;animation:slowzoom 20s ease-out forwards}
 @keyframes slowzoom{from{transform:scale(1.14)}to{transform:scale(1)}}
 /* slideshow */
 .hero-media.slideshow .slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 1.7s ease-in-out;animation:none}
@@ -918,103 +925,135 @@ section{position:relative}
     text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 12px rgba(0,0,0,.4)
   }
 
-  /* ---------- The CTA is glass here, not a plate ---------------------------
-     Solid --clay is a 100%-opaque rectangle laid across the widest part of the
-     film, and it was also -- measured -- the weakest contrast in the whole
-     hero: white on #b3623d is 4.44:1, a shade UNDER the 4.5:1 that 13px bold
-     uppercase needs. The opaque version was hiding the wave AND failing the
-     check it was nominally there to pass.
+  /* ---------- The hero CTAs are type, not objects --------------------------
+     Every box is gone: background, border, backdrop-filter, box-shadow, and
+     the whole @supports fallback that existed only to rescue the frost on
+     browsers without backdrop-filter. There is nothing left to rescue.
 
-     Frosted clay fixes both without touching the brand. The hue is the same
-     --clay, so this still reads unmistakably as the clay CTA and still
-     dominates the ghost button beneath it; at .38 the film comes through 62%.
+     MEASURED first, over the same 96 frames of the cut, worst pixel of the
+     row, white type composited exactly as the phone does it:
 
-     NO BORDER. A 1px white rule around a translucent panel is the thing that
-     makes glassmorphism look like a picture of glassmorphism -- it redraws the
-     exact rectangle the material is supposed to dissolve. Three cues replace
-     it, and not one of them is an outline:
-       a. the backdrop blur, whose edge is already a visible discontinuity in
-          the film -- the material defines its own shape;
-       b. a deeper, further-thrown drop shadow, so the panel sits above the
-          film rather than reading as a hole cut out of it;
-       c. a 1px inset highlight on the TOP EDGE ONLY -- light catching a bevel.
-          It does not run around the shape, so it never closes into the line
-          the client objected to.
+         panel + halo (what we are removing)      7.33:1
+         halo alone, no panel at all              7.15:1
+         panel and halo both removed              2.27:1
 
-     MEASURED over the same 96 frames, composited exactly as the phone does it
-     (film -> grade -> veil -> blur -> glass), the blur modelled pessimistically
-     as a box of radius 14 against the real Gaussian sigma of 14:
-         white on the glass          3.21:1     the label on its own
-         white + its shadow halo     7.33:1     what the eye actually reads
-         :active, clay-dk at .54     8.66:1
-     against 4.44:1 for the solid button this replaces. */
-  .hero .btn-primary{
-    background:rgba(179,98,61,.38);                  /* --clay at 38% */
-    border:none;
-    -webkit-backdrop-filter:blur(14px) saturate(130%);   /* iOS needs the prefix below 18 */
-            backdrop-filter:blur(14px) saturate(130%);
-    box-shadow:0 14px 34px -14px rgba(0,0,0,.62),        /* the throw that reads as height */
-               0 2px 8px -4px rgba(0,0,0,.40),           /* contact shadow, keeps the edge */
-               inset 0 1px 0 rgba(255,255,255,.22);      /* bevel sheen, top edge only */
-    text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 10px rgba(0,0,0,.4);
-  }
-  /* Tap-hold and press. Both stay translucent -- going solid on :hover would
-     undo the whole point on the one interaction a phone actually has -- and
-     both restate the shadow, because the @media(hover:none) block further down
-     zeroes .btn:hover box-shadow and would otherwise win on source order. */
-  .hero .btn-primary:hover,
-  .hero .btn-primary:active{
-    background:rgba(154,79,46,.54);                  /* --clay-dk at 54% */
-    box-shadow:0 14px 34px -14px rgba(0,0,0,.62),0 2px 8px -4px rgba(0,0,0,.40),
-               inset 0 1px 0 rgba(255,255,255,.22);
-  }
+     So the glass was worth 0.18, and the halo was worth 4.88. The shadow was
+     always doing the work; the panels were decoration that happened to sit
+     underneath it. Losing them costs essentially nothing, which is the whole
+     reason this change is safe to make.
 
-  /* ---------- The ghost button is frosted, not outlined --------------------
-     Its hairline goes for the same reason the CTA hairline does, but removing
-     it left nothing at all behind: a transparent rectangle with no edge and no
-     fill is not a button. So it gets the faintest panel that still reads --
-     white at 10%, over a lighter blur than the CTA, so the two materials stay
-     distinguishable by weight as well as by hue. Clay and heavy frost above,
-     clear and light frost below: the hierarchy survives without either one
-     needing to be drawn.
+     Three things still have to survive losing the panels:
 
-     This also closes a hole that predates the redesign. The ghost label has
-     never had a text-shadow, and white type on the bare veiled film measures
-     2.34:1 -- a genuine AA failure, and one the 1px border was never doing
-     anything about. Adding the halo is what fixes it; the frost is nearly
-     free, costing 0.20 against bare film.
+     a. THE TAP TARGET. min-height:52px is inherited from .btn and stays, and
+        .hero-meta>.btn below still stretches each row to full width, so the
+        live area is now the entire 346x52 strip -- comfortably past the 44px
+        Apple and WCAG 2.5.5 both ask for, and BIGGER than the old painted
+        rectangle, because the whole row is live rather than just the part
+        that had a colour in it.
 
-     MEASURED, worst of 96 frames, with the halo:
-         white .10 + blur            5.78:1
-         :active, white .16          5.49:1
-         @supports fallback, .20     5.10:1   */
+     b. THE ALIGNMENT. The labels were centred because a filled rectangle
+        wants to be centred. Bare type does not: it wants the same left edge
+        as the h1 and the lead above it. The horizontal padding therefore goes
+        to zero and the labels flush to the text column -- which is what makes
+        removing the boxes read as composition rather than as absence.
+
+     c. THE HIERARCHY. Two identical lines of white uppercase would be two
+        links, not a primary and a secondary. The CTA keeps pure white, 800
+        weight and wider tracking; the ghost drops to 600 at 82% white. Same
+        family, unmistakably different rank -- the job the clay panel used to
+        do, done with type instead. */
+  .hero .btn-primary,
   .hero .btn-ghost{
-    background:rgba(255,255,255,.10);
+    background:none;
     border:none;
-    color:#fff;
-    -webkit-backdrop-filter:blur(10px) saturate(120%);
-            backdrop-filter:blur(10px) saturate(120%);
-    box-shadow:0 10px 28px -14px rgba(0,0,0,.50),inset 0 1px 0 rgba(255,255,255,.18);
-    text-shadow:0 1px 2px rgba(0,0,0,.5),0 2px 10px rgba(0,0,0,.4);
+    box-shadow:none;
+    -webkit-backdrop-filter:none;
+            backdrop-filter:none;
+    padding:14px 0;                 /* vertical only; min-height still rules */
+    justify-content:flex-start;     /* flush left with the h1, not centred   */
+    text-align:start;
+    gap:10px;
+    /* The halo IS the readability now, so it carries a little more than it
+       did under the glass: alpha .6/.5 instead of .5/.4, and the outer blur
+       widened 10px -> 12px because there is no longer a panel edge to
+       contain the bloom. MEASURED at the new alphas, worst frame, worst
+       pixel: 8.64:1 for the CTA and 6.73:1 for the ghost, against the 4.5:1
+       that 13px bold uppercase needs. */
+    text-shadow:0 1px 2px rgba(0,0,0,.6),0 2px 12px rgba(0,0,0,.5);
   }
-  /* The base rule flips this to solid white with ink type on :hover, which on
-     a phone means it STAYS that way after the tap -- an opaque slab dropped
-     over the film, precisely what we just finished removing from the CTA.
-     Denser frost instead, and the label stays white. */
+  .hero .btn-primary{color:#fff;font-weight:800;letter-spacing:.16em}
+  .hero .btn-ghost{color:rgba(255,255,255,.82);font-weight:600;letter-spacing:.13em}
+
+  /* A chevron drawn from two borders on a pseudo-element, not a glyph: it
+     inherits currentColor, stays crisp at any pixel density, and cannot be
+     substituted by a fallback font the way a real character can. It is a
+     mark, not an outline -- it never closes around the label.
+
+     border-inline-end + the [dir=rtl] flip below keep it pointing at the
+     edge the reader is travelling towards, which on /he/ is the left one.
+     drop-shadow rather than text-shadow because a text-shadow does not reach
+     a border; without it the mark would be the one unlit thing in the row. */
+  .hero .btn-primary::after,
+  .hero .btn-ghost::after{
+    content:"";
+    width:7px;height:7px;flex:none;
+    border-top:1.6px solid currentColor;
+    border-inline-end:1.6px solid currentColor;
+    transform:rotate(45deg);
+    margin-inline-start:1px;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,.6));
+    transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  }
+  [dir="rtl"] .hero .btn-primary::after,
+  [dir="rtl"] .hero .btn-ghost::after{transform:rotate(-45deg)}
+
+  /* PRESS FEEDBACK, and a defusing job. The base rules further up still say
+     .btn-primary:hover goes solid clay and .btn-ghost:hover goes solid WHITE
+     with ink type -- and on a phone :hover sticks after the tap, so without
+     these the first press would drop back exactly the opaque slab this whole
+     change removes. The feedback instead is the type dimming and the chevron
+     stepping toward the edge it points at. */
+  .hero .btn-primary:hover,
+  .hero .btn-primary:active,
   .hero .btn-ghost:hover,
   .hero .btn-ghost:active{
-    background:rgba(255,255,255,.16);
-    color:#fff;
-    box-shadow:0 10px 28px -14px rgba(0,0,0,.50),inset 0 1px 0 rgba(255,255,255,.18);
+    background:none;
+    border:none;
+    box-shadow:none;
+    transform:none;
   }
+  .hero .btn-primary:hover,
+  .hero .btn-primary:active{color:rgba(255,255,255,.72)}
+  .hero .btn-ghost:hover,
+  .hero .btn-ghost:active{color:rgba(255,255,255,.60)}
+  .hero .btn-primary:active::after,
+  .hero .btn-ghost:active::after{transform:translateX(3px) rotate(45deg)}
+  [dir="rtl"] .hero .btn-primary:active::after,
+  [dir="rtl"] .hero .btn-ghost:active::after{transform:translateX(-3px) rotate(-45deg)}
+  /* ---------- The desktop slideshow does not run here ----------------------
+     ...so its frames must not be paid for here either. loading="lazy" alone
+     was not enough and never could be: these three sit at inset:0 filling the
+     hero at opacity:0, which is fully "in the viewport" as far as the
+     intersection check is concerned, so a phone downloaded all three and then
+     painted the film straight over the top of them. MEASURED on a 375px
+     viewport: 367 KB + 349 KB of aerial photography per mobile visit, for
+     pixels no phone has ever displayed.
 
-  /* No backdrop-filter means no frost, and a 10% wash over sharp, busy film is
-     invisible. Both panels trade transparency back for density -- the CTA goes
-     darker, the ghost goes brighter. Measured 8.70:1 and 5.10:1 with the halo. */
-  @supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
-    .hero .btn-primary{background:rgba(154,79,46,.62)}
-    .hero .btn-ghost{background:rgba(255,255,255,.20)}
-  }
+     display:none is what actually stops it. A lazy image inside a display:none
+     subtree never intersects anything, so the fetch is not deferred -- it does
+     not happen. Scoped to this media query, so dragging a window or turning a
+     phone landscape past 760px brings the slideshow, and its images, straight
+     back.
+
+     Slide 1 is deliberately NOT in here: on a phone its <picture> resolves to
+     the film's own poster frame, which is the mobile hero and the LCP. See
+     index.html. */
+  .hero-media .slide[data-desktop-only]{display:none}
+  /* Which leaves exactly one frame, so pin it visible rather than leaving it
+     to a slideshow that now has nothing to slide to. Without this, the timer
+     in main.js would move .active onto a display:none frame a few seconds in
+     and the hero would go blank on any phone where the film never starts. */
+  .hero-media.slideshow .slide:not([data-desktop-only]){opacity:1;animation:none}
   .hero h1{margin:14px 0 18px}
   /* Full-width, stacked, easy to reach with one thumb */
   .hero-meta{flex-direction:column;align-items:stretch;gap:12px;margin-top:28px}
@@ -1025,7 +1064,18 @@ section{position:relative}
   }
   .hero-stats .stat{padding-inline-end:16px}
   .hero-stats .stat+.stat{padding-inline-start:20px;border-inline-start:1px solid rgba(255,255,255,.32)}
-  .hero-dots{inset-inline-start:var(--gutter);inset-inline-end:auto;bottom:calc(10px + var(--safe-b))}
+  /* Three dots for one frame. The two desktop aerials are display:none up
+     above, so on a phone the hero is a single picture -- the film, or the
+     poster it starts on -- and a pager that offers to move between three
+     of them is simply describing a slideshow that is not running. It was
+     already hidden once .has-video landed, but the film is deliberately
+     held back until load now, and it never arrives at all if autoplay is
+     refused, so the dots were left counting to three in the meantime.
+     The rotation itself is left alone on purpose: the timer costs one
+     class toggle every 7s, the pin above keeps the visible frame lit
+     through it, and stopping it in JS would mean a tablet turned past
+     760px sat on a dead slideshow until the next reload. */
+  .hero-dots{display:none}
   .cta-band .btns{flex-direction:column;align-items:stretch;gap:12px}
   .cta-band .btns>.btn{width:100%}
   .checklist li{font-size:.95rem;gap:12px}
@@ -1093,7 +1143,7 @@ section{position:relative}
   }
   html{scroll-behavior:auto}
   .strip .track{animation:none}
-  .hero-media>img,.hero-media.slideshow .slide.active{animation:none;transform:none}
+  .hero-media img,.hero-media.slideshow .slide.active{animation:none;transform:none}
   .js .reveal{opacity:1;transform:none;filter:none}
 }
 

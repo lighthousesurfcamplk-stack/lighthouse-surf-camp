@@ -511,6 +511,12 @@
 
     function attemptPlay(){
       if(!wanted || reduceMotion.matches) return;
+      /* The src now lands later than `wanted` does -- see afterLoad() below --
+         and the retry paths can both fire in the gap between them. play() on a
+         source-less element rejects, and that rejection is indistinguishable
+         from a refused autoplay, so it would stand the film down before it had
+         ever been asked for. One line, and the gap is closed. */
+      if(!heroVideo.getAttribute('src')) return;
       var token   = attempt;
       var started = heroVideo.play();
       if(started && started['catch']) started['catch'](function(err){
@@ -658,10 +664,47 @@
 
       wanted = src;
       attempt++;
-      heroVideo.setAttribute('src', src);
-      heroVideo.load();
-      attemptPlay();
-      armRetry();
+      afterLoad(function(){
+        /* A rotation while we were waiting already picked something else. */
+        if(wanted !== src) return;
+        heroVideo.setAttribute('src', src);
+        heroVideo.load();
+        attemptPlay();
+        armRetry();
+      });
+    }
+
+    /* ---- Let the page finish before the film starts ----------------------
+       autoplay overrides preload="none". The moment a src lands on this
+       element the browser starts pulling the file, and the phone cut is
+       4.4 MB. Mounting it the instant content.js resolved therefore put
+       4.4 MB of video in a race against the 200 KB poster that IS the largest
+       contentful paint -- on exactly the throttled connection a mobile
+       Lighthouse run simulates. That is the single biggest reason the mobile
+       audit was timing out, and it is not something a preload hint or an
+       image budget can fix: the video was simply eating the pipe.
+
+       So the film waits for load. Everything that counts toward a Core Web
+       Vital has painted by then, and the bytes cost nothing anybody is
+       waiting on. What the visitor sees is the poster immediately and the
+       film fading in a moment later -- which is what the poster was added
+       for in the first place.
+
+       The 3s timer is a safety net, not a schedule: 'load' waits on every
+       subresource on the page, so one slow image anywhere below the fold
+       would otherwise hold the hero hostage indefinitely. */
+    function afterLoad(fn){
+      if(document.readyState === 'complete'){ fn(); return; }
+      var fired = false, timer;
+      function go(){
+        if(fired) return;
+        fired = true;
+        clearTimeout(timer);
+        window.removeEventListener('load', go);
+        fn();
+      }
+      timer = setTimeout(go, 3000);
+      window.addEventListener('load', go);
     }
 
     // Only reveal it once frames are actually on screen, never on the

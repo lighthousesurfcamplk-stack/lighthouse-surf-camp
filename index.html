@@ -35,9 +35,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#0d333b">
-<!-- The hero image is the LCP element; fetch it in parallel with the CSS. -->
-<link rel="preload" as="image" href="assets/img/dji0088.jpg" fetchpriority="high">
-<link rel="stylesheet" href="assets/css/style.css?v=34">
+<!-- The hero image is the LCP element; fetch it in parallel with the CSS.
+     TWO of them, because this page has two heroes and they are different
+     files: the aerial on a desktop, the film's own first frame on a phone.
+     An unconditional preload of the aerial handed a phone 298 KB at the
+     HIGHEST priority for an image it never displays, while the JPEG it does
+     display waited on main.js, content.js and a media-home.json round-trip.
+     media= on a preload is honoured by every engine and costs nothing: each
+     viewport now fetches exactly one hero, and neither fetches the other. -->
+<link rel="preload" as="image" media="(min-width:761px)" href="assets/img/dji0088.jpg" fetchpriority="high">
+<link rel="preload" as="image" media="(max-width:760px)" href="assets/video/lighthouse-mobile-poster.jpg" fetchpriority="high">
+<link rel="stylesheet" href="assets/css/style.css?v=35">
 <script type="application/ld+json">
 {
   "@context":"https://schema.org","@type":"Resort", "inLanguage": "en",
@@ -81,9 +89,29 @@
 <!-- HERO -->
 <header class="hero">
   <div class="hero-media slideshow">
-    <img width="1700" height="956" class="slide active" src="assets/img/dji0088.jpg" data-cms="media:hero.slide1" alt="Aerial view of Light House Surf Camp and the Arugam Bay coastline" decoding="async" fetchpriority="high" data-i18n-alt="index.alt--aerial-view-of-light-house-surf">
-    <img width="1537" height="1023" class="slide" src="assets/img/img1155.jpg" data-cms="media:hero.slide2" alt="A surfer riding a wave at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-surfer-riding-a-wave-at">
-    <img width="1700" height="956" class="slide" src="assets/img/dji0086.jpg" data-cms="media:hero.slide3" alt="Aerial of the palm coastline at golden hour, Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-palm-coastline-at">
+    <!-- SLIDE 1 IS THE LCP ELEMENT, and it is a different file on each
+         viewport. Desktop gets the aerial. A phone gets the film's own first
+         frame -- the same JPEG the <video> below carries as its poster, so the
+         two are one download, and the still a visitor sees before the film
+         starts is literally the frame the film starts on.
+
+         <picture> rather than JS, because the preload scanner can read it. The
+         phone hero is now discoverable in the raw HTML and starts in the first
+         few milliseconds instead of waiting on two scripts and a JSON round
+         trip; the desktop aerial is not fetched on a phone AT ALL, which is
+         what a media-gated <source> guarantees and which no amount of lazy
+         loading can.
+
+         data-cms-poster is the hook content.js uses to keep this <source> in
+         step with the poster in /admin. A matching <source> beats the <img src>
+         underneath it, so hydrating the img alone would silently stop working
+         the day the owner uploads a new one. -->
+    <picture>
+      <source media="(max-width:760px)" srcset="assets/video/lighthouse-mobile-poster.jpg" data-cms-poster>
+      <img width="1700" height="956" class="slide active" src="assets/img/dji0088.jpg" data-cms="media:hero.slide1" alt="Aerial view of Light House Surf Camp and the Arugam Bay coastline" decoding="async" fetchpriority="high" data-i18n-alt="index.alt--aerial-view-of-light-house-surf">
+    </picture>
+    <img width="1537" height="1023" class="slide" data-desktop-only src="assets/img/img1155.jpg" data-cms="media:hero.slide2" alt="A surfer riding a wave at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-surfer-riding-a-wave-at">
+    <img width="1700" height="956" class="slide" data-desktop-only src="assets/img/dji0086.jpg" data-cms="media:hero.slide3" alt="Aerial of the palm coastline at golden hour, Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-palm-coastline-at">
 
     <!-- BACKGROUND FILM (optional, set in /admin → Images & Video → Home Page).
          Ships with no src on purpose. main.js reads the desktop and mobile
@@ -201,7 +229,7 @@
       </article>
 
       <article class="pkg-card reveal" data-delay="2">
-        <img width="1700" height="956" src="assets/img/drone-3.jpg" data-cms="img:pkg-10day" alt="Aerial view of the point break at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-view-of-the-point-break">
+        <img width="1100" height="619" src="assets/img/drone-3.jpg" data-cms="img:pkg-10day" alt="Aerial view of the point break at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-view-of-the-point-break">
         <div class="pkg-body">
           <h3 data-cms="name:pkg-10day" data-i18n="index.h3--10-day-pro-trip">10-Day Pro Trip</h3>
           <p class="pkg-tag" data-cms="meta:pkg-10day" data-i18n="index.p--all-inclusive-9-nights">All-inclusive · 9 nights</p>
@@ -272,7 +300,7 @@
       </ul>
       <div style="margin-top:34px"><a class="btn btn-gold" href="wellness.html" data-i18n="index.a--explore-wellness">Explore Wellness <span class="arrow">→</span></a></div>
     </div>
-    <div class="split-media"><img width="1242" height="1533" src="assets/img/imge0018.jpg" data-cms="media:wellness" alt="A-frame sea-view cabana at Light House Surf Camp — surf and restore" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-frame-sea-view-cabana-at"></div>
+    <div class="split-media"><img width="1100" height="1358" src="assets/img/imge0018.jpg" data-cms="media:wellness" alt="A-frame sea-view cabana at Light House Surf Camp — surf and restore" loading="lazy" decoding="async" data-i18n-alt="index.alt--a-frame-sea-view-cabana-at"></div>
   </div>
 </section>
 
@@ -291,7 +319,7 @@
 <!-- PHOTO BAND -->
 <section class="photoband">
   <div class="ph"><img width="957" height="1700" src="assets/img/cabana2-3.jpg" data-cms="media:band.one" alt="Hammock with sea view" loading="lazy" decoding="async" data-i18n-alt="index.alt--hammock-with-sea-view"><span class="cap" data-i18n="index.span--slow-mornings">Slow mornings</span></div>
-  <div class="ph"><img width="1700" height="956" src="assets/img/drone-3.jpg" data-cms="media:band.two" alt="Aerial of the Arugam Bay coastline and surf" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-arugam-bay-coastline"><span class="cap" data-i18n="index.span--empty-lineups">Empty lineups</span></div>
+  <div class="ph"><img width="1100" height="619" src="assets/img/drone-3.jpg" data-cms="media:band.two" alt="Aerial of the Arugam Bay coastline and surf" loading="lazy" decoding="async" data-i18n-alt="index.alt--aerial-of-the-arugam-bay-coastline"><span class="cap" data-i18n="index.span--empty-lineups">Empty lineups</span></div>
   <div class="ph"><img width="919" height="1280" src="assets/img/restaurant-12.jpg" data-cms="media:band.three" alt="Sunset through the natural-wood restaurant" loading="lazy" decoding="async" data-i18n-alt="index.alt--sunset-through-the-natural-wood-restaurant"><span class="cap" data-i18n="index.span--golden-hour">Golden hour</span></div>
   <div class="ph"><img width="1275" height="1700" src="assets/img/others-1.jpg" data-cms="media:band.four" alt="Palm and beach at sunset" loading="lazy" decoding="async" data-i18n-alt="index.alt--palm-and-beach-at-sunset"><span class="cap" data-i18n="index.span--endless-coast">Endless coast</span></div>
 </section>
@@ -314,7 +342,7 @@
       </ul>
       <div style="margin-top:34px"><a class="btn btn-primary" href="book.html" data-i18n="index.a--plan-your-trip">Plan Your Trip <span class="arrow">→</span></a></div>
     </div>
-    <div class="split-media wide"><img width="1402" height="1122" src="assets/img/ea001.jpg" data-cms="media:place" alt="Sri Lanka's wild east coast at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--sri-lanka-s-wild-east-coast"></div>
+    <div class="split-media wide"><img width="1100" height="880" src="assets/img/ea001.jpg" data-cms="media:place" alt="Sri Lanka's wild east coast at Arugam Bay" loading="lazy" decoding="async" data-i18n-alt="index.alt--sri-lanka-s-wild-east-coast"></div>
   </div>
 </section>
 
@@ -424,7 +452,7 @@
 
 <script type="application/ld+json" data-seo="auto">{"@context":"https://schema.org","@type":"FAQPage","inLanguage":"en","mainEntity":[{"@type":"Question","name":"When is the best time to surf Arugam Bay?","acceptedAnswer":{"@type":"Answer","text":"Peak surf season runs June to October, when the swell is most consistent and the bay is at its best. Our cabanas are limited and fill first for those months, so book early. Outside the peak the coast is quieter, greener and ideal if you are learning."}},{"@type":"Question","name":"I have never surfed before. Is this camp for me?","acceptedAnswer":{"@type":"Answer","text":"Yes — most of our guests arrive as complete beginners. Lessons run in small groups with certified local coaches, and we read the swell each morning to pick a break that suits your level. Soft-tops and rash guards are provided."}},{"@type":"Question","name":"How do I pay, and what if my plans change?","acceptedAnswer":{"@type":"Answer","text":"You reserve with a 25% deposit online and settle the balance on arrival in Arugam Bay. Cancellation is free up to 14 days before check-in. If you would rather not pay online at all, message us on WhatsApp and we will arrange it with you directly."}},{"@type":"Question","name":"What is included in an all-inclusive camp?","acceptedAnswer":{"@type":"Answer","text":"Your cabana, every meal, your coached surf sessions and your board hire — all in one price. Longer camps add Ayurvedic treatments, video coaching and surf-safari trips up the coast. The full list sits on each package card above."}},{"@type":"Question","name":"How do I get to the camp from the airport?","acceptedAnswer":{"@type":"Answer","text":"Tell us your flight and we will arrange the transfer. Tuk-tuks and bikes can be organised once you are here, so you can explore the coast at your own pace."}},{"@type":"Question","name":"Can you cater for vegetarians and vegans?","acceptedAnswer":{"@type":"Answer","text":"Always. Vegetarian and vegan options are available at every meal, alongside authentic Sri Lankan rice and curry, hoppers and the daily catch. Tell us about any allergies when you book and the kitchen will plan around them."}}]}</script>
 
-<script src="assets/js/main.js?v=14"></script>
-<script src="assets/js/content.js?v=6"></script>
+<script src="assets/js/main.js?v=15"></script>
+<script src="assets/js/content.js?v=7"></script>
 </body>
 </html>

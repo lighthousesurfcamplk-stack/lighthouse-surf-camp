@@ -331,6 +331,18 @@
              and desktop has no film. main.js promotes this to the real attribute
              only on the viewport that actually mounts one. */
           if (film.poster)       el.setAttribute('data-poster',  asset(film.poster));
+
+          /* The phone hero is ALSO a <source> in the markup now -- see the
+             <picture> wrapped around slide 1 in index.html -- because a
+             <source> is the only form the preload scanner can find before any
+             of this JavaScript has run. A matching <source> beats the <img src>
+             underneath it, so hydrating the image alone would silently stop
+             working the day the owner uploads a new poster in /admin: the JSON
+             would change and the picture would not. Keep the two in step. */
+          if (film.poster) {
+            var pSrc = document.querySelector('source[data-cms-poster]');
+            if (pSrc) pSrc.setAttribute('srcset', asset(film.poster));
+          }
           document.dispatchEvent(new CustomEvent('lhsc:video', { detail: el }));
           break;
         }
