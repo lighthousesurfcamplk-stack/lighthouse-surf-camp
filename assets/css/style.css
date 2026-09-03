@@ -1030,6 +1030,87 @@ section{position:relative}
   .hero .btn-ghost:active::after{transform:translateX(3px) rotate(45deg)}
   [dir="rtl"] .hero .btn-primary:active::after,
   [dir="rtl"] .hero .btn-ghost:active::after{transform:translateX(-3px) rotate(-45deg)}
+  /* ---------- A line under the label ---------------------------------------
+     Minimal is not the same as unrecognisable. With every box gone the CTAs
+     read beautifully, but nothing except tracking was left to say "tap me",
+     and tracking is not an affordance. This puts one back using the oldest
+     mark there is for a link, and gives it just enough motion to be found.
+
+     WHY text-decoration AND NOT A PSEUDO-ELEMENT. MEASURED at 375px: the
+     label is 177px sitting inside a 331px row, 53% of it, because the row is
+     stretched to full width for the tap target. So a ::before pinned
+     left:0;right:0 paints a 331px rule -- a divider under the button, not an
+     underline on the label. Sizing a pseudo-element to the text instead is
+     not possible here in CSS: the button contains a bare text node with no
+     element around it, and it cannot be given one, because i18n-build swaps
+     the INNER HTML of every [data-i18n] element when it generates the 96
+     locale pages -- a <span> would survive in English and be destroyed in all
+     eight translations, which is the worst kind of bug, the kind only
+     somebody reading Hebrew would ever see. text-decoration is the one
+     mechanism that measures itself against the text, and it then keeps doing
+     that for free in German, Japanese and Hebrew alike, at every font size,
+     forever. ::after is also already spoken for by the chevron.
+
+     It inherits the halo, too. text-shadow applies to a decoration as well as
+     to the glyphs, so the line arrives already carrying the same two shadow
+     layers that make the type legible over moving film -- which a
+     pseudo-element would have had to be given separately, the way the chevron
+     needed its own drop-shadow.
+
+     The line runs from the first letter to just short of the chevron: a
+     decoration spans the flex line box, so the 10px gap is inside it. Left
+     alone deliberately. A rule that stops dead under the final glyph looks
+     clipped, and the small lead-out reads as the line handing off to the mark
+     that follows it. */
+  .hero .btn-primary,
+  .hero .btn-ghost{
+    text-decoration-line:underline;
+    text-decoration-thickness:1px;    /* 3 device px on a phone: crisp, not heavy */
+    text-underline-offset:7px;        /* clear of the type, well inside the 52px row */
+  }
+
+  /* The swell. Colour only -- text-decoration-color is a paint property, not
+     a layout input, so this cannot reflow anything. That matters on the one
+     screen that is also decoding a 4.4 MB film.
+
+     It rests for the first 44% of the cycle, rises over the next 20%, and
+     takes the remaining 36% to fall back, so the eye catches a slow warm
+     swell rather than a blink. It comes up in --sand (#e8dcc4), the same
+     cream already carrying "meets the surf." two lines above, so the line
+     borrows a colour the hero has established rather than introducing one.
+
+     The ghost runs the same curve 1.1s later and dimmer. Two lines breathing
+     in unison would read as a single flashing object; offset, they read as a
+     sequence, and the delay quietly walks the eye down to the second choice
+     after the first has been offered. The alpha gap is the same hierarchy
+     the type already states: primary brighter, ghost subordinate. */
+  .hero .btn-primary{
+    text-decoration-color:rgba(255,255,255,.42);
+    animation:cta-underline 7s ease-in-out infinite;
+  }
+  .hero .btn-ghost{
+    text-decoration-color:rgba(255,255,255,.30);
+    animation:cta-underline-soft 7s ease-in-out infinite 1.1s;
+  }
+  @keyframes cta-underline{
+    0%,44%,100%{text-decoration-color:rgba(255,255,255,.42)}
+    64%{text-decoration-color:rgba(232,220,196,.95)}
+  }
+  @keyframes cta-underline-soft{
+    0%,44%,100%{text-decoration-color:rgba(255,255,255,.30)}
+    64%{text-decoration-color:rgba(232,220,196,.70)}
+  }
+
+  /* Press. An animation beats a plain declaration in the cascade, so :active
+     has to stand the swell down before it can set a colour of its own --
+     otherwise the press would be invisible for most of the cycle. Stopping it
+     is also the honest behaviour: the visitor is touching the thing now, so
+     the line should stop advertising and simply be lit. */
+  .hero .btn-primary:active,
+  .hero .btn-ghost:active{
+    animation:none;
+    text-decoration-color:rgba(232,220,196,.95);
+  }
   /* ---------- The desktop slideshow does not run here ----------------------
      ...so its frames must not be paid for here either. loading="lazy" alone
      was not enough and never could be: these three sit at inset:0 filling the
@@ -1079,6 +1160,17 @@ section{position:relative}
   .cta-band .btns{flex-direction:column;align-items:stretch;gap:12px}
   .cta-band .btns>.btn{width:100%}
   .checklist li{font-size:.95rem;gap:12px}
+}
+
+/* Reduced motion: the swell stops, the line stays. The affordance was always
+   the point -- the animation was only how it got noticed -- so both lines hold
+   at a fixed, slightly brighter alpha instead of disappearing. Combined query
+   rather than a nested one, matching the pattern already used further down. */
+@media(max-width:760px) and (prefers-reduced-motion:reduce){
+  .hero .btn-primary,
+  .hero .btn-ghost{animation:none}
+  .hero .btn-primary{text-decoration-color:rgba(255,255,255,.55)}
+  .hero .btn-ghost{text-decoration-color:rgba(255,255,255,.40)}
 }
 
 /* --- Phone --- */
