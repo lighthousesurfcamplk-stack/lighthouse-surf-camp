@@ -161,8 +161,18 @@ the admin is the order guests see.
 
 **To change your WhatsApp number:**
 Site Settings → Contact → **WhatsApp number**. Digits only, country code
-first, no `+` and no spaces: `94702828819`. Every WhatsApp button on the
-site picks it up.
+first, no `+` and no spaces: `94771066677`. Every WhatsApp button *and* every
+booking enquiry on the site picks this one up — so this is the phone that has
+to be watched.
+
+Below it sits **Second WhatsApp number** (`94771606203`) — the camp's other
+line. It is recorded here so both numbers live in one place, and it is printed
+in the site footer next to the first. No booking button routes to it, and the
+footer text itself lives in the page templates, so tell your developer if this
+number ever changes.
+
+Each number has a matching **as displayed** field — the spaced version guests
+read, e.g. `+94 77 106 6677`.
 
 **To change the deposit:**
 Site Settings → Booking rules → **Deposit taken online**. It is a decimal:

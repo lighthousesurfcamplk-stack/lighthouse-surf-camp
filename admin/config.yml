@@ -630,11 +630,24 @@ collections:
               - label: "WhatsApp number"
                 name: "whatsapp"
                 widget: "string"
-                pattern: ['^[0-9]{8,15}$', "Digits only, including the country code and no + — e.g. 94702828819"]
+                pattern: ['^[0-9]{8,15}$', "Digits only, including the country code and no + — e.g. 94771066677"]
                 hint: >-
                   Digits only, country code first, no + and no spaces.
-                  Every "Chat on WhatsApp" button on the site uses this.
-              - { label: "WhatsApp number as displayed", name: "whatsappDisplay", widget: "string", hint: "How it is printed on screen, e.g. +94 70 282 8819" }
+                  Every "Chat on WhatsApp" button and every booking enquiry
+                  on the site goes to this number, so this is the phone that
+                  has to be watched.
+              - { label: "WhatsApp number as displayed", name: "whatsappDisplay", widget: "string", hint: "How it is printed on screen, e.g. +94 77 106 6677" }
+              - label: "Second WhatsApp number"
+                name: "whatsappAlt"
+                widget: "string"
+                required: false
+                pattern: ['^[0-9]{8,15}$', "Digits only, including the country code and no + — e.g. 94771606203"]
+                hint: >-
+                  Optional. Same format as above. The camp's second line, kept
+                  here so both numbers live in one place. Booking buttons all
+                  use the first number, and the footer prints both from the
+                  page templates — so tell your developer if this one changes.
+              - { label: "Second number as displayed", name: "whatsappAltDisplay", widget: "string", required: false, hint: "How it is printed on screen, e.g. +94 77 160 6203" }
               - { label: "Email", name: "email", widget: "string" }
               - { label: "Instagram handle", name: "instagram", widget: "string", hint: "Without the @." }
 

@@ -800,7 +800,11 @@
       p.textContent = t('Message us on WhatsApp and we will set the whole trip up for you personally — usually within the hour.');
       var a = document.createElement('a');
       a.className = 'btn btn-gold';
-      a.href = 'https://wa.me/94702828819';
+      /* Hardcoded on purpose. This branch only runs because the content load
+         failed — settings.json among it — so contact.whatsapp is precisely
+         the thing we do not have. Keep it in step with
+         content/settings.json → contact.whatsapp by hand. */
+      a.href = 'https://wa.me/94771066677';
       a.target = '_blank';
       a.rel = 'noopener';
       a.textContent = t('Book on WhatsApp');
