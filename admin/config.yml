@@ -684,18 +684,26 @@ collections:
                 default: false
                 hint: >-
                   Leave OFF until your PayHere account is approved and the
-                  hash endpoint is deployed. While it is off, guests confirm
+                  keys are set in Netlify. While it is off, guests confirm
                   over WhatsApp instead — bookings still work.
-              - label: "Sandbox (test) mode"
-                name: "sandbox"
-                widget: "boolean"
-                default: true
-                hint: "ON = test cards only, no real money. Turn OFF only when you are ready to take live payments."
-              - { label: "Merchant ID", name: "merchantId", widget: "string", hint: "From your PayHere dashboard. This one is safe to publish — never put your Merchant SECRET here." }
-              - { label: "Hash endpoint", name: "hashEndpoint", widget: "string" }
-              - { label: "Return URL", name: "returnUrl", widget: "string" }
-              - { label: "Cancel URL", name: "cancelUrl", widget: "string" }
-              - { label: "Notify URL", name: "notifyUrl", widget: "string" }
+              - label: "Checkout endpoint"
+                name: "endpoint"
+                widget: "string"
+                default: "/api/payhere-checkout"
+                required: false
+                hint: >-
+                  Leave this exactly as it is unless a developer tells you
+                  otherwise.
+
+              # Everything else PayHere needs — merchant id, the merchant
+              # SECRET, test-vs-live mode, and all three callback URLs — now
+              # lives in Netlify's environment variables, not here. That is
+              # deliberate: this file is published to the public web with
+              # every deploy, and the prices a guest is charged are worked
+              # out on the server from content/packages.json rather than
+              # taken from the browser. Anything in this file is something an
+              # attacker can read and, if the browser were trusted with it,
+              # change. See ADMIN-GUIDE.md, Part 5.
 
           - { label: "Reminder", name: "_note", widget: "hidden" }
 

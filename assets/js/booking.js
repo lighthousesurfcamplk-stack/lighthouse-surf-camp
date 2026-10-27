@@ -29,6 +29,9 @@
 
   var MAX_QTY = 30;
   var STORE_KEY = 'lhsc.cart.v1';
+  // Which order this browser last handed to PayHere. thank-you.html reads it
+  // if the gateway comes back without ?order= in the URL.
+  var ORDER_KEY = 'lhsc.order.v1';
   var STORE_TTL = 7 * 24 * 60 * 60 * 1000; // a stale cart from last month helps nobody
 
   var $ = function (id) { return document.getElementById(id); };
@@ -620,62 +623,136 @@
     window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
   }
 
+  function busy(btn, on) {
+    if (!btn) return;
+    btn.disabled = on;
+    btn.classList.toggle('is-loading', on);
+    btn.setAttribute('aria-busy', on ? 'true' : 'false');
+  }
+
+  /* THE HANDOFF TO PAYHERE.
+
+     This browser sends what the guest chose. It does not send what it
+     costs. The old flow computed the deposit here, asked the server to
+     sign that number, and posted the pair to the gateway -- so anyone who
+     could open a console could have a $1 deposit signed against an $890
+     trip, and PayHere would accept it, because the signature really was
+     the camp's. /api/payhere-checkout now reprices the cart from the same
+     content/packages.json and content/experiences.json this page rendered
+     from, and returns the signed fields. The amount, the order id, the
+     merchant id and all three callback URLs are decided there.
+
+     Everything is still a fallback away from the old WhatsApp flow: card
+     payment switched off, an endpoint that is not deployed yet, a server
+     with no PayHere credentials -- each ends with the booking in the
+     camp's WhatsApp instead of nowhere. */
   function payHere() {
     var ph = state.data.settings.payhere || {};
-    var dep = deposit().toFixed(2);
-    var orderId = 'LHSC-' + Date.now();
+    var btn = $('payBtn');
 
-    if (!ph.enabled) {
+    if (!ph.enabled || !ph.endpoint) {
       toast(t('Sending your booking to our team on WhatsApp…'));
       openWhatsApp('DEPOSIT BOOKING (' + money(deposit()) + ')');
       return;
     }
 
-    var btn = $('payBtn');
-    btn.disabled = true;
-    btn.classList.add('is-loading');
+    /* Step 3 is only reachable through a validated step 2, but the fields
+       behind it stay editable, so a guest who goes back, clears their email
+       and returns would otherwise be handed to a gateway that has no way to
+       reach them. */
+    if (!validateDetails(false)) {
+      goStep(2);
+      validateDetails(true);
+      toast(t('Just one detail to fix before we can take your deposit.'), 'warn');
+      return;
+    }
+    if (!state.cart.length) {
+      goStep(1);
+      return;
+    }
 
-    fetch(ph.hashEndpoint, {
+    busy(btn, true);
+
+    fetch(ph.endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        order_id: orderId,
-        amount: dep,
-        currency: state.data.settings.booking.currency
+        // ids and quantities only — see the note above
+        cart: state.cart.map(function (c) { return { id: c.id, qty: c.qty }; }),
+        // '' on the English pages, 'de' / 'ch' / 'ja' … on the generated
+        // ones, so the guest comes back to a thank-you page in the language
+        // they booked in. The server checks it against its own list.
+        locale: document.documentElement.getAttribute('data-lang-dir') || '',
+        guest: {
+          first: val('fname'), last: val('lname'),
+          email: val('email'), phone: val('phone'),
+          level: val('level'), guests: val('guests'),
+          date: val('date'), country: val('country'), notes: val('notes')
+        }
       })
     })
       .then(function (r) {
-        if (!r.ok) throw new Error('hash endpoint ' + r.status);
-        return r.json();
+        // Read the body either way: a 400 carries a reason worth acting on,
+        // and an HTML error page from a misconfigured host carries none.
+        return r.text().then(function (raw) {
+          var body = {};
+          try { body = JSON.parse(raw); } catch (e) {}
+          return { ok: r.ok, status: r.status, body: body };
+        });
       })
       .then(function (res) {
-        if (!res || !res.hash) throw new Error('no hash returned');
-        var form = $('payhereForm');
-        form.action = ph.sandbox
-          ? 'https://sandbox.payhere.lk/pay/checkout'
-          : 'https://www.payhere.lk/pay/checkout';
-
-        var f = {
-          ph_merchant_id: ph.merchantId, ph_return_url: ph.returnUrl,
-          ph_cancel_url: ph.cancelUrl, ph_notify_url: ph.notifyUrl,
-          ph_order_id: orderId,
-          ph_items: lines().map(function (l) { return l.item.name + '×' + l.qty; }).join(', ') + ' (deposit)',
-          ph_currency: state.data.settings.booking.currency, ph_amount: dep, ph_hash: res.hash,
-          ph_first_name: val('fname'), ph_last_name: val('lname'),
-          ph_email: val('email'), ph_phone: val('phone')
-        };
-        Object.keys(f).forEach(function (k) { if ($(k)) $(k).value = f[k]; });
-
-        localStorage.removeItem(STORE_KEY); // the cart has become an order
-        form.submit();
+        /* The server read the cart differently than this page did: a price
+           edited in /admin since the tab was opened, or an option the owner
+           has just retired. Diverting to WhatsApp would send the camp a
+           total nobody can honour, so say so and let them reload -- the
+           WhatsApp button is the next control on the page either way. */
+        if (res.status === 400) {
+          console.warn('[LHSC] checkout rejected —', res.body.error || res.status);
+          busy(btn, false);
+          toast(t('Those prices have changed since you opened this page — please reload and try again.'), 'warn');
+          return;
+        }
+        if (!res.ok || !res.body.action || !res.body.fields) {
+          throw new Error(res.body.error || ('checkout HTTP ' + res.status));
+        }
+        handoff(res.body);
       })
       .catch(function (err) {
         console.warn('[LHSC] PayHere unavailable —', err.message);
-        btn.disabled = false;
-        btn.classList.remove('is-loading');
+        busy(btn, false);
         toast(t('Card payment is unavailable right now — sending via WhatsApp instead.'), 'warn');
         openWhatsApp();
       });
+  }
+
+  /* Stamp out the signed fields and go. book.html carries an empty form on
+     purpose: it used to hold fifteen fixed <input id="ph_*"> elements, which
+     made "PayHere wants one more field" a two-file change with a silent
+     half-working state in between. Whatever the server sends is what gets
+     posted, and this function never needs to know what any of it means. */
+  function handoff(res) {
+    var form = $('payhereForm');
+    if (!form) throw new Error('no PayHere form on this page');
+
+    form.action = res.action;
+    form.innerHTML = '';
+    Object.keys(res.fields).forEach(function (k) {
+      var input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = k;
+      input.value = res.fields[k] == null ? '' : String(res.fields[k]);
+      form.appendChild(input);
+    });
+
+    /* The cart stays put until the money actually arrives. Clearing it here
+       -- which is what the old code did -- emptied the basket of every guest
+       who pressed cancel at the gateway and landed back on an empty
+       book.html with no idea what they had picked. thank-you.html clears it
+       once /api/payhere-status confirms the deposit. */
+    try { sessionStorage.setItem(ORDER_KEY, res.order_id || ''); } catch (e) {}
+
+    toast(t('Taking you to our secure payment page…'));
+    form.submit();
   }
 
   /* ---------------------------------------------------------------

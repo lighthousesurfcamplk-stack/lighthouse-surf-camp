@@ -19,14 +19,10 @@
     "minNoticeDays": 1,
     "note": "Balance is settled on arrival in Arugam Bay. Free cancellation up to 14 days before check-in."
   },
+  "_payhereNote": "Card payment has exactly two switches here. Everything else — the merchant id, the sandbox flag, the amount, the signature, the return and notify URLs — is decided on the server from environment variables, so that nothing a browser can edit is able to change what gets charged.",
   "payhere": {
     "enabled": false,
-    "sandbox": true,
-    "merchantId": "YOUR_MERCHANT_ID",
-    "hashEndpoint": "/api/payhere-hash",
-    "returnUrl": "https://lighthousesurfcamp.lk/thank-you.html",
-    "cancelUrl": "https://lighthousesurfcamp.lk/book.html",
-    "notifyUrl": "https://lighthousesurfcamp.lk/api/payhere-notify"
+    "endpoint": "/api/payhere-checkout"
   },
   "_note": "Every figure below is published on the live site. Only edit these to numbers you can actually evidence — they also feed the star rating Google shows in search results.",
   "rating": { "value": "4.9", "count": "180" },

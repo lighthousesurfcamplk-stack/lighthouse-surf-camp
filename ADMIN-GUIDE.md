@@ -218,18 +218,63 @@ and push. This works because `local_backend: true` is set in `config.yml`.
 Bookings work today without this: guests confirm over WhatsApp and pay the
 deposit however you agree. Card payments are an upgrade, not a dependency.
 
-1. Get a **PayHere** merchant account approved.
-2. Deploy `server/payhere-server.js` (any Node host — Netlify Functions,
-   Render, Railway, a small VPS).
-3. Set the **`PAYHERE_MERCHANT_SECRET`** environment variable **on that server
-   only**. It must never appear in this repository, in `settings.json`, or
-   anywhere the browser can read it. The whole reason the hash is generated
-   server-side is to keep that secret off the guest's device.
-4. In the admin: Site Settings → Card payments →
-   fill in **Merchant ID**, point **Hash endpoint** at your deployed server,
-   leave **Sandbox mode ON**, and turn **Accept card payments ON**.
-5. Test end-to-end with PayHere's sandbox test cards.
-6. Only once a sandbox payment has completed cleanly, turn **Sandbox mode OFF**.
+**Almost none of this is done in the admin.** That is the point. Card details
+and the keys that move money are the one part of the site the browser is not
+trusted with, so they live in Netlify's settings instead — where a published
+file cannot leak them.
+
+1. Get a **PayHere** merchant account approved. From **Settings → Domains &
+   Credentials**, copy the **Merchant ID** and the **Merchant Secret**, and
+   add your domain there — PayHere rejects a checkout from a domain it does
+   not know.
+
+2. In Netlify: **Site configuration → Environment variables**. Add
+
+   - `PAYHERE_MERCHANT_ID`
+   - `PAYHERE_MERCHANT_SECRET`
+   - `PAYHERE_SANDBOX` = `true`
+
+   The **secret** is the one that matters. It signs every amount, and it must
+   never appear in this repository, in `settings.json`, in the admin, or
+   anywhere the browser can read it. If you ever paste it somewhere public,
+   treat it as burned: regenerate it in the PayHere dashboard the same day.
+
+3. *(Recommended)* Create the bookings table so payments are recorded and
+   guests get a confirmation. In **Supabase → SQL Editor → New query**,
+   paste the contents of `supabase/schema.sql` and press Run. Then add
+   `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to the same Netlify
+   settings. The service-role key is as sensitive as the merchant secret:
+   server only, never in the admin.
+
+   Skipping this does not break payments. You simply lose the stored booking,
+   the guest's confirmation email, and the confirmed receipt on the
+   thank-you page — the camp is still alerted, and PayHere still has the
+   record.
+
+4. In the admin: **Site Settings → Card payments → Accept card payments
+   ON**. That single switch is the only payment setting here, and the only
+   one the browser is trusted with. (The **Checkout endpoint** beside it
+   should stay exactly as it is.)
+
+5. Test end to end with PayHere's published **sandbox test cards**. Walk the
+   whole path: build a booking, pay the deposit, and check that the
+   thank-you page confirms it and that the booking appears in Supabase.
+
+6. Only once a sandbox payment has completed cleanly: swap the live Merchant
+   ID and Secret into Netlify and set `PAYHERE_SANDBOX` to `false`.
+
+### What protects you
+
+- **Prices are never taken from the browser.** When a guest pays, the page
+  sends only *which* items and *how many*; the server works out the price
+  from the same `content/packages.json` you edit here. Nobody can edit a
+  price on their own screen and pay less — and the deposit a guest is shown
+  can never differ from the one they are charged.
+- **Arriving at the thank-you page is not proof of payment.** Anyone can open
+  that address. The booking is marked paid only when PayHere's own servers
+  confirm it to ours with a signature; the page then asks what actually
+  happened and says only that. A guest who cancels is told the truth, not
+  congratulated.
 
 If anything fails mid-payment, the booking form automatically falls back to
 WhatsApp rather than leaving the guest stranded.

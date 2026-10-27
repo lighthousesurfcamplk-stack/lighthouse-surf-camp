@@ -5,6 +5,16 @@
   publish = "."
   command = ""
 
+# Zero-dependency functions: built-in crypto, global fetch, and the
+# catalogue pulled in with a static require so the bundler ships it.
+# Nothing to install, so `command` stays empty.
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # ---------------------------------------------------------------
 #  Caching
 # ---------------------------------------------------------------
@@ -59,6 +69,14 @@
 # ---------------------------------------------------------------
 #  Redirects
 # ---------------------------------------------------------------
+#  The payment endpoints. A rewrite (200), not a redirect: PayHere posts
+#  its confirmation callback server-to-server and does not follow a 3xx,
+#  so /api/payhere-notify has to answer at that exact address.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
 [[redirects]]
   from = "/admin"
   to = "/admin/"

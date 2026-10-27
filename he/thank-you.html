@@ -35,7 +35,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#0d333b">
-<link rel="stylesheet" href="../assets/css/style.css?v=36">
+<link rel="stylesheet" href="../assets/css/style.css?v=37">
 </head>
 <body>
 <svg class="flag-sprite" width="0" height="0" aria-hidden="true" focusable="false"><symbol id="flag-gb" viewBox="0 0 20 15"><path fill="#012169" d="M0 0h20v15H0z"/><path stroke="#fff" stroke-width="3" d="m0 0 20 15m0-15L0 15"/><path stroke="#C8102E" stroke-width="2" d="m0 0 20 15m0-15L0 15"/><path stroke="#fff" stroke-width="5" d="M10 0v15M0 7.5h20"/><path stroke="#C8102E" stroke-width="3" d="M10 0v15M0 7.5h20"/></symbol><symbol id="flag-de" viewBox="0 0 20 15"><path fill="#000" d="M0 0h20v5H0z"/><path fill="#DD0000" d="M0 5h20v5H0z"/><path fill="#FFCE00" d="M0 10h20v5H0z"/></symbol><symbol id="flag-ch" viewBox="0 0 20 15"><path fill="#D52B1E" d="M0 0h20v15H0z"/><path fill="#fff" d="M8.55 3.3h2.9v2.75h2.75v2.9h-2.75v2.75h-2.9V8.95H5.8v-2.9h2.75z"/></symbol><symbol id="flag-fr" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><path fill="#002395" d="M0 0h6.67v15H0z"/><path fill="#ED2939" d="M13.33 0H20v15h-6.67z"/></symbol><symbol id="flag-it" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><path fill="#009246" d="M0 0h6.67v15H0z"/><path fill="#CE2B37" d="M13.33 0H20v15h-6.67z"/></symbol><symbol id="flag-es" viewBox="0 0 20 15"><path fill="#AA151B" d="M0 0h20v15H0z"/><path fill="#F1BF00" d="M0 3.75h20v7.5H0z"/></symbol><symbol id="flag-ru" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v5H0z"/><path fill="#0039A6" d="M0 5h20v5H0z"/><path fill="#D52B1E" d="M0 10h20v5H0z"/></symbol><symbol id="flag-jp" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><circle cx="10" cy="7.5" r="4.05" fill="#BC002D"/></symbol><symbol id="flag-il" viewBox="0 0 20 15"><path fill="#fff" d="M0 0h20v15H0z"/><path fill="#0038B8" d="M0 2h20v1.9H0zM0 11.1h20V13H0z"/><path fill="none" stroke="#0038B8" stroke-width=".8" d="m10 4.75 2.34 4.05H7.66zM10 10.25 7.66 6.2h4.68z"/></symbol></svg>
@@ -50,15 +50,67 @@
 <main id="main">
 
 <section class="phero phero-full">
-  <img width="919" height="1280" src="../assets/img/restaurant-12.jpg" srcset="../assets/img/restaurant-12-400.jpg 400w, ../assets/img/restaurant-12-640.jpg 640w, ../assets/img/restaurant-12-800.jpg 800w, ../assets/img/restaurant-12.jpg 919w" sizes="100vw" alt="שקיעה מעל Light House Surf Camp" decoding="async" fetchpriority="high" data-i18n-alt="thank-you.alt--sunset-over-light-house-surf-camp">
-  <div class="wrap" style="text-align:center">
-    <div style="font-size:4rem;margin-bottom:10px">🤙</div>
-    <span class="eyebrow" data-i18n="thank-you.span--booking-confirmed">ההזמנה אושרה</span>
-    <h1 data-i18n="thank-you.h1--see-you-in-the-water">נתראה במים!</h1>
-    <p class="lead" style="margin:18px auto 0" data-i18n="thank-you.p--your-deposit-is-received-and-your">המקדמה התקבלה והמקום שלכם שמור. שלחנו לכם מייל אישור, והצוות שלנו ייצור איתכם קשר בקרוב בוואטסאפ כדי לאשר את הפרטים ולסדר את ההסעה.</p>
-    <div style="margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+  <img width="919" height="1280" src="../assets/img/restaurant-12.jpg" srcset="../assets/img/restaurant-12-400.jpg 400w, ../assets/img/restaurant-12-640.jpg 640w, ../assets/img/restaurant-12-800.jpg 800w, ../assets/img/restaurant-12.jpg 919w" sizes="100vw" alt="שקיעה מעל Light House Surf Camp" decoding="async" fetchpriority="high" data-i18n-alt="thank-you.alt--sunset-over-light-house-surf-camp">
+  <div class="wrap ty-wrap">
+
+    <!-- Five states, one of which is true. The honest one — "we have your
+         booking", claiming nothing about money — is the one that renders with
+         no JavaScript, and the one every unresolved case falls back to. This
+         page used to tell everybody who loaded the URL that their deposit had
+         arrived, including the guest who had just pressed cancel at the
+         gateway. assets/js/thanks.js asks /api/payhere-status and removes the
+         four states that do not apply. -->
+
+    <div class="ty-state" data-ty="idle">
+      <div class="ty-glyph" aria-hidden="true">🤙</div>
+      <span class="eyebrow" data-i18n="thank-you.span--booking-received">ההזמנה נקלטה</span>
+      <h1 data-i18n="thank-you.h1--see-you-in-the-water">נתראה במים!</h1>
+      <p class="lead" data-i18n="thank-you.p--thank-you-your-booking-is-with">תודה — ההזמנה שלכם אצל הצוות שלנו באארוגם ביי. אנחנו עונים אישית בוואטסאפ, בדרך כלל בתוך שעה, כדי לאשר את התאריכים ולארגן את ההסעות.</p>
+    </div>
+
+    <div class="ty-state hidden" data-ty="checking" aria-hidden="true">
+      <div class="ty-spin" aria-hidden="true"></div>
+      <span class="eyebrow" data-i18n="thank-you.span--one-moment">רגע אחד</span>
+      <h1 data-i18n="thank-you.h1--confirming-your-payment">מאמתים את התשלום שלכם</h1>
+      <p class="lead" data-i18n="thank-you.p--we-are-checking-with-the-payment">אנחנו בודקים מול ספק התשלומים. זה בדרך כלל לוקח כמה שניות — אנא השאירו את הדף פתוח.</p>
+    </div>
+
+    <div class="ty-state hidden" data-ty="paid" aria-hidden="true">
+      <div class="ty-glyph" aria-hidden="true">🤙</div>
+      <span class="eyebrow" data-i18n="thank-you.span--deposit-received">המקדמה נקלטה</span>
+      <h1 data-i18n="thank-you.h1--see-you-in-the-water-2">נתראה במים!</h1>
+      <p class="lead" data-i18n="thank-you.p--your-deposit-has-arrived-and-your">המקדמה שלכם נכנסה והתאריכים שלכם שמורים. אישור בדרך לתיבת הדואר שלכם, והצוות שלנו ייצור קשר בוואטסאפ כדי לארגן את ההסעות.</p>
+    </div>
+
+    <div class="ty-state hidden" data-ty="pending" aria-hidden="true">
+      <div class="ty-glyph" aria-hidden="true">⏳</div>
+      <span class="eyebrow" data-i18n="thank-you.span--almost-there">כמעט שם</span>
+      <h1 data-i18n="thank-you.h1--your-payment-is-still-clearing">התשלום עדיין בעיבוד</h1>
+      <p class="lead" data-i18n="thank-you.p--your-bank-has-not-confirmed-the">הבנק שלכם עוד לא אישר את המקדמה, ושום דבר לא אבד. נשלח לכם מייל ברגע שהיא תיכנס — או שתכתבו לנו בוואטסאפ ונבדוק את זה איתכם עכשיו.</p>
+    </div>
+
+    <div class="ty-state hidden" data-ty="failed" aria-hidden="true">
+      <div class="ty-glyph" aria-hidden="true">🌊</div>
+      <span class="eyebrow" data-i18n="thank-you.span--payment-not-completed">התשלום לא הושלם</span>
+      <h1 data-i18n="thank-you.h1--that-deposit-did-not-go-through">המקדמה לא עברה</h1>
+      <p class="lead" data-i18n="thank-you.p--nothing-has-been-charged-your-dates">לא נגבה שום סכום. התאריכים שלכם עדיין פנויים — נסו שוב, או שלחו לנו את ההזמנה בוואטסאפ ונשמור אותם בשבילכם.</p>
+    </div>
+
+    <!-- The receipt, shown only beside the paid state. Every figure comes from
+         /api/payhere-status, which answers with money and nothing that
+         identifies the guest — the reference travels in the URL, so it is
+         treated as readable rather than secret. -->
+    <div class="ty-receipt hidden" id="tyReceipt" aria-hidden="true">
+      <div class="ty-ref"><span data-i18n="thank-you.span--booking-reference">מספר הזמנה</span><b id="tyOrder">—</b></div>
+      <div id="tyLines"></div>
+      <div class="sum-row"><span data-i18n="thank-you.span--balance-on-arrival">יתרה בהגעה</span><span id="tyBalance">—</span></div>
+      <div class="sum-row total"><span data-i18n="thank-you.span--deposit-paid">מקדמה שולמה</span><span id="tyDeposit">—</span></div>
+    </div>
+
+    <div class="ty-cta">
       <a class="btn btn-primary" href="https://wa.me/94771066677" target="_blank" rel="noopener" data-i18n="thank-you.a--message-us-on-whatsapp">שלחו לנו הודעה בוואטסאפ</a>
-      <a class="btn btn-ghost" href="index.html" data-i18n="thank-you.a--back-to-home-2">חזרה לדף הבית</a>
+      <a class="btn btn-ghost hidden" href="book.html" id="tyRetry" data-i18n="thank-you.a--try-the-payment-again">נסו לשלם שוב</a>
+      <a class="btn btn-ghost" href="index.html" id="tyHome" data-i18n="thank-you.a--back-to-home-2">חזרה לדף הבית</a>
     </div>
   </div>
 </section>
@@ -66,4 +118,5 @@
 
 <script src="../assets/js/main.js?v=16"></script>
 <script src="../assets/js/content.js?v=9"></script>
+<script src="../assets/js/thanks.js?v=1"></script>
 </body></html>

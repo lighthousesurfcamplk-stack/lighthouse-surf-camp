@@ -28,7 +28,7 @@
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#0d333b">
 <link rel="preload" as="image" href="../assets/img/cabana3-11.jpg" fetchpriority="high">
-<link rel="stylesheet" href="../assets/css/style.css?v=36">
+<link rel="stylesheet" href="../assets/css/style.css?v=37">
 <script type="application/ld+json" data-seo="auto">{"@context":"https://schema.org","@type":"BreadcrumbList","inLanguage":"de","itemListElement":[{"@type":"ListItem","position":1,"name":"Start","item":"https://lighthousesurfcamp.lk/"},{"@type":"ListItem","position":2,"name":"Buchen","item":"https://lighthousesurfcamp.lk/book.html"}]}</script>
 </head>
 <body data-media="pages">
@@ -191,25 +191,11 @@
 
 <div class="bk-toast" id="bkToast" role="status" aria-live="polite"></div>
 
-<!-- Hidden PayHere form (posted only when payhere.enabled is true in the CMS) -->
-<form id="payhereForm" method="post" action="https://sandbox.payhere.lk/pay/checkout" class="hidden">
-  <input type="hidden" name="merchant_id" id="ph_merchant_id">
-  <input type="hidden" name="return_url" id="ph_return_url">
-  <input type="hidden" name="cancel_url" id="ph_cancel_url">
-  <input type="hidden" name="notify_url" id="ph_notify_url">
-  <input type="hidden" name="order_id" id="ph_order_id">
-  <input type="hidden" name="items" id="ph_items">
-  <input type="hidden" name="currency" id="ph_currency" value="USD">
-  <input type="hidden" name="amount" id="ph_amount">
-  <input type="hidden" name="hash" id="ph_hash">
-  <input type="hidden" name="first_name" id="ph_first_name">
-  <input type="hidden" name="last_name" id="ph_last_name">
-  <input type="hidden" name="email" id="ph_email">
-  <input type="hidden" name="phone" id="ph_phone">
-  <input type="hidden" name="address" id="ph_address" value="Arugam Bay">
-  <input type="hidden" name="city" id="ph_city" value="Arugam Bay">
-  <input type="hidden" name="country" id="ph_country" value="Sri Lanka">
-</form>
+<!-- The handoff to PayHere. Deliberately empty: assets/js/booking.js builds
+     every field from what /api/payhere-checkout signs, so the amount, the
+     order id and the merchant id never sit in this page's markup where a
+     browser could edit them on the way past. -->
+<form id="payhereForm" method="post" action="" class="hidden" aria-hidden="true"></form>
 
 </main>
 

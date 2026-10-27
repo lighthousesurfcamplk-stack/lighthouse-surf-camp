@@ -2422,3 +2422,48 @@ p,li,dd,blockquote,figcaption,.lead,h1,h2,h3,h4,h5,h6{
 @media(max-width:760px){
   .phero-book{padding-top:calc(var(--nav-h) + 76px)}
 }
+
+/* ---------- thank-you.html: the five confirmation states ---------- */
+/* One state is visible at a time and assets/js/thanks.js decides which, from
+   /api/payhere-status. The neutral one is the default in the markup, so a
+   guest with JavaScript off reads something true rather than something
+   flattering. All of it sits on .phero's dark gradient, which is why the
+   receipt borrows .sum-row from the booking cart verbatim: the figures a
+   guest agreed to and the figures they paid ought to look like one object. */
+.ty-wrap{text-align:center}
+.ty-wrap .eyebrow{justify-content:center}
+.ty-wrap .lead{margin-left:auto;margin-right:auto}
+
+.ty-state{animation:tyin .5s ease both}
+@keyframes tyin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.ty-glyph{font-size:clamp(3rem,7vw,4rem);line-height:1;margin-bottom:12px}
+
+/* The booking cart's loader, recoloured for a dark surface. */
+.ty-spin{width:34px;height:34px;margin:0 auto 20px;border:2px solid rgba(247,241,230,.26);
+  border-top-color:var(--sand);border-radius:50%;animation:bkspin .8s linear infinite}
+
+/* The receipt, revealed only beside the paid state. */
+.ty-receipt{max-width:440px;margin:38px auto 0;padding:6px 22px 20px;text-align:start;
+  border:1px solid var(--line-dk);border-radius:var(--r);background:rgba(26,20,14,.42);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.ty-ref{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+  padding:16px 0 13px;border-bottom:1px solid var(--line-dk);font-size:.68rem;
+  text-transform:uppercase;letter-spacing:.2em;font-weight:700;color:rgba(247,241,230,.6)}
+.ty-ref b{font-family:var(--body);font-size:.82rem;letter-spacing:.06em;
+  color:var(--sand);font-weight:700;white-space:nowrap}
+
+.ty-cta{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+@media(max-width:560px){
+  .ty-receipt{padding:4px 17px 17px}
+  /* Side by side, the label wraps to two lines while the reference keeps
+     to one and hangs off the top of it. Stacked, both read straight. */
+  .ty-ref{flex-direction:column;align-items:flex-start;gap:7px}
+  .ty-ref b{font-size:.9rem}
+  .ty-cta .btn{width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  .ty-state{animation:none}
+  .ty-spin{animation:none}
+}

@@ -1,7 +1,8 @@
 {
   "name": "lighthouse-surf-payments",
   "version": "1.0.0",
-  "description": "PayHere payment backend for Light House Surf Camp online bookings",
+  "description": "Standalone PayHere/Supabase payment server for Light House Surf Camp. A thin Express shim over netlify/functions/ — see the header of payhere-server.js.",
+  "private": true,
   "main": "payhere-server.js",
   "scripts": {
     "start": "node payhere-server.js"

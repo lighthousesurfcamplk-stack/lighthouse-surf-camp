@@ -1,0 +1,21 @@
+# Secrets. server/.env holds the PayHere merchant secret and the Supabase
+# service-role key; on Netlify those live in the site's environment variables
+# instead, and neither belongs in this repository under any circumstances.
+.env
+.env.*
+!.env.example
+server/.env
+
+node_modules/
+server/node_modules/
+
+# Netlify CLI working directory
+.netlify/
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.idea/
+.vscode/
