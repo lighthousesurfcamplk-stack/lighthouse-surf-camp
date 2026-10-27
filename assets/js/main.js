@@ -759,15 +759,29 @@
       }
       return Math.min(i, 4) * 90;
     };
+    /* One ratio cannot serve both a section heading and the gallery's
+       masonry. threshold is measured against the ELEMENT, so 14% of a block
+       taller than seven screens is more of it than the window can ever show
+       at once: the observer never reaches the figure, never notifies, and the
+       block stays at opacity:0 for good. The gallery crossed that line as it
+       filled up, which is why its grid went dark while every heading around
+       it still arrived.
+
+       So ask for whichever comes first: the designed fraction, or half a
+       screen of the block on show. Anything shorter than about three screens
+       is untouched -- half a screen is more than 14% of it, so 14% still
+       wins and the cascade keeps the timing it was tuned to. */
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(entry){
-        if(entry.isIntersecting){
+        var box = entry.boundingClientRect.height || 1;
+        var view = (entry.rootBounds && entry.rootBounds.height) || window.innerHeight;
+        if(entry.isIntersecting && entry.intersectionRatio >= Math.min(.14, view * .5 / box)){
           entry.target.style.transitionDelay = stagger(entry.target) + 'ms';
           entry.target.classList.add('in');
           io.unobserve(entry.target);
         }
       });
-    }, {threshold:.14, rootMargin:'0px 0px -6% 0px'});
+    }, {threshold:[0,.02,.05,.09,.14], rootMargin:'0px 0px -6% 0px'});
     els.forEach(function(el){ io.observe(el); });
   }
 

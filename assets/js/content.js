@@ -270,15 +270,60 @@
     }
     /* A matching <source> beats the <img src> underneath it for exactly the
        same reason, so a cloned <picture> would pin a rebuilt grid to the
-       prototype's photograph just as a stale srcset would. No grid ships one
-       today; this is here so that stops being one edit away from a silent
-       bug. The hero <picture> in index.html is not rebuilt through here --
-       it is kept in step deliberately, see case 'video'. */
-    if (node && node !== img && node.querySelectorAll) {
-      var ss = node.querySelectorAll('source');
+       prototype's photograph just as a stale srcset would. Clear whatever the
+       clone brought, then put back the list harvested for THIS photograph, so
+       a grid of <picture> tiles keeps its webp through a reorder in /admin.
+       A photograph the page has never seen is left with the jpeg in src,
+       which is always safe.
+
+       The wrap covers the mixed grid: the gallery's first tile is a plain
+       <img>, so every tile clones as one, and a photograph that does have a
+       webp list needs an element that can hold it. Only a tile that shipped
+       inside a <picture> can have harvested a list, so any grid reaching the
+       wrap already styles pictures. The hero <picture> in index.html is not
+       rebuilt through here -- it is kept in step deliberately, see case
+       'video'. */
+    var list = (v && v.sources) || [];
+    var pic = (node && node !== img && node.tagName === 'PICTURE') ? node
+      : (img.parentNode && img.parentNode.tagName === 'PICTURE') ? img.parentNode
+        : null;
+    var host = pic || (node && node !== img && node.querySelectorAll ? node : null);
+    if (host) {
+      var ss = host.querySelectorAll('source');
       for (var i = 0; i < ss.length; i++) ss[i].parentNode.removeChild(ss[i]);
     }
+    if (list.length && img.parentNode) {
+      if (!pic) {
+        pic = document.createElement('picture');
+        img.parentNode.insertBefore(pic, img);
+        pic.appendChild(img);
+      }
+      for (var j = 0; j < list.length; j++) {
+        var sc = document.createElement('source');
+        if (list[j].type) sc.setAttribute('type', list[j].type);
+        if (list[j].srcset) sc.setAttribute('srcset', list[j].srcset);
+        if (list[j].sizes) sc.setAttribute('sizes', list[j].sizes);
+        pic.insertBefore(sc, img);
+      }
+    }
     return true;
+  }
+
+  /* The webp list a <picture> tile carries lives in its <source>, one element
+     up from the srcset beside it, and a clone would hand every tile the
+     prototype's. Harvested with the srcset so a rebuild restores both
+     together. An empty list is a real answer: this photograph ships as a
+     plain jpeg, and its tile must not inherit someone else's webp. */
+  function harvestSources(img) {
+    var out = [], p = img.parentNode;
+    if (!p || p.tagName !== 'PICTURE') return out;
+    var ss = p.getElementsByTagName('source');
+    for (var i = 0; i < ss.length; i++) out.push({
+      type: ss[i].getAttribute('type'),
+      srcset: ss[i].getAttribute('srcset'),
+      sizes: ss[i].getAttribute('sizes')
+    });
+    return out;
   }
 
   function fillGrid(el, items) {
@@ -316,7 +361,8 @@
         srcset: i.getAttribute('srcset'),
         sizes: i.getAttribute('sizes'),
         width: i.getAttribute('width'),
-        height: i.getAttribute('height')
+        height: i.getAttribute('height'),
+        sources: harvestSources(i)
       };
       return src;
     });
@@ -328,6 +374,10 @@
       var node = proto.cloneNode(true);
       var img = node.tagName === 'IMG' ? node : node.querySelector('img');
       if (!img) return;
+      /* Into the fragment first: giving a webp list back to a tile the grid
+         cloned as a plain <img> means wrapping that <img> in a <picture>, and
+         an element with no parent cannot be wrapped in place. */
+      frag.appendChild(node);
       /* A clone carries the prototype's srcset, which would outrank the src
          set here and show the first tile's photograph in every position.
          applyImage swaps in this photograph's own list when the page shipped
@@ -345,7 +395,6 @@
       img.setAttribute('loading', 'lazy');
       img.setAttribute('decoding', 'async');
       setAlt(img, m.alt);
-      frag.appendChild(node);
     });
     if (!frag.childNodes.length) return;
     el.textContent = '';

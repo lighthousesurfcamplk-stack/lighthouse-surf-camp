@@ -62,7 +62,7 @@
     "alt": "Sunrise and sunset over Arugam Bay"
   },
   "cta": {
-    "image": "assets/img/restaurant-12.jpg",
+    "image": "assets/img/restaurant-16.jpg",
     "alt": "Sunset over Light House Surf Camp"
   },
   "_note": "Edited in /admin under \"Images and Video\". Every key here is declared in admin/config.yml - anything not declared there is dropped on the next save."
