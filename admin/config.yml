@@ -54,7 +54,7 @@ publish_mode: simple
 
 site_url: https://lighthousesurfcamp.lk
 display_url: https://lighthousesurfcamp.lk
-logo_url: https://lighthousesurfcamp.lk/assets/img/favicon.svg
+logo_url: /assets/img/favicon.svg
 
 collections:
   # ===========================================================

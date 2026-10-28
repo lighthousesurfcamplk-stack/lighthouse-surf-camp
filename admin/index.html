@@ -41,6 +41,49 @@
        git-gateway backend. Harmless if you switch to the GitHub backend. -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
+  <!-- ----------------------------------------------------------------
+       Pin the config file to an ABSOLUTE url before Decap boots.
+
+       Left to itself Decap fetches "config.yml" RELATIVE to whatever url
+       the admin happened to be opened at, so /admin without the trailing
+       slash asks for /config.yml and gets a 404 - the "Failed to load
+       config.yml" error. Resolving the path here, from the admin's own
+       directory, makes that impossible however the page was reached.
+       Deriving it instead of hard-coding "/admin/config.yml" keeps it
+       right when the site is served from a sub-folder, e.g. a local
+       python -m http.server started one level up.
+       Docs: https://decapcms.org/docs/configuration-options/
+  ---------------------------------------------------------------- -->
+  <script>
+    (function () {
+      var p = location.pathname;
+      /* "/admin/" -> "/admin/" | "/admin" -> "/admin/" | "/admin/index.html" -> "/admin/" */
+      var dir = /\/$/.test(p) ? p
+        : /\.[a-z0-9]+$/i.test(p) ? p.slice(0, p.lastIndexOf('/') + 1)
+          : p + '/';
+      var l = document.createElement('link');
+      l.rel = 'cms-config-url';
+      l.type = 'text/yaml';
+      l.href = dir + 'config.yml';
+      document.head.appendChild(l);
+
+      /* Opened by double-clicking the file? Nothing can be fetched over
+         file://, and Decap reports that as the very same confusing 404.
+         Say what is actually wrong instead. */
+      if (location.protocol === 'file:') {
+        document.addEventListener('DOMContentLoaded', function () {
+          var b = document.getElementById('boot');
+          if (!b) return;
+          b.innerHTML = '<div><h1>Open this page over http, not from a folder</h1>' +
+            '<p>The content manager has to be reached at your site address, ' +
+            'for example <strong>https://your-site/admin/</strong>. Opening ' +
+            'admin/index.html straight from the file system cannot load its ' +
+            'settings.</p></div>';
+        });
+      }
+    })();
+  </script>
+
   <!-- Decap CMS itself. Pinned to a major version so an upstream
        release can never change the admin under the owner's feet. -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>

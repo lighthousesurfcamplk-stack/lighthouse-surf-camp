@@ -66,6 +66,16 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
+# The admin re-reads this file on every load. A cached copy - or a cached
+# 404 from before the file existed - would keep the panel broken long
+# after a fix went out, so it is never cached. The explicit type stops it
+# falling back to a generic download type.
+[[headers]]
+  for = "/admin/config.yml"
+  [headers.values]
+    Content-Type = "text/yaml; charset=utf-8"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
 # ---------------------------------------------------------------
 #  Redirects
 # ---------------------------------------------------------------
