@@ -26,9 +26,9 @@
       "image": "assets/img/img0091.jpg", "alt": "Double cabana room with sea view", "active": true
     },
     {
-      "id": "stay-mountain", "category": "stay", "name": "Mountain Cabana",
+      "id": "stay-mountain", "category": "stay", "name": "Mountain Bungalow",
       "meta": "Premium · private terrace · sleeps 2", "price": 50, "unit": "per night",
-      "image": "assets/img/photo8.jpg", "alt": "Mountain cabana with private hammock terrace", "active": true
+      "image": "assets/img/photo8.jpg", "alt": "Mountain bungalow with private hammock terrace", "active": true
     },
     {
       "id": "stay-buffalo", "category": "stay", "name": "Buffalo Rock Cabana",

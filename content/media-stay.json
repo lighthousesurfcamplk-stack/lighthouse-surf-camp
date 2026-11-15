@@ -1,7 +1,7 @@
 {
   "hero": {
     "image": "assets/img/cabana3-11.jpg",
-    "alt": "Jungle A-frame cabana by the sea at Light House Surf Camp"
+    "alt": "Jungle wooden cabana by the sea at Light House Surf Camp"
   },
   "rooms": {
     "one": {
@@ -26,7 +26,7 @@
     },
     "six": {
       "image": "assets/img/photo8.jpg",
-      "alt": "Mountain cabana with private hammock terrace"
+      "alt": "Mountain bungalow with private hammock terrace"
     },
     "seven": {
       "image": "assets/img/buffalo-1.jpg",
@@ -36,7 +36,7 @@
   "band": {
     "one": {
       "image": "assets/img/cabana3-10.jpg",
-      "alt": "A-frame cabana with timber steps"
+      "alt": "Wooden cabana with timber steps"
     },
     "two": {
       "image": "assets/img/cabana2-1.jpg",
