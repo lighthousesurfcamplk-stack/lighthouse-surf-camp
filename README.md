@@ -67,7 +67,7 @@ The site is plain HTML/CSS/JS with no build step, so hosting is free and easy:
    payments cannot run, because both need somewhere to execute server
    code; bookings fall back to WhatsApp on their own.
 
-Then point your domain (e.g. `lighthousesurfcamp.lk`) at the host.
+Then point your domain (e.g. `lighthousesurfcamp.com`) at the host.
 
 > **One rule:** `api/` is not an ordinary folder. Vercel turns every file in
 > it into a live endpoint at `/api/<filename>` — which is how `/admin` signs
@@ -100,7 +100,7 @@ Vercel → **Settings → Environment Variables**, added for all environments. T
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | optional — needed to store bookings and confirm them |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | optional — instant alert to the camp |
 | `RESEND_API_KEY`, `BOOKING_EMAIL_FROM` | optional — confirmation email to the guest |
-| `SITE_URL` | your public address, e.g. `https://lighthousesurfcamp.lk` — where PayHere sends the guest back to. Set it: there is no reliable default on Vercel, where every preview deploy has its own hostname |
+| `SITE_URL` | your public address, e.g. `https://lighthousesurfcamp.com` — where PayHere sends the guest back to. Set it: there is no reliable default on Vercel, where every preview deploy has its own hostname |
 | `GITHUB_OAUTH_ID`, `GITHUB_OAUTH_SECRET` | the `/admin` login — nothing to do with payments. See `ADMIN-GUIDE.md`, Part 2 |
 | `ALLOWED_GITHUB_LOGINS` | optional — comma-separated GitHub usernames allowed into `/admin`. Without it, any GitHub account can reach the admin screen (though only accounts with repository access can save anything) |
 

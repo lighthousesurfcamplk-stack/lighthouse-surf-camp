@@ -32,7 +32,7 @@ const path = require('path');
 const schema = require('./i18n-schema');
 
 const ROOT = path.resolve(__dirname, '..');
-const ORIGIN = 'https://lighthousesurfcamp.lk';
+const ORIGIN = 'https://lighthousesurfcamp.com';
 
 /* The languages we emit. `en` is the source and lives at the site root.
    To add a language: create i18n/<code>.json and add a row here. */

@@ -5,4 +5,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /server/
 
-Sitemap: https://lighthousesurfcamp.lk/sitemap.xml
+Sitemap: https://lighthousesurfcamp.com/sitemap.xml

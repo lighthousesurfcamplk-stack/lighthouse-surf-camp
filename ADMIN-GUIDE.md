@@ -81,7 +81,7 @@ In your Vercel project: **Settings → Environment Variables**. Add these for
 |---|---|
 | `GITHUB_OAUTH_ID` | the **Client ID** from Step 2 |
 | `GITHUB_OAUTH_SECRET` | the **Client secret** from Step 2 |
-| `SITE_URL` | your site's address, e.g. `https://lighthousesurfcamp.lk` |
+| `SITE_URL` | your site's address, e.g. `https://lighthousesurfcamp.com` |
 
 The client secret belongs here and nowhere else. Never paste it into the
 admin, into `config.yml`, or into any file in the repository: everything in
@@ -109,7 +109,7 @@ above takes effect until you trigger one: **Deployments → the top one →
 
 **Step 5. Connect your own domain** (when you're ready).
 
-In Vercel: **Settings → Domains → Add** → `lighthousesurfcamp.lk`, then
+In Vercel: **Settings → Domains → Add** → `lighthousesurfcamp.com`, then
 follow the DNS instructions it gives you. HTTPS is issued automatically and
 free.
 

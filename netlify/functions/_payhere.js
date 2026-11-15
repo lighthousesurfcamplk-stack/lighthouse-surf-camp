@@ -55,7 +55,7 @@ const SANDBOX         = String(process.env.PAYHERE_SANDBOX || 'true') !== 'false
    for any other host. Deriving the return/cancel URLs from the server rather
    than accepting them from the request is what keeps this off the list of
    open redirects -- see localeReturn() below. */
-const SITE_URL = (process.env.SITE_URL || process.env.URL || 'https://lighthousesurfcamp.lk')
+const SITE_URL = (process.env.SITE_URL || process.env.URL || 'https://lighthousesurfcamp.com')
   .replace(/\/+$/, '');
 
 const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
