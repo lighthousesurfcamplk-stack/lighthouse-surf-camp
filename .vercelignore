@@ -1,0 +1,26 @@
+# Files that must not reach the deployment.
+#
+# This site has no build step: Vercel publishes the repository as-is, so
+# every file listed in git is otherwise a public URL. These directories
+# are development-time only - nothing the website or the /api functions
+# load at runtime - so they are kept out of the deployment entirely
+# rather than served and hoped to be ignored.
+#
+# Anything the functions `require` must NOT be listed here: the bundler
+# follows those requires at build time and needs the files present.
+# netlify/functions/ is therefore still uploaded (api/*.js wraps it) and
+# is blocked at the URL level in vercel.json instead.
+
+# The local Express wrapper around the payment handlers. Only used by
+# `npm start` in server/ while developing.
+server/
+
+# The image-ladder, i18n build and tagging scripts. Run by hand, locally.
+tools/
+
+# The bookings table definition. Applied through the Supabase dashboard,
+# never read by the site.
+supabase/
+
+# Editor and agent scratch.
+.claude/

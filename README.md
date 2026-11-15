@@ -25,15 +25,23 @@ Light House Surf Camp/
 ├── i18n/               # One dictionary per language (en.json is generated)
 ├── tools/              # i18n-tag.js marks the English copy, i18n-build.js
 │                       #   generates the 96 translated pages + sitemap
-├── netlify/functions/  # The payment backend. Nothing here runs in the
-│   ├── _payhere.js     #   browser, and only this code holds the secrets.
-│   ├── payhere-checkout.js
-│   ├── payhere-notify.js
-│   └── payhere-status.js
+├── api/                # Serverless endpoints. Vercel publishes each
+│   ├── auth.js         #   file here at /api/<name>. auth + callback are
+│   ├── callback.js     #   the GitHub sign-in for /admin; the payhere-*
+│   ├── payhere-*.js    #   three are wrappers over the handlers below.
+│   └── _netlify-shim.js   # Underscored = bundled, never routed.
+├── netlify/functions/  # The payment logic itself, and the only code
+│   ├── _payhere.js     #   that touches the merchant secret. Written to
+│   ├── payhere-checkout.js  # Netlify's handler shape, which api/*.js
+│   ├── payhere-notify.js    # adapts — so there is exactly one copy of
+│   └── payhere-status.js    # the rules that price a booking.
 ├── supabase/schema.sql # Run once, creates the bookings table
+├── vercel.json         # The live hosting config: headers, redirects
+├── netlify.toml        # The same for Netlify. Not in use — see the file
+├── ADMIN-GUIDE.md      # The owner's manual for /admin, start to finish
 └── server/             # The same payment API as a standalone Express app,
-    ├── payhere-server.js  #   for hosts that are not Netlify. Optional.
-    ├── package.json
+    ├── payhere-server.js  #   for hosts with no serverless functions at
+    ├── package.json       #   all. Optional, and only used locally.
     └── .env.example    # Every environment variable, documented
 ```
 
@@ -47,18 +55,28 @@ Just **double-click `index.html`** — the whole site works offline in any brows
 
 The site is plain HTML/CSS/JS with no build step, so hosting is free and easy:
 
-1. **Netlify** — connect the repo and deploy. (Recommended, and the only
-   option that also runs the card payments: `netlify.toml` is already set up
-   to publish the folder as-is and deploy `netlify/functions/` alongside it.)
-2. **GitHub Pages** or **any cPanel host** — upload the files. Everything
-   works except card payments, which need somewhere to run server code;
-   bookings fall back to WhatsApp on their own.
+1. **Vercel** — connect the repo and deploy. **This is where the site is
+   hosted.** It is also the only option that runs the two things which need
+   server code: logging in to `/admin`, and taking a card deposit.
+   `vercel.json` carries the headers and redirects, and every file in
+   `api/` becomes a live endpoint. Import the repo with Framework Preset
+   **Other**, an empty **Build Command**, and the repository root as the
+   **Output Directory** — there is nothing to build.
+2. **GitHub Pages** or **any cPanel host** — upload the files. The public
+   website works in full, but `/admin` cannot sign you in and card
+   payments cannot run, because both need somewhere to execute server
+   code; bookings fall back to WhatsApp on their own.
 
 Then point your domain (e.g. `lighthousesurfcamp.lk`) at the host.
 
-> **One rule:** do not create a folder called `api/` in the project root. The
-> `/api/*` addresses are rewritten to the Netlify functions, and a real
-> folder of that name would shadow them.
+> **One rule:** `api/` is not an ordinary folder. Vercel turns every file in
+> it into a live endpoint at `/api/<filename>` — which is how `/admin` signs
+> you in and how the deposit is taken. Nothing static belongs there, and
+> those files must not be renamed.
+>
+> *(This said the exact opposite until the site moved to Vercel. On Netlify,
+> `/api/*` was a **rewrite** to `netlify/functions/`, and a real folder of
+> that name would have shadowed it. Same addresses, opposite mechanism.)*
 
 ---
 
@@ -71,8 +89,8 @@ Right now the **Book Now** page works immediately and sends bookings via **Whats
 ### Step 1 — Get a PayHere account
 Sign up at **https://www.payhere.lk**, complete business verification, and from **Settings → Domains & Credentials** copy your **Merchant ID** and **Merchant Secret**. Add your domain there too, or PayHere will reject the checkout.
 
-### Step 2 — Put the keys in Netlify
-Netlify → **Site configuration → Environment variables**. The names and what each one does are documented in `server/.env.example`; only the first three are required:
+### Step 2 — Put the keys in Vercel
+Vercel → **Settings → Environment Variables**, added for all environments. The names and what each one does are documented in `server/.env.example`; only the first three are required. Variables reach the site on its **next** deploy, so redeploy once you have saved them:
 
 | Variable | Value |
 |---|---|
@@ -82,11 +100,14 @@ Netlify → **Site configuration → Environment variables**. The names and what
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | optional — needed to store bookings and confirm them |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | optional — instant alert to the camp |
 | `RESEND_API_KEY`, `BOOKING_EMAIL_FROM` | optional — confirmation email to the guest |
+| `SITE_URL` | your public address, e.g. `https://lighthousesurfcamp.lk` — where PayHere sends the guest back to. Set it: there is no reliable default on Vercel, where every preview deploy has its own hostname |
+| `GITHUB_OAUTH_ID`, `GITHUB_OAUTH_SECRET` | the `/admin` login — nothing to do with payments. See `ADMIN-GUIDE.md`, Part 2 |
+| `ALLOWED_GITHUB_LOGINS` | optional — comma-separated GitHub usernames allowed into `/admin`. Without it, any GitHub account can reach the admin screen (though only accounts with repository access can save anything) |
 
 The merchant **secret** signs every amount. It is the one value that must never reach the browser, `content/settings.json`, or a commit. `.gitignore` keeps `.env` out of git; everything else is on you.
 
 ### Step 3 — Create the bookings table
-In Supabase: **SQL Editor → New query**, paste `supabase/schema.sql`, Run. That is the whole database. Row Level Security is on with no policies on purpose, so nothing but the service-role key — which lives only in Netlify — can read or write it.
+In Supabase: **SQL Editor → New query**, paste `supabase/schema.sql`, Run. That is the whole database. Row Level Security is on with no policies on purpose, so nothing but the service-role key — which lives only in Vercel's environment variables — can read or write it.
 
 Skip this and payments still work; the camp is still alerted and PayHere still has the receipt. You just lose the stored booking, the guest's confirmation email, and the confirmation on `thank-you.html`.
 
@@ -119,7 +140,7 @@ Worth knowing, because it is the reason this is four steps instead of one:
 
 ## ✏️ Editing content
 
-- **Everything is edited in `/admin`** (Netlify CMS, invite-only). Prices, rooms, photos, opening copy and settings all write back to `content/*.json` as ordinary commits, so every change is in the git history and revertible.
+- **Everything is edited in `/admin`** (Decap CMS — you sign in with the GitHub account the repository lives in; setup and day-to-day use are in `ADMIN-GUIDE.md`). Prices, rooms, photos, opening copy and settings all write back to `content/*.json` as ordinary commits, so every change is in the git history and revertible.
 - **Prices live in exactly one place** — `content/packages.json` and its siblings. The booking page, the quoted deposit and the amount actually charged all read from that same file, which is why they cannot disagree.
 - **Photos** are your own, optimized for web and stored in `assets/img/` (cabanas, dome, restaurant, drone, garden). To add more, drop JPGs into `assets/img/` and reference them. A few surf-action / board shots on the Surf and Rentals pages are still royalty-free stock — swap them for your own surf photos when you have them.
 - **Contact details** (WhatsApp, email, Instagram) live in `content/settings.json` and are hydrated into every page's footer.

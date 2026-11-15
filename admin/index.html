@@ -37,10 +37,6 @@
     </div>
   </div>
 
-  <!-- Netlify Identity: provides the email/password login for the
-       git-gateway backend. Harmless if you switch to the GitHub backend. -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-
   <!-- ----------------------------------------------------------------
        Pin the config file to an ABSOLUTE url before Decap boots.
 
@@ -86,9 +82,41 @@
 
   <!-- Decap CMS itself. Pinned to a major version so an upstream
        release can never change the admin under the owner's feet. -->
+  <!-- ----------------------------------------------------------------
+       Hold Decap back for one line of configuration.
+
+       The GitHub backend has to know which origin its sign-in popup is
+       allowed to talk to: it compares the popup’s message origin against
+       backend.base_url EXACTLY, and silently ignores anything else. That
+       value is this site’s own address - which is different on the custom
+       domain, on the *.vercel.app address and on every preview deployment,
+       so a value hard-coded in config.yml would leave the admin unable to
+       sign in on two of the three. Reading it off the page is always right,
+       and is one less thing for the owner to keep in step with their DNS.
+
+       CMS_MANUAL_INIT stops the bundle booting the moment it loads; the
+       object passed to CMS.init() below is deep-merged OVER config.yml, so
+       the backend name, repository and branch - and everything else the
+       owner edits - still come from the file.
+       Docs: https://decapcms.org/docs/manual-initialization/
+  ---------------------------------------------------------------- -->
+  <script>window.CMS_MANUAL_INIT = true;</script>
+
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
   <script>
+    /* Boot the CMS now that the page can say where it is.
+
+       base_url is the ONE value Decap cannot read from config.yml here;
+       see the comment above. Everything else is merged in from the file.
+       On localhost Decap talks to `npx decap-server` instead (because
+       local_backend is on in config.yml) and ignores this entirely. */
+    CMS.init({
+      config: {
+        backend: { base_url: location.origin }
+      }
+    });
+
     // Hide the boot message once the CMS has painted.
     window.addEventListener('load', function () {
       setTimeout(function () {
@@ -96,18 +124,6 @@
         if (b) b.remove();
       }, 1200);
     });
-
-    // After an invited user sets their password, drop them straight into
-    // the admin instead of bouncing them back to the public homepage.
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on('init', function (user) {
-        if (!user) {
-          window.netlifyIdentity.on('login', function () {
-            document.location.href = '/admin/';
-          });
-        }
-      });
-    }
   </script>
 </body>
 </html>

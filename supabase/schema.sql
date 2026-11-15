@@ -10,7 +10,8 @@
 -- service role bypasses RLS by design, so the functions keep working.
 --
 -- That is the whole security model, and it only holds while the service-role
--- key stays in the Netlify environment. It must never appear in this
+-- key stays in the host's environment variables (Vercel → Settings →
+-- Environment Variables, for this deployment). It must never appear in this
 -- repository, in content/settings.json, or in anything the browser loads.
 -- A guest's browser needs no access to this table at all: it asks
 -- /api/payhere-status, which answers with figures and no personal details.
@@ -72,4 +73,4 @@ alter table public.bookings enable row level security;
 -- Anything that needs to read this table should go through the functions.
 
 comment on table public.bookings is
-  'Deposit bookings from book.html. Written only by the Netlify payment functions via the service-role key; RLS is on with no policies, so no client key can reach it.';
+  'Deposit bookings from book.html. Written only by the server-side payment functions via the service-role key; RLS is on with no policies, so no client key can reach it.';

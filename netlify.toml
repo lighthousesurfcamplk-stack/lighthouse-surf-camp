@@ -1,4 +1,16 @@
-# Light House Surf Camp — deploy configuration
+# Light House Surf Camp — deploy configuration for NETLIFY.
+#
+# NOT IN USE. This site is deployed on VERCEL, and the live configuration
+# is vercel.json. Nothing in this file has any effect: not the cache or
+# security headers, not the no-cache header on /admin/config.yml, and not
+# the redirects below. Netlify reads netlify.toml; Vercel does not.
+#
+# It is kept because netlify/functions/ is still the single source of
+# truth for the payment logic — api/*.js wraps those handlers for Vercel
+# runtime, see api/_netlify-shim.js — so this file is what a move back to
+# Netlify would need. If you change a header or a redirect, change it in
+# vercel.json; mirroring it here keeps the two from drifting.
+#
 # Plain static site: nothing to build, publish the repo root as-is.
 
 [build]

@@ -30,68 +30,101 @@ price to hide.
 
 ## Part 2 — Getting the admin online (one-time, ~15 minutes)
 
-You only do this once. Pick **Option A** unless you have a reason not to.
+You only do this once. The site is hosted on **Vercel**, and you sign in to
+the admin with your **GitHub** account — the same account the website's files
+already live in. Nothing to install, nothing to pay for.
 
-### Option A — Netlify login (recommended: no GitHub account needed)
+> **Why GitHub, and not an email and password?** An email login needs a
+> service somewhere to hold the passwords. Netlify has one built in, and this
+> guide used to describe it. Vercel does not — which is exactly what the error
+> *"Unable to access identity settings"* was trying to say. Signing in with
+> GitHub needs no extra service at all: the repository already knows who you
+> are. Two small files in `/api` do the one job Netlify's service was doing,
+> which is to hold a secret the browser must never be shown.
 
-**Step 1. Put the site on Netlify.**
+**Step 1. Put the site on Vercel.** *(Skip if it is already there.)*
 
-1. Go to [app.netlify.com](https://app.netlify.com) and sign up (free).
-2. **Add new site → Import an existing project → GitHub**.
-3. Authorise Netlify, then choose the `lighthouse-surf-camp` repository.
-4. Leave the build command **empty** and the publish directory as **`.`**
-   (this is a plain HTML site — there is nothing to build).
-5. Click **Deploy**. In under a minute you get a URL like
-   `lighthouse-surf-camp.netlify.app`.
+1. Go to [vercel.com](https://vercel.com) and sign in with GitHub (free).
+2. **Add New → Project**, then **Import** the `lighthouse-surf-camp`
+   repository.
+3. Framework Preset: **Other**. Leave the **Build Command** empty and the
+   **Output Directory** as the repository root — this is a plain HTML site,
+   there is nothing to build.
+4. Click **Deploy**. In under a minute you get an address like
+   `lighthouse-surf-camp.vercel.app`.
 
-**Step 2. Turn on logins.**
+**Step 2. Create the GitHub login.**
 
-1. In your new site: **Site configuration → Identity → Enable Identity**.
-2. Under **Registration preferences**, choose **Invite only**.
-   *Do not skip this.* "Open" means anyone on the internet could register
-   themselves and start editing your prices.
-3. Under **Services → Git Gateway**, click **Enable Git Gateway**.
-   This is what lets the admin panel save to GitHub on your behalf.
+1. Go to **GitHub → your avatar → Settings → Developer settings →
+   OAuth Apps → New OAuth App**.
+2. Fill it in:
 
-**Step 3. Invite yourself.**
+   | Field | Value |
+   |---|---|
+   | Application name | `Light House Surf Camp admin` |
+   | Homepage URL | `https://yoursite.com` |
+   | Authorization callback URL | `https://yoursite.com/api/callback` |
 
-1. Go to the **Identity** tab → **Invite users**.
-2. Enter your own email address and send.
-3. Open the email, click **Accept the invite**, and set a password.
-4. You land on `/admin` and you are in.
+   Use your real address — the custom domain if you have one, otherwise the
+   `…vercel.app` one. The callback URL has to match **exactly**: `https://`,
+   the same spelling, and no trailing slash.
+3. Press **Register application**, then **Generate a new client secret**.
+   Leave that page open — GitHub will not show you the secret again once you
+   navigate away.
 
-**Step 4. Connect your own domain** (when you're ready).
+**Step 3. Give the two values to Vercel.**
 
-**Domain management → Add a domain** → `lighthousesurfcamp.lk`, then follow
-Netlify's DNS instructions. HTTPS is issued automatically and free.
+In your Vercel project: **Settings → Environment Variables**. Add these for
+**all** environments:
 
-> If your Netlify site does not offer Identity, use Option B instead — the
-> admin panel itself is identical either way.
+| Name | Value |
+|---|---|
+| `GITHUB_OAUTH_ID` | the **Client ID** from Step 2 |
+| `GITHUB_OAUTH_SECRET` | the **Client secret** from Step 2 |
+| `SITE_URL` | your site's address, e.g. `https://lighthousesurfcamp.lk` |
 
----
+The client secret belongs here and nowhere else. Never paste it into the
+admin, into `config.yml`, or into any file in the repository: everything in
+the repository is public the moment it deploys. `SITE_URL` is not part of the
+login — it is the address the payment pages send guests back to — but set it
+now while you are in the right screen.
 
-### Option B — GitHub login
+*Optional, and worth doing:*
 
-Use this if you would rather sign in with your GitHub account.
+| Name | Value |
+|---|---|
+| `ALLOWED_GITHUB_LOGINS` | your GitHub username, e.g. `lighthousesurfcamplk-stack` |
 
-1. Open `admin/config.yml`.
-2. Comment out the `backend: git-gateway` block and uncomment the
-   `backend: github` block below it.
-3. You need an OAuth client, because GitHub will not accept a login from a
-   static page directly. The standard route is to deploy a small, free,
-   open-source OAuth relay (for example `decap-cms-github-oauth-provider`)
-   and put its address in `base_url`.
-4. In **GitHub → Settings → Developer settings → OAuth Apps → New OAuth App**,
-   set the callback URL to `https://<your-oauth-relay>/callback`, then paste
-   the Client ID and Secret into the relay's environment variables.
+Without this, any GitHub user who approves the app gets as far as the admin
+screen. They cannot change anything — GitHub refuses writes from anyone
+without access to your repository — but there is no reason to let them look.
+With it, only the usernames you list get in. Separate several with commas.
 
-Option A avoids all of this, which is why it is the default.
+**Step 4. Redeploy, then log in.**
+
+Environment variables only reach the site on its *next* deploy, so nothing
+above takes effect until you trigger one: **Deployments → the top one →
+`⋯` → Redeploy**. Then open `https://yoursite.com/admin/`, click
+**Login with GitHub**, approve once, and you are in.
+
+**Step 5. Connect your own domain** (when you're ready).
+
+In Vercel: **Settings → Domains → Add** → `lighthousesurfcamp.lk`, then
+follow the DNS instructions it gives you. HTTPS is issued automatically and
+free.
+
+> **If you ever change the domain**, go back to the OAuth app from Step 2 and
+> update its callback URL to `https://<new-domain>/api/callback`, and update
+> `SITE_URL`. Those are the only two places your address is written down —
+> the admin panel works out where it is running by itself. A login popup
+> complaining that the redirect URI does not match is this, and only this.
 
 ---
 
 ## Part 3 — Day-to-day use
 
-**To log in:** go to `yoursite.com/admin`, enter your email and password.
+**To log in:** go to `yoursite.com/admin`, click **Login with GitHub**, and
+approve if GitHub asks. It will not ask again on that browser.
 
 **To change a price:**
 Camp Packages → click the package → change **Price** → **Publish**.
@@ -220,7 +253,7 @@ deposit however you agree. Card payments are an upgrade, not a dependency.
 
 **Almost none of this is done in the admin.** That is the point. Card details
 and the keys that move money are the one part of the site the browser is not
-trusted with, so they live in Netlify's settings instead — where a published
+trusted with, so they live in Vercel's settings instead — where a published
 file cannot leak them.
 
 1. Get a **PayHere** merchant account approved. From **Settings → Domains &
@@ -228,11 +261,16 @@ file cannot leak them.
    add your domain there — PayHere rejects a checkout from a domain it does
    not know.
 
-2. In Netlify: **Site configuration → Environment variables**. Add
+2. In Vercel: **Settings → Environment Variables** — the same screen as
+   Part 2, Step 3. Add
 
    - `PAYHERE_MERCHANT_ID`
    - `PAYHERE_MERCHANT_SECRET`
    - `PAYHERE_SANDBOX` = `true`
+
+   and make sure `SITE_URL` is set, which is how the payment pages know
+   where to send a guest back to. Then redeploy: variables only reach the
+   site on its next deploy.
 
    The **secret** is the one that matters. It signs every amount, and it must
    never appear in this repository, in `settings.json`, in the admin, or
@@ -242,7 +280,7 @@ file cannot leak them.
 3. *(Recommended)* Create the bookings table so payments are recorded and
    guests get a confirmation. In **Supabase → SQL Editor → New query**,
    paste the contents of `supabase/schema.sql` and press Run. Then add
-   `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to the same Netlify
+   `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to the same Vercel
    settings. The service-role key is as sensitive as the merchant secret:
    server only, never in the admin.
 
@@ -261,7 +299,7 @@ file cannot leak them.
    thank-you page confirms it and that the booking appears in Supabase.
 
 6. Only once a sandbox payment has completed cleanly: swap the live Merchant
-   ID and Secret into Netlify and set `PAYHERE_SANDBOX` to `false`.
+   ID and Secret into Vercel, set `PAYHERE_SANDBOX` to `false`, and redeploy.
 
 ### What protects you
 
@@ -312,17 +350,36 @@ CMS genuinely cannot do.
 ## Troubleshooting
 
 **"I published but the site hasn't changed."**
-Give it a minute — Netlify redeploys after each save. Check
-**Deploys** in Netlify for a failed build. Then hard-refresh
+Give it a minute — Vercel redeploys after each save. Check
+**Deployments** in Vercel for a failed build. Then hard-refresh
 (`Ctrl+Shift+R`, or `Cmd+Shift+R` on a Mac).
 
 **"Failed to load config.yml"**
 YAML is whitespace-sensitive. If you edited `admin/config.yml` by hand, check
 you used spaces and not tabs, and that indentation lines up.
 
-**"I can't log in."**
-Confirm Identity is enabled and that you accepted the emailed invite. Invited
-users must set a password before the first login.
+**"Unable to access identity settings."**
+This site no longer uses Netlify Identity — see Part 2. If you still see
+this, your browser is holding an old copy of `admin/config.yml`:
+hard-refresh (`Ctrl+Shift+R`, or `Cmd+Shift+R` on a Mac).
+
+**"Cannot sign in yet — set GITHUB_OAUTH_ID and GITHUB_OAUTH_SECRET."**
+Exactly what it says: Part 2, Step 3, and then redeploy. Variables you have
+saved but not yet deployed do not count.
+
+**"The redirect_uri is not associated with this application."**
+GitHub is comparing the address you are on against the callback URL in the
+OAuth app, character for character. Open the OAuth app from Part 2, Step 2
+and set the callback to `https://<the address in your browser>/api/callback`.
+A missing `s` in `https`, a trailing slash, or `www.` are the usual causes.
+
+**"That GitHub account is not allowed to edit this site."**
+Your username is not in `ALLOWED_GITHUB_LOGINS`. Correct it in Vercel —
+lower case, commas between several — and redeploy.
+
+**The login popup opens and nothing happens.**
+Allow pop-ups for your site, and allow cookies: the sign-in uses a one-time
+cookie to check that the reply came back from the request you started.
 
 **"I deleted something by accident."**
 Nothing is ever really lost. Open your repository on GitHub → **History** on

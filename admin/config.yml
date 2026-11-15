@@ -14,28 +14,39 @@
 # =============================================================
 
 # -------------------------------------------------------------
-#  BACKEND — pick ONE. Option A ships enabled.
+#  BACKEND — sign in with GitHub
 # -------------------------------------------------------------
-#  A) Netlify Identity + Git Gateway.
-#     Best for a non-technical owner: they log in with an email
-#     and password and never need a GitHub account.
+#  The admin commits straight to the repository below, and the
+#  owner signs in with their GitHub account.
+#
+#  This used to be Netlify Identity + Git Gateway, which handed
+#  out email-and-password logins. Neither of those services is
+#  part of Vercel, where this site is hosted, so asking for them
+#  produced the "Unable to access identity settings" error. Their
+#  one essential job — holding an OAuth secret the browser must
+#  never see, and handing back a finished token — is now done by
+#  two small functions in /api. See api/auth.js for the flow and
+#  ADMIN-GUIDE.md for the click-by-click setup.
 backend:
-  name: git-gateway
+  name: github
+  repo: lighthousesurfcamplk-stack/lighthouse-surf-camp
   branch: main
 
-#  B) GitHub direct. Use this if you would rather log in with a
-#     GitHub account, or if Identity is not available on your
-#     Netlify site. Comment out block A, uncomment this, and see
-#     "Option B" in ADMIN-GUIDE.md for the OAuth setup.
-#
-# backend:
-#   name: github
-#   repo: lighthousesurfcamplk-stack/lighthouse-surf-camp
-#   branch: main
-#   base_url: https://your-oauth-provider.netlify.app
+  #  Where the sign-in popup goes. Decap defaults this to "auth",
+  #  i.e. /auth, which is a static 404 here — our function lives
+  #  at /api/auth, and it redirects on to GitHub.
+  auth_endpoint: api/auth
+
+  #  NOTE: base_url is deliberately absent. It has to equal this
+  #  site’s exact origin, which differs between the custom domain,
+  #  the *.vercel.app address and each preview deployment, so
+  #  admin/index.html reads it off the page at boot and merges it
+  #  in. Setting it here would override that and break the admin
+  #  everywhere except the one address written down.
 
 # Local preview: run `npx decap-server` then open /admin on
-# localhost — edits write straight to your working copy, no login.
+# localhost — edits write straight to your working copy, no login
+# and no GitHub round trip.
 local_backend: true
 
 # -------------------------------------------------------------
@@ -52,8 +63,8 @@ public_folder: "assets/img"
 # review changes as drafts before they publish.
 publish_mode: simple
 
-site_url: https://lighthousesurfcamp.lk
-display_url: https://lighthousesurfcamp.lk
+site_url: https://lighthousesurfcamp.com
+display_url: https://lighthousesurfcamp.com
 logo_url: /assets/img/favicon.svg
 
 collections:
@@ -684,7 +695,7 @@ collections:
                 default: false
                 hint: >-
                   Leave OFF until your PayHere account is approved and the
-                  keys are set in Netlify. While it is off, guests confirm
+                  keys are set in Vercel. While it is off, guests confirm
                   over WhatsApp instead — bookings still work.
               - label: "Checkout endpoint"
                 name: "endpoint"
@@ -697,7 +708,7 @@ collections:
 
               # Everything else PayHere needs — merchant id, the merchant
               # SECRET, test-vs-live mode, and all three callback URLs — now
-              # lives in Netlify's environment variables, not here. That is
+              # lives in Vercel's environment variables, not here. That is
               # deliberate: this file is published to the public web with
               # every deploy, and the prices a guest is charged are worked
               # out on the server from content/packages.json rather than
